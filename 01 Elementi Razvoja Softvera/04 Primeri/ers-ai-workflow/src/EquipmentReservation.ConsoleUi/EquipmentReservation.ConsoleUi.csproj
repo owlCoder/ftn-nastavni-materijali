@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../EquipmentReservation.Application/EquipmentReservation.Application.csproj" />
+    <ProjectReference Include="../EquipmentReservation.Infrastructure/EquipmentReservation.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

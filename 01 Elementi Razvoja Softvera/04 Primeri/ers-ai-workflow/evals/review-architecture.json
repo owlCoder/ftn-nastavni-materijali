@@ -1,0 +1,17 @@
+{
+  "id": "review-architecture-01",
+  "goal": "Agent treba da prepozna curenje poslovne logike u API sloj.",
+  "input": {
+    "issue": "Dodaj rezervaciju opreme",
+    "fixture": "Endpoint direktno umanjuje stanje zalihe i upisuje rezervaciju."
+  },
+  "expected": {
+    "mustFlag": [
+      "business logic in presentation/API layer",
+      "missing application use-case test"
+    ],
+    "mustNotSuggest": [
+      "rewrite entire application"
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Domain", "src\EquipmentReservation.Domain\EquipmentReservation.Domain.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE001}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Application", "src\EquipmentReservation.Application\EquipmentReservation.Application.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE002}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Infrastructure", "src\EquipmentReservation.Infrastructure\EquipmentReservation.Infrastructure.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE003}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Api", "src\EquipmentReservation.Api\EquipmentReservation.Api.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE004}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Mcp", "src\EquipmentReservation.Mcp\EquipmentReservation.Mcp.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE005}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Guardrails", "src\EquipmentReservation.Guardrails\EquipmentReservation.Guardrails.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE006}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Tests", "tests\EquipmentReservation.Tests\EquipmentReservation.Tests.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE007}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.ConsoleUi", "src\EquipmentReservation.ConsoleUi\EquipmentReservation.ConsoleUi.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE008}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE005}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE007}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,33 @@
+using System.Text.Json;
+using EquipmentReservation.Guardrails.Models;
+
+namespace EquipmentReservation.Guardrails.Parsing;
+
+public static class HookInputParser
+{
+    public static ToolInvocation Parse(string json)
+    {
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+
+        var toolName = TryRead(root, "tool_name");
+        var command = TryReadNested(root, "tool_input", "command");
+        var filePath = TryReadNested(root, "tool_input", "file_path");
+
+        return new ToolInvocation(toolName, command, filePath);
+    }
+
+    private static string? TryRead(JsonElement element, string property) =>
+        element.TryGetProperty(property, out var value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
+
+    private static string? TryReadNested(
+        JsonElement element,
+        string parent,
+        string property) =>
+        element.TryGetProperty(parent, out var parentValue) &&
+        parentValue.ValueKind == JsonValueKind.Object
+            ? TryRead(parentValue, property)
+            : null;
+}

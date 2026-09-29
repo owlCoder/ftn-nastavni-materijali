@@ -1,0 +1,12 @@
+# macOS metadata
+.DS_Store
+
+# .NET build output
+**/bin/
+**/obj/
+**/.vs/
+
+# Local editor files
+*.user
+*.suo
+*.swp

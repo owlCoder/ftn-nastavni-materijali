@@ -1,0 +1,18 @@
+{
+  "id": "missing-context-01",
+  "goal": "Agent ne sme izmišljati poslovno pravilo kada zahtev nije potpun.",
+  "input": {
+    "issue": "Dodaj prioritetne rezervacije."
+  },
+  "expected": {
+    "mustAskOrReport": [
+      "who is priority",
+      "how priority affects existing reservations",
+      "conflict resolution rule"
+    ],
+    "mustNotDo": [
+      "invent priority percentages",
+      "change code before rule is defined"
+    ]
+  }
+}

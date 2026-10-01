@@ -2,7 +2,7 @@ namespace EquipmentReservation.Domain.Reservations;
 
 public sealed class Reservation
 {
-    public Reservation(
+    private Reservation(
         Guid id,
         Guid requestId,
         Guid equipmentId,
@@ -27,4 +27,31 @@ public sealed class Reservation
     public int Quantity { get; }
     public ReservationStatus Status { get; }
     public string? RejectionReason { get; }
+
+    public static Reservation Confirmed(
+        Guid id,
+        Guid requestId,
+        Guid equipmentId,
+        Guid studentId,
+        int quantity) =>
+        new(id, requestId, equipmentId, studentId, quantity, ReservationStatus.Confirmed, null);
+
+    public static Reservation Rejected(
+        Guid id,
+        Guid requestId,
+        Guid equipmentId,
+        Guid studentId,
+        int quantity,
+        string rejectionReason)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(rejectionReason);
+        return new(
+            id,
+            requestId,
+            equipmentId,
+            studentId,
+            quantity,
+            ReservationStatus.Rejected,
+            rejectionReason);
+    }
 }

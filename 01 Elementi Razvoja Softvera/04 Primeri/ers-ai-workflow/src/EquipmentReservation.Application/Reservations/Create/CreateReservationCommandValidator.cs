@@ -1,18 +1,23 @@
+using EquipmentReservation.Application.Common;
+using EquipmentReservation.Domain.Shared;
+
 namespace EquipmentReservation.Application.Reservations.Create;
 
-public static class CreateReservationCommandValidator
+public sealed class CreateReservationCommandValidator : IValidator<CreateReservationCommand>
 {
-    public static void ValidateAndThrow(CreateReservationCommand command)
+    public Result Validate(CreateReservationCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
 
         if (command.RequestId == Guid.Empty)
-            throw new ArgumentException("Request id is required.", nameof(command));
+            return Result.Fail(CreateReservationErrorCodes.RequestIdRequired);
         if (command.EquipmentId == Guid.Empty)
-            throw new ArgumentException("Equipment id is required.", nameof(command));
+            return Result.Fail(CreateReservationErrorCodes.EquipmentIdRequired);
         if (command.StudentId == Guid.Empty)
-            throw new ArgumentException("Student id is required.", nameof(command));
+            return Result.Fail(CreateReservationErrorCodes.StudentIdRequired);
         if (command.Quantity <= 0)
-            throw new ArgumentOutOfRangeException(nameof(command), "Quantity must be positive.");
+            return Result.Fail(CreateReservationErrorCodes.QuantityMustBePositive);
+
+        return Result.Ok();
     }
 }

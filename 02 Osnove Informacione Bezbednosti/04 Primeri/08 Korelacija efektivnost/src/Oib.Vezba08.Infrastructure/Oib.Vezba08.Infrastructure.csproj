@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../Oib.Vezba08.Application/Oib.Vezba08.Application.csproj" />
+  </ItemGroup>
+</Project>

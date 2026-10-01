@@ -1,19 +1,21 @@
 namespace EquipmentReservation.Mcp.Workspace;
 
-internal static class ProjectRootLocator
+public static class ProjectRootLocator
 {
-    public static string Find(string startPath)
+    private const string RootMarker = "Directory.Build.props";
+
+    public static ProjectRoot Find(string startPath)
     {
         var current = new DirectoryInfo(Path.GetFullPath(startPath));
         while (current is not null)
         {
-            if (File.Exists(Path.Combine(current.FullName, "Directory.Build.props")))
-                return current.FullName;
+            if (File.Exists(Path.Combine(current.FullName, RootMarker)))
+                return new ProjectRoot(current.FullName);
 
             current = current.Parent;
         }
 
         throw new InvalidOperationException(
-            "Project root containing Directory.Build.props was not found.");
+            $"Project root containing {RootMarker} was not found.");
     }
 }

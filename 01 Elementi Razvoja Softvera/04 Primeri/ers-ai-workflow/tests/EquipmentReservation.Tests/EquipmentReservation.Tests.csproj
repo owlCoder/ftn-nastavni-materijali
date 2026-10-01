@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NUnit" Version="4.6.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.3.0" />
   </ItemGroup>
@@ -13,5 +14,6 @@
     <ProjectReference Include="../../src/EquipmentReservation.Application/EquipmentReservation.Application.csproj" />
     <ProjectReference Include="../../src/EquipmentReservation.Infrastructure/EquipmentReservation.Infrastructure.csproj" />
     <ProjectReference Include="../../src/EquipmentReservation.Guardrails/EquipmentReservation.Guardrails.csproj" />
+    <ProjectReference Include="../../src/EquipmentReservation.Mcp/EquipmentReservation.Mcp.csproj" />
   </ItemGroup>
 </Project>

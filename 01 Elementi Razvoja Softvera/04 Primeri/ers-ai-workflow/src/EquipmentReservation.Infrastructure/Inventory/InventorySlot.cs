@@ -1,7 +1,9 @@
+using EquipmentReservation.Domain.Inventory;
+
 namespace EquipmentReservation.Infrastructure.Inventory;
 
-internal sealed class InventorySlot(int available)
+internal sealed class InventorySlot(InventoryItem item)
 {
-    public int Available { get; set; } = available;
+    public InventoryItem Item { get; set; } = item;
     public object SyncRoot { get; } = new();
 }

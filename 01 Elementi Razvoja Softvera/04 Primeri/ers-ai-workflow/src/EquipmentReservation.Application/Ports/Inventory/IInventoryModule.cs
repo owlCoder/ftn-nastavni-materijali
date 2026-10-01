@@ -1,8 +1,10 @@
+using EquipmentReservation.Domain.Shared;
+
 namespace EquipmentReservation.Application.Ports.Inventory;
 
 public interface IInventoryModule
 {
-    Task<ReserveInventoryResult> ReserveAsync(
+    Task<Result> ReserveAsync(
         ReserveInventoryRequest request,
         CancellationToken cancellationToken);
 }

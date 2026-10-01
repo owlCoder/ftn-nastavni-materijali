@@ -3,7 +3,7 @@ using EquipmentReservation.Guardrails.Models;
 
 namespace EquipmentReservation.Guardrails.Services;
 
-public sealed class GuardrailEvaluator(IEnumerable<IToolGuardrail> guardrails)
+public sealed class GuardrailEvaluator(IEnumerable<IToolGuardrail> guardrails) : IGuardrailEvaluator
 {
     private readonly IReadOnlyList<IToolGuardrail> _guardrails = guardrails.ToArray();
 

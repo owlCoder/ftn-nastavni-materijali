@@ -1,11 +1,12 @@
 using System.Text.Json;
+using EquipmentReservation.Guardrails.Abstractions;
 using EquipmentReservation.Guardrails.Models;
 
 namespace EquipmentReservation.Guardrails.Parsing;
 
-public static class HookInputParser
+public sealed class HookInputParser : IToolInvocationParser
 {
-    public static ToolInvocation Parse(string json)
+    public ToolInvocation Parse(string json)
     {
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
@@ -18,7 +19,9 @@ public static class HookInputParser
     }
 
     private static string? TryRead(JsonElement element, string property) =>
-        element.TryGetProperty(property, out var value) && value.ValueKind == JsonValueKind.String
+        element.ValueKind == JsonValueKind.Object &&
+        element.TryGetProperty(property, out var value) &&
+        value.ValueKind == JsonValueKind.String
             ? value.GetString()
             : null;
 
@@ -26,8 +29,8 @@ public static class HookInputParser
         JsonElement element,
         string parent,
         string property) =>
-        element.TryGetProperty(parent, out var parentValue) &&
-        parentValue.ValueKind == JsonValueKind.Object
+        element.ValueKind == JsonValueKind.Object &&
+        element.TryGetProperty(parent, out var parentValue)
             ? TryRead(parentValue, property)
             : null;
 }

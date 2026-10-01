@@ -8,6 +8,6 @@
 - PDF prezentacije za studente: `02 Prezentacije/PDF/`
 - Primeri: `04 Primeri/`
 
-Kompletan izvršiv primer za vežbe 5–8 nalazi se u `04 Primeri/ers-ai-workflow/`. Ulazna tačka je `EquipmentReservation.sln`.
+Kompletan izvršiv primer za vežbe 5–8 nalazi se u `04 Primeri/ers-ai-workflow/`. Ulazna tačka je `EquipmentReservation.sln`, a AI deo primera podešen je za Kova (`.kova/`).
 
 Prezentacije su numerisane redom izvođenja nastave (`00_`, `01_`, … `08_`). PPTX je radni izvor, a PDF je distribucioni format.

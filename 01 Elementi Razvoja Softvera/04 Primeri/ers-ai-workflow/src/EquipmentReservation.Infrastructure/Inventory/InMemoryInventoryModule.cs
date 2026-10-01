@@ -1,41 +1,50 @@
 using System.Collections.Concurrent;
 using EquipmentReservation.Application.Ports.Inventory;
+using EquipmentReservation.Domain.Inventory;
+using EquipmentReservation.Domain.Shared;
 
 namespace EquipmentReservation.Infrastructure.Inventory;
 
 public sealed class InMemoryInventoryModule : IInventoryModule, IInventoryReadModel
 {
     private readonly ConcurrentDictionary<Guid, InventorySlot> _slots = new();
+    private readonly InventoryReservationService _reservationService;
 
-    public void Seed(Guid equipmentId, int available)
+    public InMemoryInventoryModule(
+        InventoryReservationService reservationService,
+        IEnumerable<InventoryItem> initialItems)
     {
-        if (equipmentId == Guid.Empty)
-            throw new ArgumentException("Equipment id is required.", nameof(equipmentId));
-        if (available < 0)
-            throw new ArgumentOutOfRangeException(nameof(available));
+        _reservationService = reservationService
+            ?? throw new ArgumentNullException(nameof(reservationService));
+        ArgumentNullException.ThrowIfNull(initialItems);
 
-        _slots[equipmentId] = new InventorySlot(available);
+        foreach (var item in initialItems)
+        {
+            if (!_slots.TryAdd(item.EquipmentId, new InventorySlot(item)))
+                throw new ArgumentException(
+                    $"Equipment '{item.EquipmentId}' is listed more than once.",
+                    nameof(initialItems));
+        }
     }
 
-    public Task<ReserveInventoryResult> ReserveAsync(
+    public Task<Result> ReserveAsync(
         ReserveInventoryRequest request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
         cancellationToken.ThrowIfCancellationRequested();
 
         if (!_slots.TryGetValue(request.EquipmentId, out var slot))
-            return Task.FromResult(new ReserveInventoryResult(false, "EquipmentNotFound"));
+            return Task.FromResult(Result.Fail(InventoryErrorCodes.EquipmentNotFound));
 
         lock (slot.SyncRoot)
         {
-            if (request.Quantity <= 0)
-                return Task.FromResult(new ReserveInventoryResult(false, "InvalidQuantity"));
+            var reserved = _reservationService.Reserve(slot.Item, request.Quantity);
+            if (!reserved.Success)
+                return Task.FromResult(Result.Fail(reserved.Error));
 
-            if (slot.Available < request.Quantity)
-                return Task.FromResult(new ReserveInventoryResult(false, "InsufficientStock"));
-
-            slot.Available -= request.Quantity;
-            return Task.FromResult(new ReserveInventoryResult(true, null));
+            slot.Item = reserved.Value;
+            return Task.FromResult(Result.Ok());
         }
     }
 
@@ -50,7 +59,7 @@ public sealed class InMemoryInventoryModule : IInventoryModule, IInventoryReadMo
 
         lock (slot.SyncRoot)
         {
-            return Task.FromResult<int?>(slot.Available);
+            return Task.FromResult<int?>(slot.Item.Available);
         }
     }
 }

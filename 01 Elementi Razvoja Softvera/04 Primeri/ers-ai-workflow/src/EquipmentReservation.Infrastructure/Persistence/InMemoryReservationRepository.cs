@@ -21,7 +21,9 @@ public sealed class InMemoryReservationRepository : IReservationRepository
         Reservation reservation,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(reservation);
         cancellationToken.ThrowIfCancellationRequested();
+
         if (!_byRequestId.TryAdd(reservation.RequestId, reservation))
             throw new InvalidOperationException(
                 "A reservation with the same request id already exists.");

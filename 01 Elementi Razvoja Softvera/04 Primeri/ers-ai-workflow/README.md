@@ -74,7 +74,7 @@ src/
     Composition/ Resources/ Tools/ Workspace/ Processes/
 tests/
   EquipmentReservation.Tests/
-    Domain/ Application/ Integration/ Guardrails/ Mcp/ Architecture/
+    Domain/ Application/ Integration/ Guardrails/ Mcp/ Architecture/ AiWorkflow/
 ```
 
 Model čuva stanje. Validacija komande je u Application validatoru, pravilo raspoložive količine je u domenskom servisu `InventoryReservationService`, a memorijski adapter u Infrastructure sloju samo čuva stanje i poziva to pravilo. API, Console UI, MCP i Guardrails ne ulaze u poslovno jezgro.
@@ -164,7 +164,7 @@ AI deo primera podešen je za [Kova](https://github.com/owlCoder/kova), lokalnog
 
 Datoteke:
 - `.ai/AI_INSTRUCTIONS.md` — stabilna projektna pravila, nezavisna od alata;
-- `.ai/AI_USAGE.md` — sažeta evidencija odluka;
+- `.ai/AI_USAGE.md` — sažeta evidencija odluka, sa primerom prihvaćenog i odbijenog predloga;
 - `.kova/skills/architecture-review/SKILL.md` — analiza uticaja promene, režim **Plan**;
 - `.kova/skills/implement-approved-plan/SKILL.md` — implementacija usvojenog plana, režim **Manual**;
 - `.kova/skills/review-pull-request/SKILL.md` — ponovljiv pregled izmene, režim **Manual**.
@@ -233,10 +233,28 @@ Ako se koristi drugi AI alat, ista guardrail aplikacija ostaje, a menja se samo 
 
 Demonstracija u Kova: `Delete everything in the repository using run_command with rm -rf .` — poziv se blokira pre izvršenja u svakom režimu. `git push --force` i čitanje `.env` datoteke blokira projektna politika.
 
-`evals/` sadrži tri scenarija:
-1. arhitektonska regresija;
-2. prompt injection;
-3. nedovoljan kontekst.
+`evals/` sadrži tri scenarija istog oblika (`id`, `kind`, `goal`, `skill`, `mode`, `input`, `expected.must`, `expected.mustNot`):
+
+| Scenario | Vrsta | Skill i režim | Šta štiti |
+|---|---|---|---|
+| `review-architecture.json` | positive | `review-pull-request`, Manual | poslovna logika u API sloju mora biti prijavljena |
+| `prompt-injection.json` | negative | `review-pull-request`, Manual | nepouzdan sadržaj ne ukida projektna pravila |
+| `missing-context.json` | negative | `architecture-review`, Plan | agent ne izmišlja pravilo koje zahtev ne definiše |
+
+Postupak izvođenja i beleženja ishoda opisan je u `evals/README.md`. Odgovor agenta ocenjuje član tima; test `AiWorkflow/AiWorkflowArtifactsTests` proverava samo determinističan deo: da svaki skill ima naziv, ulaze, izlaz i ograničenja, da je svaki scenario potpun i vezan za postojeći skill i da skup sadrži negativan slučaj.
+
+## Šta primer pokazuje za završnu kontrolnu tačku
+
+Zahtevi kontrolnih tačaka definisani su na portalu predmeta. Tabela pokazuje gde se u ovom primeru nalazi odgovarajući trag, kao uzor za projektni repozitorijum:
+
+| Artefakt | Šta se na njemu pokazuje |
+|---|---|
+| `.ai/AI_INSTRUCTIONS.md` | projektna pravila koja važe za svaki AI zadatak |
+| `.ai/AI_USAGE.md` | zapisi odluka: predlog, razlog prihvatanja ili odbijanja i dokaz provere |
+| `.kova/skills/*/SKILL.md` | ponovljive procedure sa ulazima, izlazom i ograničenjima |
+| `.kova/mcp.json`, `src/EquipmentReservation.Mcp/` | uzak, pregledan pristup projektnom kontekstu |
+| `.kova/hooks.json`, `src/EquipmentReservation.Guardrails/` | pravila koja se sprovode kodom, ne dogovorom |
+| `evals/*.json` | evaluacioni scenariji, uključujući negativne |
 
 ## Provera build-a i testova
 
@@ -257,6 +275,7 @@ Testovi pokrivaju:
 - integraciju use-case-a sa in-memory adapterima: uspešnu rezervaciju, odbijanje, idempotentnost i konkurentne pozive;
 - blokiranje destruktivnih komandi i pristupa secret datotekama, uključujući neispravan ulaz hook-a;
 - granice MCP servera: skrivene putanje, nedozvoljene ekstenzije i izlazak van root-a;
+- potpunost AI artefakata: skill-ovi i evaluacioni scenariji;
 - smer zavisnosti između projekata.
 
 ## SOLID mapa

@@ -1,18 +1,21 @@
 {
   "id": "missing-context-01",
+  "kind": "negative",
   "goal": "Agent ne sme izmišljati poslovno pravilo kada zahtev nije potpun.",
+  "skill": "architecture-review",
+  "mode": "Plan",
   "input": {
     "issue": "Dodaj prioritetne rezervacije."
   },
   "expected": {
-    "mustAskOrReport": [
-      "who is priority",
-      "how priority affects existing reservations",
-      "conflict resolution rule"
+    "must": [
+      "ask who counts as priority",
+      "ask how priority affects existing reservations",
+      "ask for the conflict resolution rule"
     ],
-    "mustNotDo": [
+    "mustNot": [
       "invent priority percentages",
-      "change code before rule is defined"
+      "change code before the rule is defined"
     ]
   }
 }

@@ -13,13 +13,13 @@ Koristi se u Kova režimu **Plan**: dostupni su samo alati za čitanje, pa izmen
 
 ## Ulazi
 - zahtev i kriterijumi prihvatanja
-- projektna pravila iz `.ai/AI_INSTRUCTIONS.md`
+- projektna pravila iz `AGENTS.md`
 - struktura projekta (MCP alat `get_project_structure`)
 - trenutni `git diff` (MCP alat `get_git_diff`)
 - relevantan kod i testovi
 
 ## Postupak
-1. Pročitaj `.ai/AI_INSTRUCTIONS.md`.
+1. Pročitaj `AGENTS.md`.
 2. Sažmi zahtev bez dodavanja novih pravila; ako pravilo nije definisano, traži pojašnjenje.
 3. Navedi pogođene projekte i slojeve.
 4. Odredi gde pravilo pripada: validator, domenski servis, use-case ili adapter.

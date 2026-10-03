@@ -24,7 +24,7 @@ Kratka evidencija odluka donetih uz AI alat. Ne čuva se ceo razgovor: zapis tre
 
 - **Zadatak:** odrediti gde se sprovodi pravilo raspoložive količine opreme.
 - **Alat:** Kova, model `qwen3:4b`, režim Plan, skill `architecture-review`.
-- **Kontekst:** `InMemoryInventoryModule.cs`, `InventoryReservationService.cs`, `ReservationEndpoints.cs`, `.ai/AI_INSTRUCTIONS.md`.
+- **Kontekst:** `InMemoryInventoryModule.cs`, `InventoryReservationService.cs`, `ReservationEndpoints.cs`, `AGENTS.md`.
 - **Predlog AI alata:** uporediti traženu i raspoloživu količinu direktno u `InMemoryInventoryModule`, jer adapter već drži stanje zalihe.
 - **Odluka tima:** odbijeno; poslovna odluka bi prešla u Infrastructure i svaki novi adapter bi morao da je ponovi. Pravilo ostaje u domenskom servisu `InventoryReservationService`, a adapter ga samo poziva.
 - **Provera:** testovi `Reserve_WhenStockIsInsufficient_ReturnsStableErrorCode` i `CreateReservation_WhenInventoryIsInsufficient_RejectsWithoutChangingInventory`.

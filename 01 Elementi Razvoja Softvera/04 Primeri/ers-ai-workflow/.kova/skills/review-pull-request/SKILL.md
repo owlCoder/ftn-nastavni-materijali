@@ -13,12 +13,12 @@ Koristi se u Kova režimu **Manual**: čitanje radi direktno, a poziv `run_unit_
 
 ## Ulazi
 - user story / issue i kriterijumi prihvatanja
-- projektna pravila iz `.ai/AI_INSTRUCTIONS.md`
+- projektna pravila iz `AGENTS.md`
 - `git diff` (MCP alat `get_git_diff`)
 - rezultat testova (MCP alat `run_unit_tests`)
 
 ## Postupak
-1. Pročitaj `.ai/AI_INSTRUCTIONS.md`.
+1. Pročitaj `AGENTS.md`.
 2. Sažmi očekivano ponašanje bez izmišljanja zahteva.
 3. Proveri da li diff izlazi iz obima stavke.
 4. Proveri smer zavisnosti: Domain ← Application ← Infrastructure/Presentation.

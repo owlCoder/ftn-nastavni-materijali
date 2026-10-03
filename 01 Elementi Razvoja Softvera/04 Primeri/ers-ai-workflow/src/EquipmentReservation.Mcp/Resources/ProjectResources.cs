@@ -12,7 +12,7 @@ public sealed class ProjectResources(IProjectFileReader files)
         Name = "project_instructions",
         MimeType = "text/markdown")]
     [Description("Stable project rules for AI-assisted development.")]
-    public string Instructions() => files.ReadText(".ai/AI_INSTRUCTIONS.md");
+    public string Instructions() => files.ReadText("AGENTS.md");
 
     [McpServerResource(
         UriTemplate = "project://readme",

@@ -1,6 +1,11 @@
-# AI_INSTRUCTIONS.md
+# AGENTS.md
 
-Stabilna projektna pravila za rad AI alata nad ovim solution-om. Kova ih ne učitava automatski: svaki skill iz `.kova/skills/` čita ovu datoteku kao prvi korak, a MCP server je izlaže kao resource `project://instructions`.
+Projektna pravila za AI agente koji rade nad ovim solution-om. `AGENTS.md` u korenu repozitorijuma je otvorena konvencija koju prepoznaje više AI alata. Kova 0.3 je ne učitava automatski: svaki skill iz `.kova/skills/` čita ovu datoteku kao prvi korak, a MCP server je izlaže kao resource `project://instructions`.
+
+## Komande
+- Izgradnja: `dotnet build EquipmentReservation.sln --configuration Release`
+- Testovi: `dotnet test EquipmentReservation.sln --configuration Release --no-build`
+- Pregled izmena: `git diff -- .`
 
 ## Arhitektura
 - `Domain` ne zavisi ni od jednog drugog projekta. Modeli nose stanje, a pravila sprovode domenski servisi.

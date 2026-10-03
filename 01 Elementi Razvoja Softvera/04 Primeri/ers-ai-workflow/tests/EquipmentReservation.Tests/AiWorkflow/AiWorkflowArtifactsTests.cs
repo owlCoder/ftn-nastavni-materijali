@@ -1,4 +1,5 @@
 using System.Text.Json;
+using EquipmentReservation.Mcp.Resources;
 using EquipmentReservation.Mcp.Workspace;
 using NUnit.Framework;
 
@@ -8,6 +9,8 @@ public sealed class AiWorkflowArtifactsTests
 {
     private static readonly string Root =
         ProjectRootLocator.Find(TestContext.CurrentContext.TestDirectory).FullPath;
+
+    private const string InstructionsFile = "AGENTS.md";
 
     private static readonly string[] RequiredSkillSections =
         ["## Režim rada", "## Ulazi", "## Postupak", "## Izlaz", "## Ograničenja"];
@@ -24,8 +27,19 @@ public sealed class AiWorkflowArtifactsTests
             .EnumerateFiles(Path.Combine(Root, "evals"), "*.json")
             .Select(file => Path.GetFileName(file)!);
 
+    [Test]
+    public void InstructionsResource_ServesTheAgentsFile()
+    {
+        var root = new ProjectRoot(Root);
+        var resources = new ProjectResources(new ProjectFileReader(new ProjectPathPolicy(root)));
+
+        Assert.That(
+            resources.Instructions(),
+            Is.EqualTo(File.ReadAllText(Path.Combine(Root, InstructionsFile))));
+    }
+
     [TestCaseSource(nameof(SkillNames))]
-    public void Skill_DeclaresItsNameInputsOutputAndLimits(string skillName)
+    public void Skill_ReadsProjectRulesAndDeclaresInputsOutputAndLimits(string skillName)
     {
         var skill = File.ReadAllText(
             Path.Combine(Root, ".kova", "skills", skillName, "SKILL.md"));
@@ -33,6 +47,7 @@ public sealed class AiWorkflowArtifactsTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(skill, Does.Contain($"name: {skillName}"));
+            Assert.That(skill, Does.Contain(InstructionsFile));
             foreach (var section in RequiredSkillSections)
                 Assert.That(skill, Does.Contain(section));
         }

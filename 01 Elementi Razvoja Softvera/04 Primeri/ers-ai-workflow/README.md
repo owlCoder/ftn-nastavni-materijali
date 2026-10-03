@@ -36,7 +36,7 @@ Application (use-case + portovi) ◄── Infrastructure (adapteri)
      Domain (modeli + domenski servisi)
 
 Development tooling, odvojeno od poslovnog jezgra:
-Mcp   Guardrails   .kova/   .ai/   evals/
+Mcp   Guardrails   AGENTS.md   .kova/   .ai/   evals/
 ```
 
 Dependency Rule: unutrašnji slojevi ne poznaju spoljne. `Domain` nema zavisnosti; `Application` poznaje samo `Domain`; `Infrastructure` implementira portove koje definiše `Application`; `Api` i `ConsoleUi` sklapaju sistem kao dva različita presentation adaptera. MCP i Guardrails su razvojni alati i ne postaju zavisnosti poslovnog jezgra. Pravilo čuva test `Architecture/DependencyRuleTests`.
@@ -160,22 +160,22 @@ Port zavisi od lokalnog ASP.NET Core profila, pa se koristi URL koji `dotnet run
 
 ## Vežba 6 — kontrolisan AI workflow uz Kova
 
-AI deo primera podešen je za [Kova](https://github.com/owlCoder/kova), lokalnog AI agenta za VS Code. Kova čita konfiguraciju isključivo iz `.kova/` direktorijuma.
+AI deo primera podešen je za [Kova](https://github.com/owlCoder/kova), lokalnog AI agenta za VS Code (opis odgovara verziji 0.3). Kova čita konfiguraciju isključivo iz `.kova/` direktorijuma, a projektna pravila stoje u `AGENTS.md`.
 
 Datoteke:
-- `.ai/AI_INSTRUCTIONS.md` — stabilna projektna pravila, nezavisna od alata;
+- `AGENTS.md` — stabilna projektna pravila u korenu repozitorijuma, po konvenciji koju prepoznaje više AI alata;
 - `.ai/AI_USAGE.md` — sažeta evidencija odluka, sa primerom prihvaćenog i odbijenog predloga;
 - `.kova/skills/architecture-review/SKILL.md` — analiza uticaja promene, režim **Plan**;
 - `.kova/skills/implement-approved-plan/SKILL.md` — implementacija usvojenog plana, režim **Manual**;
 - `.kova/skills/review-pull-request/SKILL.md` — ponovljiv pregled izmene, režim **Manual**.
 
-Kova učitava samo jedan izabran skill, pa svaki skill kao prvi korak čita `.ai/AI_INSTRUCTIONS.md`. Podela uloga ne zavisi od dobre volje modela: u režimu Plan Kova u kodu izlaže samo alate za čitanje, a u režimu Manual svaka izmena i svaka komanda traže odobrenje.
+Kova ne učitava `AGENTS.md` automatski i u kontekst stavlja samo jedan izabran skill, pa svaki skill kao prvi korak čita `AGENTS.md` ugrađenim alatom `read_file`. Podela uloga ne zavisi od dobre volje modela: u režimu Plan Kova u kodu izlaže samo alate za čitanje, a u režimu Manual svaka izmena i svaka komanda traže odobrenje. Kova ima i režime Edit i Auto, u kojima uobičajene izmene rade bez odobrenja; primer ih namerno ne koristi.
 
 Poenta: AI pravila ne ulaze u `Domain`/`Application`; razvojni alat može da se zameni bez menjanja poslovnog koda.
 
 ### Priprema
 
-1. Instalirati VS Code 1.100+, ekstenziju Kova (`owlcoder.kova-local`), Ollama i model `qwen3:4b` (`ollama pull qwen3:4b`). Audit hook koristi Node.js.
+1. Instalirati VS Code 1.100+, ekstenziju Kova (`owlcoder.kova-local`), Ollama i model `qwen3:4b` (`ollama pull qwen3:4b`). Audit hook koristi Node.js. Ollama je podrazumevani provajder; ako se kroz `kova.provider` izabere DeepSeek ili OpenAI-kompatibilan endpoint, upit i kontekst odlaze na taj endpoint.
 2. Izgraditi solution u Release konfiguraciji, jer Kova pokreće MCP server i guardrail sa `--no-build`:
 
    ```bash
@@ -183,7 +183,7 @@ Poenta: AI pravila ne ulaze u `Domain`/`Application`; razvojni alat može da se 
    ```
 
 3. Otvoriti **ovaj direktorijum** kao VS Code workspace, da bi MCP proces, hook-ovi i guardrail projekat delili isti root.
-4. Pokrenuti **Kova: Open Chat**, izabrati model `qwen3:4b`, uključiti Thinking i izabrati skill iz padajuće liste **Skill**.
+4. Pokrenuti **Kova: Open Chat**, izabrati model `qwen3:4b`, uključiti Thinking i izabrati skill iz padajuće liste **Skill**. Posle dodavanja novog skill-a potreban je **Developer: Reload Window**.
 
 ### Tok rada
 
@@ -195,7 +195,7 @@ Poenta: AI pravila ne ulaze u `Domain`/`Application`; razvojni alat može da se 
 ## Vežba 7 — MCP
 
 `EquipmentReservation.Mcp` koristi C# MCP SDK i stdio transport. Izlaže:
-- resource `project://instructions`;
+- resource `project://instructions` (sadržaj `AGENTS.md`);
 - resource `project://readme`;
 - tool `get_project_structure`;
 - tool `get_git_diff`;
@@ -206,7 +206,7 @@ Server ne izlaže proizvoljnu shell komandu i blokira izlazak van project root-a
 - `ProjectPathPolicy` je jedino mesto koje odlučuje koja putanja sme da se izloži;
 - `IProjectFileReader`, `IProjectStructureProvider` i `IProjectCommandRunner` su tri uske uloge umesto jedne klase koja radi sve.
 
-`.kova/mcp.json` povezuje Kova sa ovim serverom. `get_project_structure` i `get_git_diff` su pregledani i označeni kao `ReadOnly`, pa rade i u režimu Plan; `run_unit_tests` ostaje `ProcessExecution`: u režimu Plan nije dostupan, a u ostalim režimima traži odobrenje.
+`.kova/mcp.json` povezuje Kova sa ovim serverom. Kova 0.3 od MCP servera preuzima samo alate; resources su namenjeni MCP klijentima koji ih podržavaju. `get_project_structure` i `get_git_diff` su pregledani i označeni kao `ReadOnly`, pa rade i u režimu Plan; `run_unit_tests` ostaje `ProcessExecution`: u režimu Plan nije dostupan, a u ostalim režimima traži odobrenje.
 
 Ručno pokretanje:
 
@@ -249,7 +249,7 @@ Zahtevi kontrolnih tačaka definisani su na portalu predmeta. Tabela pokazuje gd
 
 | Artefakt | Šta se na njemu pokazuje |
 |---|---|
-| `.ai/AI_INSTRUCTIONS.md` | projektna pravila koja važe za svaki AI zadatak |
+| `AGENTS.md` | projektna pravila koja važe za svaki AI zadatak |
 | `.ai/AI_USAGE.md` | zapisi odluka: predlog, razlog prihvatanja ili odbijanja i dokaz provere |
 | `.kova/skills/*/SKILL.md` | ponovljive procedure sa ulazima, izlazom i ograničenjima |
 | `.kova/mcp.json`, `src/EquipmentReservation.Mcp/` | uzak, pregledan pristup projektnom kontekstu |

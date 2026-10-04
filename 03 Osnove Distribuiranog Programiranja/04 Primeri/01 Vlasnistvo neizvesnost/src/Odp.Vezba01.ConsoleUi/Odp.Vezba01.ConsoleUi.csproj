@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Odp.Vezba01.Application/Odp.Vezba01.Application.csproj" />
+    <ProjectReference Include="../Odp.Vezba01.Infrastructure/Odp.Vezba01.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

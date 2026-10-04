@@ -13,19 +13,18 @@ Koristi se u Kova režimu **Manual**: čitanje radi direktno, a poziv `run_unit_
 
 ## Ulazi
 - user story / issue i kriterijumi prihvatanja
-- projektna pravila iz `AGENTS.md`
+- projektna pravila iz `AGENTS.md` (Kova ih učitava automatski)
 - `git diff` (MCP alat `get_git_diff`)
 - rezultat testova (MCP alat `run_unit_tests`)
 
 ## Postupak
-1. Pročitaj `AGENTS.md`.
-2. Sažmi očekivano ponašanje bez izmišljanja zahteva.
-3. Proveri da li diff izlazi iz obima stavke.
-4. Proveri smer zavisnosti: Domain ← Application ← Infrastructure/Presentation.
-5. Proveri da li poslovna pravila cure u API/Console/MCP/hook sloj.
-6. Proveri negativne i granične scenarije.
-7. Uporedi promenjeno ponašanje sa testovima.
-8. Vrati nalaze po ozbiljnosti i navedi dokaz.
+1. Sažmi očekivano ponašanje bez izmišljanja zahteva.
+2. Proveri da li diff izlazi iz obima stavke.
+3. Proveri smer zavisnosti: Domain ← Application ← Infrastructure/Presentation.
+4. Proveri da li poslovna pravila cure u API/Console/MCP/hook sloj.
+5. Proveri negativne i granične scenarije.
+6. Uporedi promenjeno ponašanje sa testovima.
+7. Vrati nalaze po ozbiljnosti i navedi dokaz.
 
 ## Izlaz
 - `blockingFindings`

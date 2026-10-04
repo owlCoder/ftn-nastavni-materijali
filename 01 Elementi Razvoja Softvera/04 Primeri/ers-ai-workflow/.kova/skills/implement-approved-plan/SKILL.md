@@ -13,11 +13,11 @@ Koristi se u Kova režimu **Manual**: svaka izmena datoteke i svaka komanda tra�
 
 ## Ulazi
 - usvojen plan iz skill-a `architecture-review`
-- projektna pravila iz `AGENTS.md`
+- projektna pravila iz `AGENTS.md` (Kova ih učitava automatski)
 - datoteke navedene u planu i njihovi testovi
 
 ## Postupak
-1. Pročitaj `AGENTS.md` i usvojen plan.
+1. Pročitaj usvojen plan.
 2. Menjaj samo datoteke navedene u planu; ako je potrebna još neka, stani i prijavi.
 3. Poslovno pravilo drži u Domain/Application delu, van API, Console i MCP sloja.
 4. Koristi postojeće portove ili uvedi uzak novi port kada je potrebna spoljašnja zavisnost.

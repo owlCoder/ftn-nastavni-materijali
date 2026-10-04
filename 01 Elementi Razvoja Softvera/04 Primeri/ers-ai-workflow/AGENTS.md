@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Projektna pravila za AI agente koji rade nad ovim solution-om. `AGENTS.md` u korenu repozitorijuma je otvorena konvencija koju prepoznaje više AI alata. Kova 0.3 je ne učitava automatski: svaki skill iz `.kova/skills/` čita ovu datoteku kao prvi korak, a MCP server je izlaže kao resource `project://instructions`.
+Projektna pravila za AI agente koji rade nad ovim solution-om. `AGENTS.md` u korenu repozitorijuma je otvorena konvencija koju prepoznaje više AI alata. Kova od verzije 0.3.2 učitava ovu datoteku automatski u svako pokretanje, pre izabranog skill-a, dok god nije veća od 16.000 bajtova. MCP server je izlaže i kao resource `project://instructions`.
 
 ## Komande
 - Izgradnja: `dotnet build EquipmentReservation.sln --configuration Release`

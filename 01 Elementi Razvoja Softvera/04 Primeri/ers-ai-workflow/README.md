@@ -160,7 +160,7 @@ Port zavisi od lokalnog ASP.NET Core profila, pa se koristi URL koji `dotnet run
 
 ## Vežba 6 — kontrolisan AI workflow uz Kova
 
-AI deo primera podešen je za [Kova](https://github.com/owlCoder/kova), lokalnog AI agenta za VS Code (opis odgovara verziji 0.3). Kova čita konfiguraciju isključivo iz `.kova/` direktorijuma, a projektna pravila stoje u `AGENTS.md`.
+AI deo primera podešen je za [Kova](https://github.com/owlCoder/kova), lokalnog AI agenta za VS Code (opis odgovara verziji 0.3.2). Kova čita konfiguraciju isključivo iz `.kova/` direktorijuma, a projektna pravila stoje u `AGENTS.md`.
 
 Datoteke:
 - `AGENTS.md` — stabilna projektna pravila u korenu repozitorijuma, po konvenciji koju prepoznaje više AI alata;
@@ -169,7 +169,7 @@ Datoteke:
 - `.kova/skills/implement-approved-plan/SKILL.md` — implementacija usvojenog plana, režim **Manual**;
 - `.kova/skills/review-pull-request/SKILL.md` — ponovljiv pregled izmene, režim **Manual**.
 
-Kova ne učitava `AGENTS.md` automatski i u kontekst stavlja samo jedan izabran skill, pa svaki skill kao prvi korak čita `AGENTS.md` ugrađenim alatom `read_file`. Podela uloga ne zavisi od dobre volje modela: u režimu Plan Kova u kodu izlaže samo alate za čitanje, a u režimu Manual svaka izmena i svaka komanda traže odobrenje. Kova ima i režime Edit i Auto, u kojima uobičajene izmene rade bez odobrenja; primer ih namerno ne koristi.
+Kova od verzije 0.3.2 učitava `AGENTS.md` iz korena projekta u svako pokretanje, pre izabranog skill-a, pa skill-ovi ne ponavljaju projektna pravila niti ih čitaju sami. Datoteka sme da ima najviše 16.000 bajtova; veću Kova preskače uz poruku, a test `AiWorkflowArtifactsTests` pada pre nego što se to desi. U kontekst ulazi samo jedan izabran skill. Podela uloga ne zavisi od dobre volje modela: u režimu Plan Kova u kodu izlaže samo alate za čitanje, a u režimu Manual svaka izmena i svaka komanda traže odobrenje. Kova ima i režime Edit i Auto, u kojima uobičajene izmene rade bez odobrenja; primer ih namerno ne koristi.
 
 Poenta: AI pravila ne ulaze u `Domain`/`Application`; razvojni alat može da se zameni bez menjanja poslovnog koda.
 
@@ -206,7 +206,7 @@ Server ne izlaže proizvoljnu shell komandu i blokira izlazak van project root-a
 - `ProjectPathPolicy` je jedino mesto koje odlučuje koja putanja sme da se izloži;
 - `IProjectFileReader`, `IProjectStructureProvider` i `IProjectCommandRunner` su tri uske uloge umesto jedne klase koja radi sve.
 
-`.kova/mcp.json` povezuje Kova sa ovim serverom. Kova 0.3 od MCP servera preuzima samo alate; resources su namenjeni MCP klijentima koji ih podržavaju. `get_project_structure` i `get_git_diff` su pregledani i označeni kao `ReadOnly`, pa rade i u režimu Plan; `run_unit_tests` ostaje `ProcessExecution`: u režimu Plan nije dostupan, a u ostalim režimima traži odobrenje.
+`.kova/mcp.json` povezuje Kova sa ovim serverom. Kova od MCP servera preuzima samo alate; resources su namenjeni MCP klijentima koji ih podržavaju. `get_project_structure` i `get_git_diff` su pregledani i označeni kao `ReadOnly`, pa rade i u režimu Plan; `run_unit_tests` ostaje `ProcessExecution`: u režimu Plan nije dostupan, a u ostalim režimima traži odobrenje.
 
 Ručno pokretanje:
 

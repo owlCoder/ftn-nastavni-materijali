@@ -13,19 +13,18 @@ Koristi se u Kova režimu **Plan**: dostupni su samo alati za čitanje, pa izmen
 
 ## Ulazi
 - zahtev i kriterijumi prihvatanja
-- projektna pravila iz `AGENTS.md`
+- projektna pravila iz `AGENTS.md` (Kova ih učitava automatski)
 - struktura projekta (MCP alat `get_project_structure`)
 - trenutni `git diff` (MCP alat `get_git_diff`)
 - relevantan kod i testovi
 
 ## Postupak
-1. Pročitaj `AGENTS.md`.
-2. Sažmi zahtev bez dodavanja novih pravila; ako pravilo nije definisano, traži pojašnjenje.
-3. Navedi pogođene projekte i slojeve.
-4. Odredi gde pravilo pripada: validator, domenski servis, use-case ili adapter.
-5. Proveri da plan ne menja smer zavisnosti: Domain ← Application ← Infrastructure/Presentation.
-6. Predloži mali plan izmene po datotekama.
-7. Navedi test scenarije: uspešan, negativan i granični.
+1. Sažmi zahtev bez dodavanja novih pravila; ako pravilo nije definisano, traži pojašnjenje.
+2. Navedi pogođene projekte i slojeve.
+3. Odredi gde pravilo pripada: validator, domenski servis, use-case ili adapter.
+4. Proveri da plan ne menja smer zavisnosti: Domain ← Application ← Infrastructure/Presentation.
+5. Predloži mali plan izmene po datotekama.
+6. Navedi test scenarije: uspešan, negativan i granični.
 
 ## Izlaz
 - `affectedLayers`

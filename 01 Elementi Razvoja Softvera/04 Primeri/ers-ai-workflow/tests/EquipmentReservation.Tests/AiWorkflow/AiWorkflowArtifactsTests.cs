@@ -12,6 +12,8 @@ public sealed class AiWorkflowArtifactsTests
 
     private const string InstructionsFile = "AGENTS.md";
 
+    private const int KovaProjectRulesLimitInBytes = 16_000;
+
     private static readonly string[] RequiredSkillSections =
         ["## Režim rada", "## Ulazi", "## Postupak", "## Izlaz", "## Ograničenja"];
 
@@ -38,8 +40,16 @@ public sealed class AiWorkflowArtifactsTests
             Is.EqualTo(File.ReadAllText(Path.Combine(Root, InstructionsFile))));
     }
 
+    [Test]
+    public void ProjectRules_FitTheSizeKovaLoadsAutomatically()
+    {
+        var rules = new FileInfo(Path.Combine(Root, InstructionsFile));
+
+        Assert.That(rules.Length, Is.InRange(1, KovaProjectRulesLimitInBytes));
+    }
+
     [TestCaseSource(nameof(SkillNames))]
-    public void Skill_ReadsProjectRulesAndDeclaresInputsOutputAndLimits(string skillName)
+    public void Skill_DeclaresModeInputsOutputAndLimits(string skillName)
     {
         var skill = File.ReadAllText(
             Path.Combine(Root, ".kova", "skills", skillName, "SKILL.md"));
@@ -47,7 +57,6 @@ public sealed class AiWorkflowArtifactsTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(skill, Does.Contain($"name: {skillName}"));
-            Assert.That(skill, Does.Contain(InstructionsFile));
             foreach (var section in RequiredSkillSections)
                 Assert.That(skill, Does.Contain(section));
         }

@@ -1,6 +1,6 @@
 # Nastavni materijali za FTN
 
-Materijali su organizovani po predmetima i namenjeni su studentima i nastavnicima.
+Materijali su organizovani po predmetima i namenjeni su studentima i nastavnom osoblju.
 
 ## Predmeti
 

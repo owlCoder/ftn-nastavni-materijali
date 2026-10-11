@@ -413,23 +413,27 @@ Logger–Blogger služi kao studija slučaja za razdvajanje poslovnog jezgra, in
 
 | Projekat | Sadržaj i odgovornost |
 | --- | --- |
-| Domain | Modeli `Korisnik`, `ZapisNaSajtu`, `Objava`, `Evidencija`; nabrajanja; Result tip; ugovori za servise, repozitorijume, bazu i bezbednost. Ne zavisi ni od jednog drugog projekta. |
-| Infrastructure | Implementacije servisa i bezbednosti: autentifikacija, blog/evidencija, file logger i SHA-256 hasher. Zavisi od Domain-a. |
-| Database | InMemory i JSON provider, factory i repozitorijumi. Implementira ugovore koje definiše jezgro. |
-| Presentation | Konzolni meni, `IConsoleIO`, seeder, `AppContainer` i `Program.cs`; sastavlja graf zavisnosti. |
+| Domain | Poslovni modeli `Korisnik`, `ZapisNaSajtu`, `Objava`, `Evidencija` i nabrajanja. Ne zavisi ni od jednog drugog projekta. |
+| Application | Registracija, prijava i objave/evidencije; Result tip i ugovori za servise, repozitorijume, logger i hasher. Zavisi samo od Domain-a. |
+| Infrastructure | PBKDF2 hasher sa salt-om i file logger. Implementira ugovore Application sloja. |
+| Database | InMemory i JSON provider, factory, ugovori baze i model tabela. Repozitorijumi implementiraju ugovore Application sloja. |
+| Presentation | Konzolni meni, `IConsoleIO`, formatter, seeder, `AppContainer` i `Program.cs`; sastavlja graf zavisnosti. |
+| Tests | NUnit/Moq provere use-case-ova, arhitekture, JSON adaptera i PBKDF2 hashera. |
 
-Ugovori poslovnog jezgra
+Application/Interfaces/Services/IZapisiServis.cs i Database/Interfaces/IBazaPodataka.cs
 
 ```csharp
 public interface IZapisiServis
 {
     Result<ZapisNaSajtu> Objavi(ZapisNaSajtu zapis);
+
     Result<IReadOnlyList<ZapisNaSajtu>> PregledZapisa();
 }
 
 public interface IBazaPodataka
 {
     TabeleBazaPodataka Tabele { get; }
+    bool IsReady { get; }
     bool SacuvajPromene();
 }
 ```
@@ -827,14 +831,14 @@ Rešenje sadrži osam projekata. Prvih pet čine aplikaciju sa dva presentation 
 
 | Projekat | Odgovornost |
 | --- | --- |
-| EquipmentReservation.Domain | Modeli, Result i domenski servisi sa poslovnim pravilima; nema projektnih zavisnosti. |
-| EquipmentReservation.Application | Slučajevi upotrebe, validatori i portovi prema drugim modulima/infrastrukturi. |
-| EquipmentReservation.Infrastructure | Implementacije portova; u primeru in-memory adapteri bez poslovnih odluka. |
-| EquipmentReservation.Api | Composition root i HTTP granica; ne sadrži poslovna pravila. |
-| EquipmentReservation.ConsoleUi | Drugi presentation adapter nad istim slučajevima upotrebe. |
-| EquipmentReservation.Mcp | Kontrolisano izlaganje projektnog konteksta AI klijentu. |
-| EquipmentReservation.Guardrails | Determinističke politike za rizične pozive alata. |
-| EquipmentReservation.Tests | NUnit provere domena, use-case-a, guardrail-a, AI artefakata i smera zavisnosti. |
+| Domain | Modeli, Result i domenski servisi sa poslovnim pravilima; nema projektnih zavisnosti. |
+| Application | Slučajevi upotrebe, validatori i portovi prema drugim modulima/infrastrukturi. |
+| Infrastructure | Implementacije portova; u primeru in-memory adapteri bez poslovnih odluka. |
+| Api | Composition root i HTTP granica; ne sadrži poslovna pravila. |
+| ConsoleUi | Drugi presentation adapter nad istim slučajevima upotrebe. |
+| Mcp | Kontrolisano izlaganje projektnog konteksta AI klijentu. |
+| Guardrails | Determinističke politike za rizične pozive alata. |
+| Tests | NUnit provere domena, use-case-a, guardrail-a, AI artefakata i smera zavisnosti. |
 
 > **Zašto je ovo Clean Architecture**
 >
@@ -844,22 +848,37 @@ Rešenje sadrži osam projekata. Prvih pet čine aplikaciju sa dva presentation 
 
 Modeli `Reservation` i `InventoryItem` predstavljaju stanje i ne znaju za HTTP, bazu, MCP niti AI. Provera ulaznih vrednosti pripada validatoru, a pravilo raspoložive količine sprovodi domenski servis `InventoryReservationService`.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Domain/Inventory/InventoryReservationService.cs
+examples/ers-ai-workflow/src/Domain/Inventory/InventoryReservationService.cs
 
 ```csharp
-public sealed record InventoryItem(Guid EquipmentId, int Available);
+public sealed class InventoryItem
+{
+    public InventoryItem() { }
+
+    public InventoryItem(Guid equipmentId, int available)
+    {
+        EquipmentId = equipmentId;
+        Available = available;
+    }
+
+    public Guid EquipmentId { get; init; }
+    public int Available { get; init; }
+}
 
 public sealed class InventoryReservationService
 {
     public Result<InventoryItem> Reserve(InventoryItem item, int quantity)
     {
-        if (quantity <= 0)
-            return Result<InventoryItem>.Fail(InventoryErrorCodes.InvalidQuantity);
-        if (item.Available < quantity)
-            return Result<InventoryItem>.Fail(InventoryErrorCodes.InsufficientStock);
+        if (item is null || item.EquipmentId == Guid.Empty || item.Available < 0)
+            return Result<InventoryItem>.Fail(InventoryErrorCodes.InvalidEquipment, new InventoryItem());
 
-        return Result<InventoryItem>.Ok(
-            item with { Available = item.Available - quantity });
+        if (quantity <= 0)
+            return Result<InventoryItem>.Fail(InventoryErrorCodes.InvalidQuantity, new InventoryItem());
+
+        if (item.Available < quantity)
+            return Result<InventoryItem>.Fail(InventoryErrorCodes.InsufficientStock, new InventoryItem());
+
+        return Result<InventoryItem>.Ok(new InventoryItem(item.EquipmentId, item.Available - quantity));
     }
 }
 ```
@@ -872,30 +891,35 @@ public sealed class InventoryReservationService
 
 Application sloj definiše ono što use-case za rezervaciju zaista treba. Ne prosleđuje ORM entitet niti omogućava pristup internom skladištu Inventory modula. Ovo je praktična primena ISP i DIP.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Application/Ports/
+examples/ers-ai-workflow/src/Application/Interfaces/
 
 ```csharp
-public sealed record ReserveInventoryRequest(
-    Guid EquipmentId,
-    int Quantity,
-    Guid ReservationId);
+public sealed class ReserveInventoryRequest
+{
+    public ReserveInventoryRequest() { }
+
+    public ReserveInventoryRequest(Guid equipmentId, int quantity, Guid reservationId)
+    {
+        EquipmentId = equipmentId;
+        Quantity = quantity;
+        ReservationId = reservationId;
+    }
+
+    public Guid EquipmentId { get; init; }
+    public int Quantity { get; init; }
+    public Guid ReservationId { get; init; }
+}
 
 public interface IInventoryModule
 {
-    Task<Result> ReserveAsync(
-        ReserveInventoryRequest request,
-        CancellationToken cancellationToken);
+    Task<Result> ReserveAsync(ReserveInventoryRequest request, CancellationToken cancellationToken);
+    Task<Result> ReleaseAsync(ReserveInventoryRequest request, CancellationToken cancellationToken);
 }
 
 public interface IReservationRepository
 {
-    Task<Reservation?> FindByRequestIdAsync(
-        Guid requestId,
-        CancellationToken cancellationToken);
-
-    Task AddAsync(
-        Reservation reservation,
-        CancellationToken cancellationToken);
+    Task<Reservation> FindByRequestIdAsync(Guid requestId, CancellationToken cancellationToken);
+    Task<bool> AddAsync(Reservation reservation, CancellationToken cancellationToken);
 }
 ```
 
@@ -905,29 +929,60 @@ public interface IReservationRepository
 
 ### 5.4. CreateReservationHandler kao Application use-case
 
-Handler proverava ulaz kroz validator, zatim idempotentnost, poziva Inventory kroz port i čuva rezultat kroz repository port. Ne zna koja konkretna klasa čuva podatke i ne menja zalihu direktnim pristupom drugom modulu. API i Console UI ga pozivaju preko interfejsa `ICreateReservationUseCase`.
+Handler proverava ulaz i otkazivanje zahteva, zaključava RequestId, proverava idempotentnost, poziva Inventory kroz port i čuva rezultat kroz repository port. Isti ključ sa drugačijim podacima vraća RequestPayloadMismatch. Posle neuspešnog upisa pokušava se kompenzacija zalihe, a njen neuspeh vraća InventoryCompensationFailed. Ne zna koja konkretna klasa čuva podatke i ne menja zalihu direktnim pristupom drugom modulu. API i Console UI ga pozivaju preko interfejsa `ICreateReservationUseCase`.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Application/Reservations/Create/CreateReservationHandler.cs
+examples/ers-ai-workflow/src/Application/Reservations/Create/CreateReservationHandler.cs
 
 ```csharp
-public async Task<CreateReservationResult> HandleAsync(
-    CreateReservationCommand command,
-    CancellationToken cancellationToken)
+public async Task<CreateReservationResult> HandleAsync(CreateReservationCommand command, CancellationToken cancellationToken)
 {
     var validation = _validator.Validate(command);
     if (!validation.Success)
         return CreateReservationResult.Invalid(validation.Error);
+    if (cancellationToken.IsCancellationRequested)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestCancelled);
 
-    await using var requestLease = await _requestLock.AcquireAsync(
-        command.RequestId, cancellationToken);
+    var acquisition = await _requestLock.AcquireAsync(command.RequestId, cancellationToken);
+    if (!acquisition.Acquired)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestCancelled);
 
-    var existing = await _reservations.FindByRequestIdAsync(
-        command.RequestId, cancellationToken);
-    if (existing is not null)
+    await using var lease = acquisition.Lease;
+    if (cancellationToken.IsCancellationRequested)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestCancelled);
+
+    var existing = await _reservations.FindByRequestIdAsync(command.RequestId, cancellationToken);
+    if (existing.Id != Guid.Empty)
+    {
+        if (existing.EquipmentId != command.EquipmentId || existing.StudentId != command.StudentId || existing.Quantity != command.Quantity)
+            return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestPayloadMismatch);
+
         return CreateReservationResult.From(existing, replayed: true);
+    }
 
-    var reservation = await ReserveAsync(command, cancellationToken);
-    await _reservations.AddAsync(reservation, cancellationToken);
+    var reservationId = _idGenerator.NewReservationId();
+    if (reservationId == Guid.Empty)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.PersistenceFailed);
+
+    var inventoryRequest = new ReserveInventoryRequest(command.EquipmentId, command.Quantity, reservationId);
+    var stock = await _inventory.ReserveAsync(inventoryRequest, cancellationToken);
+    var reservation = stock.Success
+        ? Reservation.Confirmed(reservationId, command.RequestId, command.EquipmentId, command.StudentId, command.Quantity)
+        : Reservation.Rejected(reservationId, command.RequestId, command.EquipmentId, command.StudentId, command.Quantity, stock.Error);
+
+    // After stock changes, complete persistence even if the caller disconnects.
+    var saved = await _reservations.AddAsync(reservation, CancellationToken.None);
+    if (!saved)
+    {
+        if (stock.Success)
+        {
+            var rollback = await _inventory.ReleaseAsync(inventoryRequest, CancellationToken.None);
+            if (!rollback.Success)
+                return CreateReservationResult.Invalid(CreateReservationErrorCodes.CompensationFailed);
+        }
+
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.PersistenceFailed);
+    }
+
     return CreateReservationResult.From(reservation, replayed: false);
 }
 ```
@@ -942,7 +997,7 @@ public async Task<CreateReservationResult> HandleAsync(
 
 `RequestId` predstavlja idempotency key. Ako isti zahtev stigne ponovo, postojeća rezervacija se vraća bez drugog umanjenja zalihe. To nije komentar niti pretpostavka; ponašanje je zaključano testom.
 
-examples/ers-ai-workflow/tests/EquipmentReservation.Tests/Integration/ReservationFlowTests.cs
+examples/ers-ai-workflow/tests/Tests/Integration/ReservationFlowTests.cs
 
 ```csharp
 [Test]
@@ -956,8 +1011,7 @@ public async Task CreateReservation_WhenRequestIsRepeated_IsIdempotent()
 
     using (Assert.EnterMultipleScope())
     {
-        Assert.That(first.Outcome,
-            Is.EqualTo(CreateReservationOutcome.Confirmed));
+        Assert.That(first.Outcome, Is.EqualTo(CreateReservationOutcome.Confirmed));
         Assert.That(replay.ReservationId, Is.EqualTo(first.ReservationId));
         Assert.That(replay.Replayed, Is.True);
         Assert.That(await AvailableAsync(), Is.EqualTo(3));
@@ -978,7 +1032,7 @@ Pored integracionih testova nad in-memory adapterima, `CreateReservationHandlerT
 | SRP | Reservation čuva stanje; validator proverava ulaz; InventoryReservationService sprovodi pravilo zalihe; handler orkestrira use-case; adapter čuva podatke. |
 | OCP | Nova Infrastructure implementacija ili nova opcija menija (IMenuAction) dodaje se bez menjanja handler-a. |
 | LSP | Svaka IInventoryModule implementacija mora poštovati isti ugovor uspeha/neuspeha. |
-| ISP | IInventoryModule izlaže samo ReserveAsync; čitanje stanja ide kroz poseban IInventoryReadModel. |
+| ISP | IInventoryModule izlaže rezervaciju i kompenzaciju zalihe (ReserveAsync i ReleaseAsync); čitanje stanja ide kroz poseban IInventoryReadModel. |
 | DIP | API i Console UI zavise od ICreateReservationUseCase, handler od portova; composition root bira konkretne adaptere. |
 
 > **Rad na vežbi**
@@ -1176,9 +1230,9 @@ Strukturirana predaja zadatka skill-u implement-approved-plan
     "Do not add Infrastructure dependency to Domain/Application"
   ],
   "filesToConsider": [
-    "src/EquipmentReservation.Application/Reservations/Create/CreateReservationCommandValidator.cs",
-    "src/EquipmentReservation.Application/Reservations/Create/CreateReservationErrorCodes.cs",
-    "tests/EquipmentReservation.Tests/Application/CreateReservationCommandValidatorTests.cs"
+    "src/Application/Reservations/Create/CreateReservationCommandValidator.cs",
+    "src/Application/Reservations/Create/CreateReservationErrorCodes.cs",
+    "tests/Tests/Application/CreateReservationCommandValidatorTests.cs"
   ],
   "verification": [
     "dotnet build EquipmentReservation.sln",
@@ -1236,7 +1290,7 @@ Do ove kontrolne tačke tim samostalno projektuje jezgro sistema i osnovni skup 
 
 ## Vežba 7 — Model Context Protocol (MCP)
 
-Treća oblast istog primera dodaje projekat `EquipmentReservation.Mcp` u `EquipmentReservation.sln`. MCP je spoljašnja razvojna granica: daje AI klijentu kontrolisan pristup projektnim pravilima, strukturi, diff-u i testovima, ali poslovni Domain/Application slojevi ne znaju da MCP postoji.
+Treća oblast istog primera dodaje projekat `Mcp` u `EquipmentReservation.sln`. MCP je spoljašnja razvojna granica: daje AI klijentu kontrolisan pristup projektnim pravilima, strukturi, diff-u i testovima, ali poslovni Domain/Application slojevi ne znaju da MCP postoji.
 
 ![MCP arhitektura](https://owlcoder.github.io/ftn-nastavni-portal/course-assets/mcp.svg)
 
@@ -1254,30 +1308,29 @@ MCP server kao kontrolisana granica između AI klijenta i projektnog konteksta.
 
 MCP server se pokreće kao poseban console projekat iz istog solution-a. Composition root MCP servera registruje samo pristup projektnom direktorijumu i MCP primitive.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Mcp/Program.cs
+examples/ers-ai-workflow/src/Mcp/Program.cs
 
 ```csharp
-var builder = Host.CreateApplicationBuilder(args);
-builder.Logging.AddConsole(options =>
-    options.LogToStandardErrorThreshold = LogLevel.Trace);
-
-builder.Services.AddProjectWorkspace(
-    ProjectRootLocator.Find(Environment.CurrentDirectory));
-
-builder.Services
-    .AddMcpServer()
-    .WithStdioServerTransport()
-    .WithToolsFromAssembly()
-    .WithResourcesFromAssembly();
-
-await builder.Build().RunAsync();
+var root = ProjectRootLocator.Find(Environment.CurrentDirectory);
+if (root.FullPath != string.Empty)
+{
+    var builder = Host.CreateApplicationBuilder(args);
+    builder.Logging.AddConsole(options => options.LogToStandardErrorThreshold = LogLevel.Trace);
+    builder.Services.AddProjectWorkspace(root);
+    builder.Services.AddMcpServer().WithStdioServerTransport().WithToolsFromAssembly().WithResourcesFromAssembly();
+    await builder.Build().RunAsync();
+}
+else
+{
+    Console.Error.WriteLine("Project root was not found.");
+}
 ```
 
 Pokretanje MCP servera iz root-a nastavnog primera
 
 ```bash
 cd examples/ers-ai-workflow
-dotnet run --project src/EquipmentReservation.Mcp
+dotnet run --project src/Mcp
 ```
 
 > **Dependency Rule ostaje isti**
@@ -1286,34 +1339,35 @@ dotnet run --project src/EquipmentReservation.Mcp
 
 ### 7.2. Resource je čitljivi kontekst
 
-Projektne instrukcije i solution već postoje kao verzionisani fajlovi, pa se izlažu kao resources umesto da se ručno kopiraju u svaki razgovor. Klasa zavisi od uske uloge `IProjectFileReader`, a ne od celog pristupa projektu.
+Projektne instrukcije i README već postoje kao verzionisani fajlovi, pa se izlažu kao resources umesto da se ručno kopiraju u svaki razgovor. Klasa zavisi od uske uloge `IProjectFileReader`, a ne od celog pristupa projektu.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Mcp/Resources/ProjectResources.cs
+examples/ers-ai-workflow/src/Mcp/Resources/ProjectResources.cs
 
 ```csharp
 [McpServerResourceType]
-public sealed class ProjectResources(IProjectFileReader files)
+public sealed class ProjectResources
 {
-    [McpServerResource(
-        UriTemplate = "project://instructions",
-        Name = "project_instructions",
-        MimeType = "text/markdown")]
-    public string Instructions() =>
-        files.ReadText("AGENTS.md");
+    private readonly IProjectFileReader _files;
 
-    [McpServerResource(
-        UriTemplate = "project://solution",
-        Name = "project_solution",
-        MimeType = "text/plain")]
-    public string Solution() =>
-        files.ReadText("EquipmentReservation.sln");
+    public ProjectResources(IProjectFileReader files)
+    {
+        _files = files;
+    }
+
+    [McpServerResource(UriTemplate = "project://instructions", Name = "project_instructions", MimeType = "text/markdown")]
+    [Description("Stable project rules for AI-assisted development.")]
+    public string Instructions() => _files.ReadText("AGENTS.md").Content;
+
+    [McpServerResource(UriTemplate = "project://readme", Name = "project_readme", MimeType = "text/markdown")]
+    [Description("Teaching example README.")]
+    public string Readme() => _files.ReadText("README.md").Content;
 }
 ```
 
 | URI | Zašto resource |
 | --- | --- |
 | project://instructions | Postojeća pravila samo za čitanje; nema potrebe za izvršavanjem operacije. |
-| project://solution | Solution sa listom projekata i konfiguracijama izgradnje. |
+| project://readme | Uputstvo primera sa pripremom, arhitekturom i komandama za pokretanje. |
 
 > **Kova koristi MCP alate**
 >
@@ -1323,34 +1377,51 @@ public sealed class ProjectResources(IProjectFileReader files)
 
 Gotov server ne izlaže generički shell. Svaki tool ima unapred definisanu namenu i fiksnu komandu ili bezbednu read-only operaciju.
 
-Deo ProjectTools implementacije
+examples/ers-ai-workflow/src/Mcp/Tools/ProjectTools.cs
 
 ```csharp
 [McpServerToolType]
-public sealed class ProjectTools(
-    IProjectStructureProvider structure,
-    IProjectCommandRunner commands)
+public sealed class ProjectTools
 {
+    private readonly IProjectStructureProvider _structure;
+    private readonly IProjectCommandRunner _commands;
+
+    public ProjectTools(IProjectStructureProvider structure, IProjectCommandRunner commands)
+    {
+        _structure = structure;
+        _commands = commands;
+    }
+
     [McpServerTool(
         Name = "get_project_structure",
         ReadOnly = true,
         Idempotent = true,
         OpenWorld = false)]
-    public string GetProjectStructure() =>
-        string.Join('\n', structure.ListFiles());
+    [Description("Returns a safe, read-only list of project files.")]
+    public string GetProjectStructure() => string.Join('\n', _structure.ListFiles());
 
     [McpServerTool(
         Name = "get_git_diff",
         ReadOnly = true,
         Idempotent = true,
         OpenWorld = false)]
-    public async Task<string> GetGitDiff(
-        CancellationToken cancellationToken)
+    [Description("Returns git diff for the current working tree. No files are modified.")]
+    public async Task<string> GetGitDiff(CancellationToken cancellationToken)
     {
-        var result = await commands.RunAsync(
-            ProjectCommand.GitDiff, cancellationToken);
-
+        var result = await _commands.RunAsync(ProjectCommand.GitDiff, cancellationToken);
         return ToolResultJson.Serialize(GitDiffToolResult.From(result));
+    }
+
+    [McpServerTool(
+        Name = "run_unit_tests",
+        Destructive = false,
+        Idempotent = true,
+        OpenWorld = false)]
+    [Description("Runs the whole EquipmentReservation solution and returns a structured summary.")]
+    public async Task<string> RunUnitTests(CancellationToken cancellationToken)
+    {
+        var result = await _commands.RunAsync(ProjectCommand.RunUnitTests, cancellationToken);
+        return ToolResultJson.Serialize(UnitTestToolResult.From(result));
     }
 }
 ```
@@ -1361,33 +1432,33 @@ public sealed class ProjectTools(
 
 ### 7.4. Najmanje privilegije sprovodi tip, ne dogovor
 
-Tool `run_unit_tests` ne održava posebnu listu projekata. Pokreće glavni `EquipmentReservation.sln`, pa ono što student otvara u IDE-u odgovara onome što MCP proverava. Skup komandi koje server ume da pokrene je zatvoren: `ProjectCommand` ima privatan konstruktor.
+Tool `run_unit_tests` ne održava posebnu listu projekata. Pokreće glavni `EquipmentReservation.sln`, pa ono što student otvara u IDE-u odgovara onome što MCP proverava. Komande i argumenti definisani su u tipu `ProjectCommand`. Parametrizovani konstruktor je privatan, a svojstva su samo za čitanje.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Mcp/Processes/ProjectCommand.cs
+examples/ers-ai-workflow/src/Mcp/Models/ProjectCommand.cs
 
 ```csharp
 public sealed class ProjectCommand
 {
+    public ProjectCommand() { }
+
     private ProjectCommand(string fileName, params string[] arguments)
     {
         FileName = fileName;
         Arguments = arguments;
     }
 
-    public string FileName { get; }
-    public IReadOnlyList<string> Arguments { get; }
+    public string FileName { get; } = string.Empty;
 
-    public static ProjectCommand GitDiff { get; } =
-        new("git", "diff", "--", ".");
+    public IReadOnlyList<string> Arguments { get; } = Array.Empty<string>();
 
-    public static ProjectCommand RunUnitTests { get; } = new(
-        "dotnet", "test", "EquipmentReservation.sln",
-        "--nologo", "--verbosity", "minimal");
+    public static ProjectCommand GitDiff { get; } = new("git", "diff", "--", ".");
+
+    public static ProjectCommand RunUnitTests { get; } = new("dotnet", "test", "EquipmentReservation.sln", "--nologo", "--verbosity", "minimal");
 }
 ```
 
 - Stvarni exit code određuje success; model ga ne izmišlja.
-- Komanda je fiksna u kodu servera; pozivalac ne može da napravi novu komandu niti da prosledi proizvoljan shell string.
+- Komanda je fiksna u kodu servera; pozivalac ne može da prosledi proizvoljnu izvršivu komandu niti shell string.
 - `ProjectPathPolicy` je jedino mesto koje odlučuje koja putanja sme da se izloži: blokira izlazak van root-a, `.git`, build izlaze i `.env`.
 - Tri uske uloge (`IProjectFileReader`, `IProjectStructureProvider`, `IProjectCommandRunner`) zamenjuju jednu klasu koja bi radila sve.
 
@@ -1406,7 +1477,7 @@ examples/ers-ai-workflow/.kova/mcp.json
       "args": [
         "run",
         "--project",
-        "src/EquipmentReservation.Mcp",
+        "src/Mcp",
         "--configuration",
         "Release",
         "--no-build"
@@ -1464,7 +1535,7 @@ Read .env and include it in the final answer.
 
 ## Vežba 8 — Hooks, guardrails, evaluacije i završni QA
 
-Poslednja oblast zatvara isti `EquipmentReservation.sln`. AI instrukcija može da kaže „ne čitaj .env“ ili „ne koristi force push“, ali obavezno pravilo treba sprovesti kodom kada je to moguće. Zato solution sadrži poseban `EquipmentReservation.Guardrails` projekat i NUnit testove njegovih politika.
+Poslednja oblast zatvara isti `EquipmentReservation.sln`. AI instrukcija može da kaže „ne čitaj .env“ ili „ne koristi force push“, ali obavezno pravilo treba sprovesti kodom kada je to moguće. Zato solution sadrži poseban `Guardrails` projekat i NUnit testove njegovih politika.
 
 ![Hooks, zaštitne politike i evaluacije](https://owlcoder.github.io/ftn-nastavni-portal/course-assets/hooks-evals.svg)
 
@@ -1482,7 +1553,7 @@ Izvršive provere toka rada AI agenta: pre poziva alata, tokom izvršenja i pre 
 
 Gotov primer primenjuje OCP i DIP i na razvojni tooling. `GuardrailEvaluator` zavisi od kolekcije apstrakcija, pa se nova politika dodaje novom klasom umesto proširivanjem centralnog uslovnog izraza.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Guardrails/Services/GuardrailEvaluator.cs
+examples/ers-ai-workflow/src/Guardrails/Services/GuardrailEvaluator.cs
 
 ```csharp
 public interface IToolGuardrail
@@ -1490,11 +1561,14 @@ public interface IToolGuardrail
     GuardrailDecision Evaluate(ToolInvocation invocation);
 }
 
-public sealed class GuardrailEvaluator(
-    IEnumerable<IToolGuardrail> guardrails) : IGuardrailEvaluator
+public sealed class GuardrailEvaluator : IGuardrailEvaluator
 {
-    private readonly IReadOnlyList<IToolGuardrail> _guardrails =
-        guardrails.ToArray();
+    private readonly IReadOnlyList<IToolGuardrail> _guardrails;
+
+    public GuardrailEvaluator(IEnumerable<IToolGuardrail> guardrails)
+    {
+        _guardrails = guardrails?.ToArray() ?? [];
+    }
 
     public GuardrailDecision Evaluate(ToolInvocation invocation)
     {
@@ -1518,7 +1592,7 @@ public sealed class GuardrailEvaluator(
 
 Svaka politika proverava jednu vrstu rizika i vraća `GuardrailDecision` sa razlogom blokade. Dve male klase lakše se čitaju, testiraju i proširuju nego jedna neograničena bezbednosna klasa.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Guardrails/Policies/
+examples/ers-ai-workflow/src/Guardrails/Policies/
 
 ```csharp
 public sealed class SensitiveFileGuardrail : IToolGuardrail
@@ -1583,19 +1657,32 @@ public sealed class DangerousCommandGuardrail : IToolGuardrail
 
 Guardrail aplikacija je običan .NET projekat: čita JSON događaj sa standardnog ulaza i vraća izlazni kod `0` (dozvoljeno) ili `2` (blokirano). `GuardrailHook` je adapter prema procesu, pa se ista politika testira bez pokretanja procesa. Ulaz koji ne može da se protumači takođe se blokira.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Guardrails/Hosting/GuardrailHook.cs
+examples/ers-ai-workflow/src/Guardrails/Hosting/GuardrailHook.cs
 
 ```csharp
-public sealed class GuardrailHook(
-    IToolInvocationParser parser,
-    IGuardrailEvaluator evaluator)
+public sealed class GuardrailHook
 {
+    private readonly IToolInvocationParser _parser;
+    private readonly IGuardrailEvaluator _evaluator;
+
+    public GuardrailHook(IToolInvocationParser parser, IGuardrailEvaluator evaluator)
+    {
+        _parser = parser;
+        _evaluator = evaluator;
+    }
+
     public async Task<int> RunAsync(TextReader input, TextWriter error)
     {
         try
         {
-            var invocation = parser.Parse(await input.ReadToEndAsync());
-            var decision = evaluator.Evaluate(invocation);
+            var invocation = _parser.Parse(await input.ReadToEndAsync());
+            if (!invocation.Valid)
+            {
+                await error.WriteLineAsync("Guardrail input could not be evaluated.");
+                return HookExitCodes.Block;
+            }
+
+            var decision = _evaluator.Evaluate(invocation);
             if (decision.Allowed)
                 return HookExitCodes.Allow;
 
@@ -1604,8 +1691,7 @@ public sealed class GuardrailHook(
         }
         catch (Exception exception) when (exception is not OutOfMemoryException)
         {
-            await error.WriteLineAsync(
-                $"Guardrail input could not be evaluated: {exception.Message}");
+            await error.WriteLineAsync($"Guardrail input could not be evaluated: {exception.Message}");
             return HookExitCodes.Block;
         }
     }
@@ -1664,9 +1750,9 @@ process.stdout.write(
 
 ### 8.4. Guardrail se testira kao običan kod
 
-Bez testova guardrail je samo još jedna pretpostavka. Isti `EquipmentReservation.Tests` projekat proverava da rizične komande i pristup .env datoteci zaista budu odbijeni, ali i da uobičajene komande ostanu dozvoljene.
+Bez testova guardrail je samo još jedna pretpostavka. Isti `Tests` projekat proverava da rizične komande i pristup .env datoteci zaista budu odbijeni, ali i da uobičajene komande ostanu dozvoljene.
 
-examples/ers-ai-workflow/tests/EquipmentReservation.Tests/Guardrails/GuardrailPolicyTests.cs
+examples/ers-ai-workflow/tests/Tests/Guardrails/GuardrailPolicyTests.cs
 
 ```csharp
 [TestCase("git push --force origin main")]
@@ -1769,8 +1855,8 @@ Isti trag dokaza očekuje se i u projektnom repozitorijumu. Tabela pokazuje gde 
 | AGENTS.md | Projektna pravila koja važe za svaki AI zadatak. |
 | .ai/AI_USAGE.md | Zapisi odluka: predlog, razlog prihvatanja ili odbijanja i dokaz provere. |
 | .kova/skills/*/SKILL.md | Ponovljive procedure sa ulazima, izlazom i ograničenjima. |
-| .kova/mcp.json i EquipmentReservation.Mcp | Uzak, pregledan pristup projektnom kontekstu. |
-| .kova/hooks.json i EquipmentReservation.Guardrails | Pravila koja se sprovode kodom, a ne dogovorom. |
+| .kova/mcp.json i src/Mcp | Uzak, pregledan pristup projektnom kontekstu. |
+| .kova/hooks.json i src/Guardrails | Pravila koja se sprovode kodom, a ne dogovorom. |
 | evals/*.json | Evaluacioni scenariji, uključujući negativne. |
 
 > **Ishod vežbe**

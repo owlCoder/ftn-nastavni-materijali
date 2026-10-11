@@ -1,5 +1,5 @@
 using Database.Connection.Providers;
-using Domain.Interfaces.Database;
+using Database.Interfaces;
 
 namespace Database.Connection;
 

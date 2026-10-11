@@ -1,3 +1,4 @@
+using Presentation.Interfaces;
 namespace Presentation.Console;
 
 /// <summary>Podrazumevana implementacija <see cref="IConsoleIO"/> nad sistemskom konzolom.</summary>

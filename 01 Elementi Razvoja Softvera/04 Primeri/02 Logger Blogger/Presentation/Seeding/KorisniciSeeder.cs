@@ -1,6 +1,6 @@
-using Domain.Contracts;
-using Domain.Interfaces.Database;
-using Domain.Interfaces.Services;
+using Application.Contracts;
+using Database.Interfaces;
+using Application.Interfaces.Services;
 using Shared;
 
 namespace Presentation.Seeding;
@@ -13,8 +13,8 @@ public sealed class KorisniciSeeder
 {
     private static readonly RegistracijaZahtev[] PodrazumevaniKorisnici =
     [
-        new("maja", "123", "Maja Taron"),
-        new("ana", "123", "Ana Taron")
+        new("maja", "demo12345", "Maja Taron"),
+        new("ana", "demo12345", "Ana Taron")
     ];
 
     private readonly IDatabaseProvider _databaseProvider;
@@ -39,7 +39,7 @@ public sealed class KorisniciSeeder
             Result<Domain.Models.Korisnik> rezultat = _authServis.Registracija(zahtev);
             if (rezultat.IsFailure && rezultat.Error.Code != "auth.korisnicko_ime_zauzeto")
             {
-                return Result<Unit>.Failure(rezultat.Error.Code, rezultat.Error.Message);
+                return Result<Unit>.Failure(rezultat.Error.Code, rezultat.Error.Message, new Unit());
             }
         }
 

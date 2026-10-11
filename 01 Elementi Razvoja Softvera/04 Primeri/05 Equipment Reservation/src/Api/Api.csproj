@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>EquipmentReservation.Api</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Domain/Domain.csproj" />
+    <ProjectReference Include="../Application/Application.csproj" />
+    <ProjectReference Include="../Infrastructure/Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

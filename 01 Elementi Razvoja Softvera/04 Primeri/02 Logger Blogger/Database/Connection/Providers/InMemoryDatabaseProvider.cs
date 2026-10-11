@@ -1,4 +1,4 @@
-using Domain.Interfaces.Database;
+using Database.Interfaces;
 using Shared;
 
 namespace Database.Connection.Providers;

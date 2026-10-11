@@ -1,13 +1,19 @@
-using Domain.Interfaces.Database;
+using Database.Interfaces;
 using Shared;
 
 namespace Database.Connection.Providers;
 
 public sealed class JsonDatabaseProvider : IDatabaseProvider
 {
+    public JsonDatabaseProvider(string putanja = "podaci.json")
+    {
+        BazaPodataka = new JsonBazaPodataka(putanja);
+    }
+
     public string Naziv => "json";
+    public IBazaPodataka BazaPodataka { get; }
 
-    public IBazaPodataka BazaPodataka { get; } = new JsonBazaPodataka();
-
-    public Result<Unit> PokusajKonekciju() => Result<Unit>.Success(new Unit());
+    public Result<Unit> PokusajKonekciju() => BazaPodataka.IsReady
+        ? Result<Unit>.Success(new Unit())
+        : Result<Unit>.Failure("baza.neispravan_json", "Podatke nije moguće bezbedno učitati.", new Unit());
 }

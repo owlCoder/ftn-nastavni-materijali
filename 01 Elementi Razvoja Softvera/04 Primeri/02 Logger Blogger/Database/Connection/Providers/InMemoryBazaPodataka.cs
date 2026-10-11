@@ -1,4 +1,5 @@
-using Domain.Interfaces.Database;
+using Database.Models;
+using Database.Interfaces;
 
 namespace Database.Connection.Providers;
 
@@ -6,6 +7,8 @@ namespace Database.Connection.Providers;
 public sealed class InMemoryBazaPodataka : IBazaPodataka
 {
     public TabeleBazaPodataka Tabele { get; } = new();
+
+    public bool IsReady => true;
 
     public bool SacuvajPromene() => true;
 }

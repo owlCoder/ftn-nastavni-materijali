@@ -207,23 +207,27 @@ Logger–Blogger služi kao studija slučaja za razdvajanje poslovnog jezgra, in
 
 | Projekat | Sadržaj i odgovornost |
 | --- | --- |
-| Domain | Modeli `Korisnik`, `ZapisNaSajtu`, `Objava`, `Evidencija`; nabrajanja; Result tip; ugovori za servise, repozitorijume, bazu i bezbednost. Ne zavisi ni od jednog drugog projekta. |
-| Infrastructure | Implementacije servisa i bezbednosti: autentifikacija, blog/evidencija, file logger i SHA-256 hasher. Zavisi od Domain-a. |
-| Database | InMemory i JSON provider, factory i repozitorijumi. Implementira ugovore koje definiše jezgro. |
-| Presentation | Konzolni meni, `IConsoleIO`, seeder, `AppContainer` i `Program.cs`; sastavlja graf zavisnosti. |
+| Domain | Poslovni modeli `Korisnik`, `ZapisNaSajtu`, `Objava`, `Evidencija` i nabrajanja. Ne zavisi ni od jednog drugog projekta. |
+| Application | Registracija, prijava i objave/evidencije; Result tip i ugovori za servise, repozitorijume, logger i hasher. Zavisi samo od Domain-a. |
+| Infrastructure | PBKDF2 hasher sa salt-om i file logger. Implementira ugovore Application sloja. |
+| Database | InMemory i JSON provider, factory, ugovori baze i model tabela. Repozitorijumi implementiraju ugovore Application sloja. |
+| Presentation | Konzolni meni, `IConsoleIO`, formatter, seeder, `AppContainer` i `Program.cs`; sastavlja graf zavisnosti. |
+| Tests | NUnit/Moq provere use-case-ova, arhitekture, JSON adaptera i PBKDF2 hashera. |
 
-Ugovori poslovnog jezgra
+Application/Interfaces/Services/IZapisiServis.cs i Database/Interfaces/IBazaPodataka.cs
 
 ```csharp
 public interface IZapisiServis
 {
     Result<ZapisNaSajtu> Objavi(ZapisNaSajtu zapis);
+
     Result<IReadOnlyList<ZapisNaSajtu>> PregledZapisa();
 }
 
 public interface IBazaPodataka
 {
     TabeleBazaPodataka Tabele { get; }
+    bool IsReady { get; }
     bool SacuvajPromene();
 }
 ```

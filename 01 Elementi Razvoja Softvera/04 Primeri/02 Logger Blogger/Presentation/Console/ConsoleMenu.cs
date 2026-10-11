@@ -1,8 +1,10 @@
-using Domain.Contracts;
+using Presentation.Interfaces;
+using Application.Contracts;
 using Domain.Enums;
 using Domain.Models;
-using Domain.Interfaces.Services;
+using Application.Interfaces.Services;
 using Presentation.Composition;
+using Presentation.Formatting;
 using Presentation.TekstGenerator;
 using Shared;
 
@@ -33,13 +35,13 @@ public sealed class ConsoleMenu
         TipKorisnika tip = OdaberiTipKorisnika();
         IZapisiServis zapisiServis = _container.ZapisiServisZa(tip);
 
-        Korisnik? korisnik = Prijava();
-        if (korisnik is null)
+        Result<Korisnik> prijava = Prijava();
+        if (prijava.IsFailure)
         {
             return;
         }
 
-        PrikaziMeni(tip, zapisiServis, korisnik);
+        PrikaziMeni(tip, zapisiServis, prijava.Value);
     }
 
     private TipKorisnika OdaberiTipKorisnika()
@@ -62,7 +64,7 @@ public sealed class ConsoleMenu
         }
     }
 
-    private Korisnik? Prijava()
+    private Result<Korisnik> Prijava()
     {
         while (true)
         {
@@ -70,17 +72,17 @@ public sealed class ConsoleMenu
             string korisnickoIme = _io.ReadLine().Trim();
             if (string.IsNullOrEmpty(korisnickoIme))
             {
-                return null;
+                return Result<Korisnik>.Failure("auth.prekinuto", "Prijava je prekinuta.", new Korisnik());
             }
 
             _io.Write("Lozinka: ");
             string lozinka = _io.ReadLine().Trim();
 
             Result<Korisnik> rezultat = _container.AuthServis.Prijava(new PrijavaZahtev(korisnickoIme, lozinka));
-            if (rezultat.IsSuccess && rezultat.Value is not null)
+            if (rezultat.IsSuccess)
             {
                 _io.WriteLine($"Uspešna prijava: {rezultat.Value.ImePrezime}");
-                return rezultat.Value;
+                return rezultat;
             }
 
             _io.WriteLine($"Greška: {rezultat.Error.Message}");
@@ -120,17 +122,8 @@ public sealed class ConsoleMenu
     private void KreirajZapis(TipKorisnika tip, IZapisiServis zapisiServis, Korisnik korisnik)
     {
         ZapisNaSajtu zapis = tip == TipKorisnika.Bloger
-            ? new Objava(
-                DateTime.Now,
-                NasumicanTekst.GetNasumicanOpis(),
-                korisnik,
-                NasumicanTekst.GetNasumicanNaslov(),
-                (TipObjave)_random.Next(1, 4))
-            : new Evidencija(
-                DateTime.Now,
-                NasumicanTekst.GetNasumicnaLogPoruka(),
-                korisnik,
-                (TipEvidencije)_random.Next(1, 4));
+            ? new Objava(DateTime.Now, NasumicanTekst.GetNasumicanOpis(), korisnik, NasumicanTekst.GetNasumicanNaslov(), (TipObjave)_random.Next(1, 4))
+            : new Evidencija(DateTime.Now, NasumicanTekst.GetNasumicnaLogPoruka(), korisnik, (TipEvidencije)_random.Next(1, 4));
 
         Result<ZapisNaSajtu> rezultat = zapisiServis.Objavi(zapis);
         if (rezultat.IsSuccess)
@@ -139,7 +132,7 @@ public sealed class ConsoleMenu
         }
         else
         {
-            _io.WriteLine(tip == TipKorisnika.Bloger ? "Objava nije postavljena!" : "Zapis nije evidentiran!");
+            _io.WriteLine($"Greška pri čuvanju: {rezultat.Error.Code} - {rezultat.Error.Message}");
         }
     }
 
@@ -150,11 +143,13 @@ public sealed class ConsoleMenu
         _io.WriteLine($"==================================== Pregled {naziv} ====================================");
 
         Result<IReadOnlyList<ZapisNaSajtu>> rezultat = zapisiServis.PregledZapisa();
-        if (rezultat.IsSuccess && rezultat.Value is not null)
+        if (rezultat.IsFailure)
+            _io.WriteLine($"Greška pri čitanju: {rezultat.Error.Code} - {rezultat.Error.Message}");
+        else
         {
             foreach (ZapisNaSajtu zapis in rezultat.Value)
             {
-                _io.Write(zapis.ToString());
+                _io.WriteLine(ZapisFormatter.Format(zapis));
             }
         }
 

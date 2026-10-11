@@ -1,50 +1,70 @@
-using Domain.Interfaces.Database;
+using Database.Interfaces;
+using Database.Models;
 using Newtonsoft.Json;
 
 namespace Database.Connection.Providers;
 
-/// <summary>Skladište koje učitava i perzistira podatke u JSON datoteku.</summary>
 public sealed class JsonBazaPodataka : IBazaPodataka
 {
-    private const string Putanja = "podaci.json";
+    private readonly string _putanja;
 
-    public TabeleBazaPodataka Tabele { get; }
+    public TabeleBazaPodataka Tabele { get; private set; } = new();
+    public bool IsReady { get; private set; } = true;
 
-    public JsonBazaPodataka()
+    public JsonBazaPodataka(string putanja = "podaci.json")
     {
+        _putanja = putanja;
+        if (!File.Exists(_putanja))
+            return;
+
         try
         {
-            if (File.Exists(Putanja))
+            string json = File.ReadAllText(_putanja);
+            TabeleBazaPodataka? podaci = JsonConvert.DeserializeObject<TabeleBazaPodataka>(json);
+            if (podaci is null || podaci.Korisnici is null || podaci.Objave is null || podaci.Evidencije is null)
             {
-                string json = File.ReadAllText(Putanja);
-                Tabele = JsonConvert.DeserializeObject<TabeleBazaPodataka>(json) ?? new();
+                IsReady = false;
+                return;
             }
-            else
-            {
-                Tabele = new();
-            }
+
+            Tabele = podaci;
         }
-        catch
+        catch (IOException)
         {
-            Tabele = new();
+            IsReady = false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            IsReady = false;
+        }
+        catch (JsonException)
+        {
+            IsReady = false;
         }
     }
 
     public bool SacuvajPromene()
     {
+        if (!IsReady)
+            return false;
+
+        string privremenaPutanja = _putanja + ".tmp";
         try
         {
-            string json = JsonConvert.SerializeObject(
-                Tabele,
-                new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                    Formatting = Formatting.Indented
-                });
-            File.WriteAllText(Putanja, json);
+            string json = JsonConvert.SerializeObject(Tabele, Formatting.Indented);
+            File.WriteAllText(privremenaPutanja, json);
+            File.Move(privremenaPutanja, _putanja, overwrite: true);
             return true;
         }
-        catch
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+        catch (JsonException)
         {
             return false;
         }

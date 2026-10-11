@@ -31,14 +31,14 @@ Rešenje sadrži osam projekata. Prvih pet čine aplikaciju sa dva presentation 
 
 | Projekat | Odgovornost |
 | --- | --- |
-| EquipmentReservation.Domain | Modeli, Result i domenski servisi sa poslovnim pravilima; nema projektnih zavisnosti. |
-| EquipmentReservation.Application | Slučajevi upotrebe, validatori i portovi prema drugim modulima/infrastrukturi. |
-| EquipmentReservation.Infrastructure | Implementacije portova; u primeru in-memory adapteri bez poslovnih odluka. |
-| EquipmentReservation.Api | Composition root i HTTP granica; ne sadrži poslovna pravila. |
-| EquipmentReservation.ConsoleUi | Drugi presentation adapter nad istim slučajevima upotrebe. |
-| EquipmentReservation.Mcp | Kontrolisano izlaganje projektnog konteksta AI klijentu. |
-| EquipmentReservation.Guardrails | Determinističke politike za rizične pozive alata. |
-| EquipmentReservation.Tests | NUnit provere domena, use-case-a, guardrail-a, AI artefakata i smera zavisnosti. |
+| Domain | Modeli, Result i domenski servisi sa poslovnim pravilima; nema projektnih zavisnosti. |
+| Application | Slučajevi upotrebe, validatori i portovi prema drugim modulima/infrastrukturi. |
+| Infrastructure | Implementacije portova; u primeru in-memory adapteri bez poslovnih odluka. |
+| Api | Composition root i HTTP granica; ne sadrži poslovna pravila. |
+| ConsoleUi | Drugi presentation adapter nad istim slučajevima upotrebe. |
+| Mcp | Kontrolisano izlaganje projektnog konteksta AI klijentu. |
+| Guardrails | Determinističke politike za rizične pozive alata. |
+| Tests | NUnit provere domena, use-case-a, guardrail-a, AI artefakata i smera zavisnosti. |
 
 > **Zašto je ovo Clean Architecture**
 >
@@ -48,22 +48,37 @@ Rešenje sadrži osam projekata. Prvih pet čine aplikaciju sa dva presentation 
 
 Modeli `Reservation` i `InventoryItem` predstavljaju stanje i ne znaju za HTTP, bazu, MCP niti AI. Provera ulaznih vrednosti pripada validatoru, a pravilo raspoložive količine sprovodi domenski servis `InventoryReservationService`.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Domain/Inventory/InventoryReservationService.cs
+examples/ers-ai-workflow/src/Domain/Inventory/InventoryReservationService.cs
 
 ```csharp
-public sealed record InventoryItem(Guid EquipmentId, int Available);
+public sealed class InventoryItem
+{
+    public InventoryItem() { }
+
+    public InventoryItem(Guid equipmentId, int available)
+    {
+        EquipmentId = equipmentId;
+        Available = available;
+    }
+
+    public Guid EquipmentId { get; init; }
+    public int Available { get; init; }
+}
 
 public sealed class InventoryReservationService
 {
     public Result<InventoryItem> Reserve(InventoryItem item, int quantity)
     {
-        if (quantity <= 0)
-            return Result<InventoryItem>.Fail(InventoryErrorCodes.InvalidQuantity);
-        if (item.Available < quantity)
-            return Result<InventoryItem>.Fail(InventoryErrorCodes.InsufficientStock);
+        if (item is null || item.EquipmentId == Guid.Empty || item.Available < 0)
+            return Result<InventoryItem>.Fail(InventoryErrorCodes.InvalidEquipment, new InventoryItem());
 
-        return Result<InventoryItem>.Ok(
-            item with { Available = item.Available - quantity });
+        if (quantity <= 0)
+            return Result<InventoryItem>.Fail(InventoryErrorCodes.InvalidQuantity, new InventoryItem());
+
+        if (item.Available < quantity)
+            return Result<InventoryItem>.Fail(InventoryErrorCodes.InsufficientStock, new InventoryItem());
+
+        return Result<InventoryItem>.Ok(new InventoryItem(item.EquipmentId, item.Available - quantity));
     }
 }
 ```
@@ -76,30 +91,35 @@ public sealed class InventoryReservationService
 
 Application sloj definiše ono što use-case za rezervaciju zaista treba. Ne prosleđuje ORM entitet niti omogućava pristup internom skladištu Inventory modula. Ovo je praktična primena ISP i DIP.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Application/Ports/
+examples/ers-ai-workflow/src/Application/Interfaces/
 
 ```csharp
-public sealed record ReserveInventoryRequest(
-    Guid EquipmentId,
-    int Quantity,
-    Guid ReservationId);
+public sealed class ReserveInventoryRequest
+{
+    public ReserveInventoryRequest() { }
+
+    public ReserveInventoryRequest(Guid equipmentId, int quantity, Guid reservationId)
+    {
+        EquipmentId = equipmentId;
+        Quantity = quantity;
+        ReservationId = reservationId;
+    }
+
+    public Guid EquipmentId { get; init; }
+    public int Quantity { get; init; }
+    public Guid ReservationId { get; init; }
+}
 
 public interface IInventoryModule
 {
-    Task<Result> ReserveAsync(
-        ReserveInventoryRequest request,
-        CancellationToken cancellationToken);
+    Task<Result> ReserveAsync(ReserveInventoryRequest request, CancellationToken cancellationToken);
+    Task<Result> ReleaseAsync(ReserveInventoryRequest request, CancellationToken cancellationToken);
 }
 
 public interface IReservationRepository
 {
-    Task<Reservation?> FindByRequestIdAsync(
-        Guid requestId,
-        CancellationToken cancellationToken);
-
-    Task AddAsync(
-        Reservation reservation,
-        CancellationToken cancellationToken);
+    Task<Reservation> FindByRequestIdAsync(Guid requestId, CancellationToken cancellationToken);
+    Task<bool> AddAsync(Reservation reservation, CancellationToken cancellationToken);
 }
 ```
 
@@ -109,29 +129,60 @@ public interface IReservationRepository
 
 ### 5.4. CreateReservationHandler kao Application use-case
 
-Handler proverava ulaz kroz validator, zatim idempotentnost, poziva Inventory kroz port i čuva rezultat kroz repository port. Ne zna koja konkretna klasa čuva podatke i ne menja zalihu direktnim pristupom drugom modulu. API i Console UI ga pozivaju preko interfejsa `ICreateReservationUseCase`.
+Handler proverava ulaz i otkazivanje zahteva, zaključava RequestId, proverava idempotentnost, poziva Inventory kroz port i čuva rezultat kroz repository port. Isti ključ sa drugačijim podacima vraća RequestPayloadMismatch. Posle neuspešnog upisa pokušava se kompenzacija zalihe, a njen neuspeh vraća InventoryCompensationFailed. Ne zna koja konkretna klasa čuva podatke i ne menja zalihu direktnim pristupom drugom modulu. API i Console UI ga pozivaju preko interfejsa `ICreateReservationUseCase`.
 
-examples/ers-ai-workflow/src/EquipmentReservation.Application/Reservations/Create/CreateReservationHandler.cs
+examples/ers-ai-workflow/src/Application/Reservations/Create/CreateReservationHandler.cs
 
 ```csharp
-public async Task<CreateReservationResult> HandleAsync(
-    CreateReservationCommand command,
-    CancellationToken cancellationToken)
+public async Task<CreateReservationResult> HandleAsync(CreateReservationCommand command, CancellationToken cancellationToken)
 {
     var validation = _validator.Validate(command);
     if (!validation.Success)
         return CreateReservationResult.Invalid(validation.Error);
+    if (cancellationToken.IsCancellationRequested)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestCancelled);
 
-    await using var requestLease = await _requestLock.AcquireAsync(
-        command.RequestId, cancellationToken);
+    var acquisition = await _requestLock.AcquireAsync(command.RequestId, cancellationToken);
+    if (!acquisition.Acquired)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestCancelled);
 
-    var existing = await _reservations.FindByRequestIdAsync(
-        command.RequestId, cancellationToken);
-    if (existing is not null)
+    await using var lease = acquisition.Lease;
+    if (cancellationToken.IsCancellationRequested)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestCancelled);
+
+    var existing = await _reservations.FindByRequestIdAsync(command.RequestId, cancellationToken);
+    if (existing.Id != Guid.Empty)
+    {
+        if (existing.EquipmentId != command.EquipmentId || existing.StudentId != command.StudentId || existing.Quantity != command.Quantity)
+            return CreateReservationResult.Invalid(CreateReservationErrorCodes.RequestPayloadMismatch);
+
         return CreateReservationResult.From(existing, replayed: true);
+    }
 
-    var reservation = await ReserveAsync(command, cancellationToken);
-    await _reservations.AddAsync(reservation, cancellationToken);
+    var reservationId = _idGenerator.NewReservationId();
+    if (reservationId == Guid.Empty)
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.PersistenceFailed);
+
+    var inventoryRequest = new ReserveInventoryRequest(command.EquipmentId, command.Quantity, reservationId);
+    var stock = await _inventory.ReserveAsync(inventoryRequest, cancellationToken);
+    var reservation = stock.Success
+        ? Reservation.Confirmed(reservationId, command.RequestId, command.EquipmentId, command.StudentId, command.Quantity)
+        : Reservation.Rejected(reservationId, command.RequestId, command.EquipmentId, command.StudentId, command.Quantity, stock.Error);
+
+    // After stock changes, complete persistence even if the caller disconnects.
+    var saved = await _reservations.AddAsync(reservation, CancellationToken.None);
+    if (!saved)
+    {
+        if (stock.Success)
+        {
+            var rollback = await _inventory.ReleaseAsync(inventoryRequest, CancellationToken.None);
+            if (!rollback.Success)
+                return CreateReservationResult.Invalid(CreateReservationErrorCodes.CompensationFailed);
+        }
+
+        return CreateReservationResult.Invalid(CreateReservationErrorCodes.PersistenceFailed);
+    }
+
     return CreateReservationResult.From(reservation, replayed: false);
 }
 ```
@@ -146,7 +197,7 @@ public async Task<CreateReservationResult> HandleAsync(
 
 `RequestId` predstavlja idempotency key. Ako isti zahtev stigne ponovo, postojeća rezervacija se vraća bez drugog umanjenja zalihe. To nije komentar niti pretpostavka; ponašanje je zaključano testom.
 
-examples/ers-ai-workflow/tests/EquipmentReservation.Tests/Integration/ReservationFlowTests.cs
+examples/ers-ai-workflow/tests/Tests/Integration/ReservationFlowTests.cs
 
 ```csharp
 [Test]
@@ -160,8 +211,7 @@ public async Task CreateReservation_WhenRequestIsRepeated_IsIdempotent()
 
     using (Assert.EnterMultipleScope())
     {
-        Assert.That(first.Outcome,
-            Is.EqualTo(CreateReservationOutcome.Confirmed));
+        Assert.That(first.Outcome, Is.EqualTo(CreateReservationOutcome.Confirmed));
         Assert.That(replay.ReservationId, Is.EqualTo(first.ReservationId));
         Assert.That(replay.Replayed, Is.True);
         Assert.That(await AvailableAsync(), Is.EqualTo(3));
@@ -182,7 +232,7 @@ Pored integracionih testova nad in-memory adapterima, `CreateReservationHandlerT
 | SRP | Reservation čuva stanje; validator proverava ulaz; InventoryReservationService sprovodi pravilo zalihe; handler orkestrira use-case; adapter čuva podatke. |
 | OCP | Nova Infrastructure implementacija ili nova opcija menija (IMenuAction) dodaje se bez menjanja handler-a. |
 | LSP | Svaka IInventoryModule implementacija mora poštovati isti ugovor uspeha/neuspeha. |
-| ISP | IInventoryModule izlaže samo ReserveAsync; čitanje stanja ide kroz poseban IInventoryReadModel. |
+| ISP | IInventoryModule izlaže rezervaciju i kompenzaciju zalihe (ReserveAsync i ReleaseAsync); čitanje stanja ide kroz poseban IInventoryReadModel. |
 | DIP | API i Console UI zavise od ICreateReservationUseCase, handler od portova; composition root bira konkretne adaptere. |
 
 > **Rad na vežbi**

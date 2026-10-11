@@ -23,14 +23,14 @@ Potreban je .NET 8 SDK. Komande izvršavati iz direktorijuma izabranog primera.
 |---|---|---|
 | [Logger–Blogger, vežba 2](<01 Elementi Razvoja Softvera/04 Primeri/02 Logger Blogger>) | `Loger-Bloger.sln` | `dotnet run --project Presentation` |
 | [ECommerce, vežba 3](<01 Elementi Razvoja Softvera/04 Primeri/03 ECommerce>) | `ECommerce.sln` | `dotnet run --project WebAPI` |
-| [Equipment Reservation, vežbe 5–8](<01 Elementi Razvoja Softvera/04 Primeri/ers-ai-workflow>) | `EquipmentReservation.sln` | `dotnet run --project src/EquipmentReservation.ConsoleUi` ili `src/EquipmentReservation.Api` |
+| [Equipment Reservation, vežbe 5–8](<01 Elementi Razvoja Softvera/04 Primeri/05 Equipment Reservation>) | `EquipmentReservation.sln` | `dotnet run --project src/ConsoleUi` ili `src/Api` |
 
 ```bash
 dotnet build <naziv-solutiona>.sln --configuration Release
 dotnet test <naziv-solutiona>.sln --configuration Release --no-build
 ```
 
-Logger–Blogger koristi demo naloge `maja` / `123` i `ana` / `123`. ECommerce i Equipment Reservation ispisuju adresu API-ja pri pokretanju. Adapteri za podatke su namenjeni nastavnim demonstracijama.
+Logger–Blogger koristi demo naloge `maja` / `demo12345` i `ana` / `demo12345`. ECommerce i Equipment Reservation ispisuju adresu API-ja pri pokretanju. Adapteri za podatke su namenjeni nastavnim demonstracijama.
 
 Za OIB i ODP koristiti broj vežbe `NN` od `01` do `08`:
 
@@ -44,10 +44,10 @@ Scenario, očekivani dokaz i zadatak uz svaki primer navedeni su u odgovarajuće
 
 ## ERS — AI razvojni tok
 
-U Equipment Reservation primeru `AGENTS.md` određuje projektna pravila, `.kova/skills` razvojne postupke, a `.ai/AI_USAGE.md` evidenciju odluka. Pre pokretanja Kova MCP servera i guardrails provera izgraditi solution u Release konfiguraciji. MCP resursi su `project://instructions` i `project://solution`; alati su `get_project_structure`, `get_git_diff` i `run_unit_tests`. Detaljna priprema i konfiguracija nalaze se u vežbama 6–8 praktikuma.
+U Equipment Reservation primeru `AGENTS.md` određuje projektna pravila, `.kova/skills` razvojne postupke, a `.ai/AI_USAGE.md` evidenciju odluka. Pre pokretanja Kova MCP servera i guardrails provera izgraditi solution u Release konfiguraciji. MCP resursi su `project://instructions` i `project://readme`; alati su `get_project_structure`, `get_git_diff` i `run_unit_tests`. Detaljna priprema i konfiguracija nalaze se u vežbama 6–8 praktikuma.
 
 Evaluacije iz `evals/*.json` sprovodi član tima: izabrati `skill` i `mode`, zadati `input`, proveriti sve stavke `expected.must` i `expected.mustNot`, pa zabeležiti ishod i dokaz u `.ai/AI_USAGE.md`. Unit testovi proveravaju strukturu tih scenarija; ocena odgovora agenta zahteva pregled.
 
 ## Usklađivanje sa portalom
 
-U repozitorijumu nastavnog portala pokrenuti `npm run generate:practicum`, preneti generisane Markdown dokumente u odgovarajuće `03 Racunarske vezbe` direktorijume i uskladiti izvore primera. Komanda `npm run check:materials-sync` upoređuje oba repozitorijuma prema sadržaju datoteka. README se održava samo u korenu repozitorijuma.
+U repozitorijumu nastavnog portala pokrenuti `npm run generate:practicum`, preneti generisane Markdown dokumente u odgovarajuće `03 Racunarske vezbe` direktorijume i uskladiti izvore primera. Komanda `npm run check:materials-sync` upoređuje oba repozitorijuma prema sadržaju datoteka. Korenski README daje pregled materijala, a README datoteke uz primere sadrže njihova uputstva za pokretanje i proveru.

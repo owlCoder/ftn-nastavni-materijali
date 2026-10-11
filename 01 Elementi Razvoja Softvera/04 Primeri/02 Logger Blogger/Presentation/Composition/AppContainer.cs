@@ -1,11 +1,13 @@
+using Presentation.Interfaces;
 using Database.Connection;
 using Database.Repositories;
-using Domain.Interfaces.Database;
-using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Security;
-using Domain.Interfaces.Services;
+using Database.Interfaces;
+using Application.Interfaces.Repositories;
+using Application.Interfaces.Security;
+using Application.Interfaces.Services;
 using Infrastructure.Security;
 using Infrastructure.Services;
+using Application.Services;
 using Presentation.Console;
 using Presentation.Seeding;
 
@@ -24,21 +26,16 @@ public sealed class AppContainer
     public required ILoggerServis Logger { get; init; }
     public required KorisniciSeeder Seeder { get; init; }
 
-    private readonly IZapisiRepozitorijum _objaveRepozitorijum;
-    private readonly IZapisiRepozitorijum _evidencijeRepozitorijum;
+    private readonly IZapisiServis _blogServis;
+    private readonly IZapisiServis _evidencijaServis;
 
-    private AppContainer(IZapisiRepozitorijum objaveRepozitorijum, IZapisiRepozitorijum evidencijeRepozitorijum)
+    private AppContainer(IZapisiServis blogServis, IZapisiServis evidencijaServis)
     {
-        _objaveRepozitorijum = objaveRepozitorijum;
-        _evidencijeRepozitorijum = evidencijeRepozitorijum;
+        _blogServis = blogServis;
+        _evidencijaServis = evidencijaServis;
     }
 
-    /// <summary>Vraća servis za zapise koji odgovara izabranom tipu korisnika.</summary>
-    public IZapisiServis ZapisiServisZa(TipKorisnika tip) => tip switch
-    {
-        TipKorisnika.Bloger => new BlogServis(_objaveRepozitorijum, Logger),
-        _ => new EvidencijaServis(_evidencijeRepozitorijum, Logger)
-    };
+    public IZapisiServis ZapisiServisZa(TipKorisnika tip) => tip == TipKorisnika.Bloger ? _blogServis : _evidencijaServis;
 
     public static AppContainer Create(string nazivProvajdera)
     {
@@ -50,12 +47,15 @@ public sealed class AppContainer
         IZapisiRepozitorijum objaveRepozitorijum = new ObjaveRepozitorijum(baza);
         IZapisiRepozitorijum evidencijeRepozitorijum = new EvidencijeRepozitorijum(baza);
 
-        IPasswordHasher passwordHasher = new Sha256PasswordHasher();
+        IPasswordHasher passwordHasher = new Pbkdf2PasswordHasher();
         IAutentifikacijaServis authServis = new AutentifikacioniServis(korisniciRepozitorijum, passwordHasher);
         ILoggerServis logger = new FileLoggerServis();
         KorisniciSeeder seeder = new(databaseProvider, authServis);
 
-        return new AppContainer(objaveRepozitorijum, evidencijeRepozitorijum)
+        IZapisiServis blogServis = new BlogServis(objaveRepozitorijum, logger);
+        IZapisiServis evidencijaServis = new EvidencijaServis(evidencijeRepozitorijum, logger);
+
+        return new AppContainer(blogServis, evidencijaServis)
         {
             Io = io,
             DatabaseProvider = databaseProvider,

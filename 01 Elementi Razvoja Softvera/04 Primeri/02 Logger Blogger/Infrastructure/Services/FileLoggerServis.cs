@@ -1,5 +1,5 @@
 using System.Globalization;
-using Domain.Interfaces.Services;
+using Application.Interfaces.Services;
 
 namespace Infrastructure.Services;
 
@@ -20,7 +20,11 @@ public sealed class FileLoggerServis : ILoggerServis
             sw.Write($"[{DateTime.Now.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture)}]: {poruka}\n");
             return true;
         }
-        catch
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
         {
             return false;
         }

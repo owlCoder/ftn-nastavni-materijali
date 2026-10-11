@@ -1,13 +1,12 @@
 # Osnove distribuiranog programiranja
 
-## Materijal
+Ugovori između komponenti, tokovi podataka, pouzdana isporuka i koordinacija. Primeri koriste simulator mreže i uređaja za ponovljive scenarije otkaza.
 
-- Administrativni dokumenti i pitanja: `00 Administracija/`
-- Projektna specifikacija: `01 Projekat/`
-- Prezentacije: `02 Prezentacije/PPTX/`
-- PDF prezentacije za studente: `02 Prezentacije/PDF/`
-- Primeri: `04 Primeri/`
+| Materijal | Sadržaj |
+|---|---|
+| [Administracija](<00 Administracija/README.md>) | Pitanja za odbranu |
+| [Projekat](<01 Projekat/README.md>) | PICTOR — specifikacija u PDF i Markdown formatu |
+| [Prezentacije](<02 Prezentacije/README.md>) | Teme nastave, PDF i PPTX |
+| [Programski primeri](<04 Primeri/README.md>) | Osam samostalnih C#/.NET vežbi |
 
-Osam samostalnih C#/.NET primera po vežbama nalazi se direktno u `04 Primeri/`. Svaka vežba ima sopstveni `.sln` sa slojevima Domain, Application, Infrastructure i ConsoleUi, NUnit testove i `README.md`. Udaljeni uređaji, mreža i kvarovi su simulirani, pa se svaki scenario može ponoviti.
-
-Prezentacije su numerisane redom izvođenja nastave (`01_`, … `08_`). PPTX je radni izvor, a PDF je distribucioni format. Uvodna prezentacija (`00_`) biće dodata kada pravila polaganja budu utvrđena.
+[Zajednička uputstva](<../00 Opsti Dokumenti/README.md>) · [Svi predmeti](<../README.md>)

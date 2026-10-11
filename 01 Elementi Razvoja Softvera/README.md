@@ -1,13 +1,12 @@
 # Elementi razvoja softvera
 
-## Materijal
+Razvoj softvera kroz zahteve, arhitekturu, testiranje i integraciju modula. Primeri obuhvataju i kontrolisanu upotrebu AI razvojnih alata.
 
-- Pravila polaganja: `00 Administracija/`
-- Projektna specifikacija: `01 Projekat/`
-- Prezentacije: `02 Prezentacije/PPTX/`
-- PDF prezentacije za studente: `02 Prezentacije/PDF/`
-- Primeri: `04 Primeri/`
+| Materijal | Sadržaj |
+|---|---|
+| [Administracija](<00 Administracija/README.md>) | Pravila polaganja |
+| [Projekat](<01 Projekat/README.md>) | PYXIS — specifikacija u PDF i Markdown formatu |
+| [Prezentacije](<02 Prezentacije/README.md>) | Teme nastave, PDF i PPTX |
+| [Programski primeri](<04 Primeri/README.md>) | Equipment Reservation, vežbe 5–8 |
 
-Kompletan izvršiv primer za vežbe 5–8 nalazi se u `04 Primeri/ers-ai-workflow/`. Ulazna tačka je `EquipmentReservation.sln`, a AI deo primera podešen je za Kova (`.kova/`).
-
-Prezentacije su numerisane redom izvođenja nastave (`00_`, `01_`, … `08_`). PPTX je radni izvor, a PDF je distribucioni format.
+[Zajednička uputstva](<../00 Opsti Dokumenti/README.md>) · [Svi predmeti](<../README.md>)

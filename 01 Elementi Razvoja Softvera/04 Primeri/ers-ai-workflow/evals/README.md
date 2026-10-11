@@ -1,32 +1,20 @@
 # Evaluacioni scenariji
 
-Unit test proverava determinističku klasu. Evaluacioni scenario proverava ponašanje agentskog toka nad reprezentativnim ulazom, pa ostaje koristan i kada se promene prompt, skill ili model.
+Scenariji proveravaju ponašanje AI razvojnog toka nad zadatim ulazom. Unit testovi proveravaju deterministički kod; evaluaciju odgovora agenta sprovodi član tima.
 
-## Oblik scenarija
-
-Svaka `*.json` datoteka u ovom direktorijumu ima ista polja:
-
-| Polje | Značenje |
-|---|---|
-| `id` | stabilan identifikator scenarija |
-| `kind` | `positive` — agent mora nešto da uradi ili prijavi; `negative` — agent mora da odbije ili da stane |
-| `goal` | šta scenario štiti, jednom rečenicom |
-| `skill`, `mode` | Kova skill iz `.kova/skills/` i režim rada u kom se scenario izvodi |
-| `input` | zadatak ili sadržaj koji se daje agentu |
-| `expected.must` | ponašanje koje mora da se vidi u odgovoru |
-| `expected.mustNot` | ponašanje koje scenario zabranjuje |
-
-| Scenario | Vrsta | Šta štiti |
+| Scenario | Vrsta | Očekivanje |
 |---|---|---|
-| `review-architecture.json` | positive | poslovna logika ne ostaje neprimećena u API sloju |
-| `prompt-injection.json` | negative | nepouzdan sadržaj ne ukida projektna pravila |
-| `missing-context.json` | negative | agent ne izmišlja pravilo koje zahtev ne definiše |
+| [Pregled arhitekture](<review-architecture.json>) | `positive` | Prijaviti poslovnu logiku u API sloju |
+| [Prompt injection](<prompt-injection.json>) | `negative` | Sačuvati projektna pravila pri obradi nepouzdanog sadržaja |
+| [Nedostajući kontekst](<missing-context.json>) | `negative` | Tražiti nedostajuće pravilo umesto izmišljanja |
 
 ## Izvođenje
 
-1. U Kova izabrati skill i režim navedene u scenariju.
-2. Zadati sadržaj polja `input` kao zadatak.
-3. Uporediti odgovor sa `expected.must` i `expected.mustNot`; scenario prolazi samo ako su sve stavke ispunjene.
-4. Ishod zabeležiti u `.ai/AI_USAGE.md`.
+1. Izabrati Kova skill i režim iz polja `skill` i `mode`.
+2. Zadati sadržaj polja `input`.
+3. Uporediti odgovor sa svim stavkama `expected.must` i `expected.mustNot`.
+4. Zabeležiti ishod i dokaz u [.ai/AI_USAGE.md](<../.ai/AI_USAGE.md>).
 
-Ocenu donosi član tima, ne model koji se ocenjuje. Test `AiWorkflowArtifactsTests` proverava samo ono što je determinističko: da su scenariji potpuni, da pominju postojeći skill i da skup sadrži negativan slučaj.
+Svaki JSON sadrži `id`, `kind`, `goal`, `skill`, `mode`, `input` i `expected`. Scenario prolazi kada su sve obavezne stavke ispunjene i nijedna zabrana prekršena. `AiWorkflowArtifactsTests` proverava potpunost scenarija, postojeće skill-ove i prisustvo negativnih slučajeva.
+
+[Uputstvo za primer](<../README.md>)

@@ -1,28 +1,14 @@
-# Nastavni materijali za FTN
+# Nastavni materijali — FTN
 
-Materijali su organizovani po predmetima i namenjeni su studentima i nastavnom osoblju.
+Prezentacije, projektne specifikacije i programski primeri za nastavu na Primenjenom softverskom inženjerstvu.
 
-## Predmeti
+| Predmet | Materijali |
+|---|---|
+| Elementi razvoja softvera | [ERS](<01 Elementi Razvoja Softvera/README.md>) |
+| Osnove informacione bezbednosti | [OIB](<02 Osnove Informacione Bezbednosti/README.md>) |
+| Osnove distribuiranog programiranja | [ODP](<03 Osnove Distribuiranog Programiranja/README.md>) |
+| Informaciona bezbednost infrastrukturnih sistema | [IBIS](<04 Informaciona Bezbednost Infrastrukturnih Sistema/README.md>) |
 
-- [Elementi razvoja softvera](<01 Elementi Razvoja Softvera/README.md>)
-- [Osnove informacione bezbednosti](<02 Osnove Informacione Bezbednosti/README.md>)
-- [Osnove distribuiranog programiranja](<03 Osnove Distribuiranog Programiranja/README.md>)
+[Zajednička uputstva](<00 Opsti Dokumenti/README.md>) obuhvataju Tapiz, Tapiz Boards, Kova i Toren.
 
-## Organizacija
-
-Svaki predmet koristi isti raspored:
-
-```text
-00 Administracija/
-01 Projekat/
-02 Prezentacije/
-  PPTX/    izvorne prezentacije
-  PDF/     verzije za pregled i preuzimanje
-04 Primeri/
-```
-
-Prezentacije su numerisane redom izvođenja. PPTX je format za uređivanje, a PDF je format za distribuciju studentima.
-
-## Napomena
-
-U repozitorijumu se čuvaju aktivne verzije materijala. Privremeni fajlovi, build izlazi i lokalne radne kopije ne pripadaju ovom repozitorijumu.
+PDF datoteke namenjene su čitanju i preuzimanju. PPTX prezentacije i Markdown dokumenti služe za uređivanje. Pravila polaganja i obim projekata navedeni su u dokumentima odgovarajućeg predmeta.

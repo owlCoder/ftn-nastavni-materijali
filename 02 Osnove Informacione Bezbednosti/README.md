@@ -1,13 +1,12 @@
 # Osnove informacione bezbednosti
 
-## Materijal
+Identitet, kontrola pristupa, zaštita podataka, procena rizika i obrada bezbednosnih događaja. Primeri povezuju bezbednosno pravilo, test i dokaz primene.
 
-- Pravila polaganja: `00 Administracija/`
-- Projektna specifikacija: `01 Projekat/`
-- Prezentacije: `02 Prezentacije/PPTX/`
-- PDF prezentacije za studente: `02 Prezentacije/PDF/`
-- Primeri: `04 Primeri/`
+| Materijal | Sadržaj |
+|---|---|
+| [Administracija](<00 Administracija/README.md>) | Pravila polaganja |
+| [Projekat](<01 Projekat/README.md>) | SCUTUM — specifikacija u PDF i Markdown formatu |
+| [Prezentacije](<02 Prezentacije/README.md>) | Teme nastave, PDF i PPTX |
+| [Programski primeri](<04 Primeri/README.md>) | Osam samostalnih C#/.NET vežbi |
 
-Osam samostalnih C#/.NET primera po vežbama nalazi se direktno u `04 Primeri/`. Svaka vežba ima sopstveni `.sln` sa slojevima Domain, Application, Infrastructure i ConsoleUi, NUnit testove i `README.md`.
-
-Prezentacije su numerisane redom izvođenja nastave (`00_`, `01_`, … `08_`). PPTX je radni izvor, a PDF je distribucioni format.
+[Zajednička uputstva](<../00 Opsti Dokumenti/README.md>) · [Svi predmeti](<../README.md>)

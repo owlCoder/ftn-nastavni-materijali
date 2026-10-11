@@ -1,45 +1,26 @@
-# Vežba 8 — Korelacija, efektivnost i učenje
+# Vežba 8 — Korelacija i efektivnost kontrole
 
-Primer koreliše više događaja u jedan slučaj i meri da li kontrola daje očekivani ishod, umesto da se samo postojanje kontrole tretira kao dokaz.
+`EventCorrelator` povezuje događaje u slučajeve. `ControlEffectivenessCalculator` poredi udeo blokiranih pokušaja sa zadatim ciljem; bez pokušaja nema osnova za ocenu efektivnosti.
 
 ## Pokretanje
+
+Potreban je .NET 8 SDK. Komande se izvršavaju iz ovog direktorijuma.
 
 ```bash
 dotnet run --project src/Oib.Vezba08.ConsoleUi
 dotnet test Oib.Vezba08.sln
 ```
 
-## Struktura
+## Scenario i provera
 
-```text
-src/
-  Oib.Vezba08.Domain/          SecurityEvent, CorrelationCase, EventCorrelator,
-                               ControlMeasurement, ControlEffectivenessCalculator
-  Oib.Vezba08.Application/     AnalyzeSecurityEventsHandler + port za izvor događaja
-  Oib.Vezba08.Infrastructure/  in-memory izvor događaja
-  Oib.Vezba08.ConsoleUi/       composition root i demonstracija
-tests/
-  Oib.Vezba08.Tests/           testovi korelatora, kalkulatora i use-case-a
-```
-
-## Bezbednosni lanac
-
-| Korak | U primeru |
+| Stavka | Sadržaj |
 |---|---|
-| Imovina | poverljivi izvoz zaštićen step-up kontrolom |
-| Pretnja | kontrola postoji, ali ne zaustavlja pokušaje koje treba da zaustavi |
-| Zahtev | kontrola mora da blokira najmanje ciljni udeo pokušaja |
-| Kontrola | merenje kroz `ControlEffectivenessCalculator` |
-| Test | `EventCorrelatorTests`, `ControlEffectivenessCalculatorTests`, `AnalyzeSecurityEventsHandlerTests` |
-| Dokaz | `SecurityAnalysisReport` sa slučajevima i izmerenom efektivnošću |
-
-## SOLID i Clean Architecture
-
-- Korelacija i merenje su dva odvojena domenska servisa (SRP).
-- `ControlMeasurement` nosi stanje, a računanje je u kalkulatoru; cilj je parametar, ne konstanta.
-- Kontrola bez ijednog pokušaja ne proglašava se efektivnom: nema dokaza, nema ispunjenog cilja.
-- Handler zavisi od `ISecurityEventSource`, pa se in-memory izvor može zameniti log skladištem (DIP).
+| Scenario | Kontrola postoji, ali ne blokira potreban udeo rizičnih pokušaja. |
+| Testovi | `EventCorrelatorTests`, `ControlEffectivenessCalculatorTests`, `AnalyzeSecurityEventsHandlerTests` |
+| Dokaz | `SecurityAnalysisReport` prikazuje povezane slučajeve i rezultate merenja. |
 
 ## Zadatak
 
 Dodati vreme događaja i meriti koliko je prošlo od prvog do poslednjeg događaja u slučaju. Proširiti `CorrelationCase` i napisati test za slučaj sa jednim događajem.
+
+[Pregled svih primera](<../README.md>)

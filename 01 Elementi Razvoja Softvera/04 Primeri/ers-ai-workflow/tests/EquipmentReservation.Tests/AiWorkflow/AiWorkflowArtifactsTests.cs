@@ -41,6 +41,17 @@ public sealed class AiWorkflowArtifactsTests
     }
 
     [Test]
+    public void SolutionResource_ServesTheBuildableTeachingSolution()
+    {
+        var root = new ProjectRoot(Root);
+        var resources = new ProjectResources(new ProjectFileReader(new ProjectPathPolicy(root)));
+
+        Assert.That(
+            resources.Solution(),
+            Is.EqualTo(File.ReadAllText(Path.Combine(Root, "EquipmentReservation.sln"))));
+    }
+
+    [Test]
     public void ProjectRules_FitTheSizeKovaLoadsAutomatically()
     {
         var rules = new FileInfo(Path.Combine(Root, InstructionsFile));

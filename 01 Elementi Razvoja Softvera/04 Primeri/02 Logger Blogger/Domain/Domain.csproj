@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Domen: modeli, enumi, ugovori, interfejsi (repozitorijumi, servisi, security, baza), Result. Ne zavisi ni od jednog drugog projekta. -->
+</Project>

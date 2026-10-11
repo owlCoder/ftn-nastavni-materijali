@@ -1,0 +1,36 @@
+# Build izlaz
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userprefs
+*.DotSettings.user
+
+# Rezultati testova
+[Tt]est[Rr]esult*/
+*.trx
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Aplikacioni podaci / logovi
+log.txt
+podaci.json
+
+# Razno
+*.log
+.DS_Store
+Thumbs.db

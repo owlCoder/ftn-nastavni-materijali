@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Infrastruktura: servisi (auth, blog, evidencija, logger) i bezbednost (password hasher). Zavisi samo od domena. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+</Project>

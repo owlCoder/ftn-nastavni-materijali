@@ -15,9 +15,9 @@ public sealed class ProjectResources(IProjectFileReader files)
     public string Instructions() => files.ReadText("AGENTS.md");
 
     [McpServerResource(
-        UriTemplate = "project://readme",
-        Name = "project_readme",
-        MimeType = "text/markdown")]
-    [Description("Teaching example README.")]
-    public string Readme() => files.ReadText("README.md");
+        UriTemplate = "project://solution",
+        Name = "project_solution",
+        MimeType = "text/plain")]
+    [Description("Teaching solution and its project references.")]
+    public string Solution() => files.ReadText("EquipmentReservation.sln");
 }

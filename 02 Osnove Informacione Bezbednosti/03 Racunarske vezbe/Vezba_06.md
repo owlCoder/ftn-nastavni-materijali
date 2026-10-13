@@ -144,8 +144,25 @@ dotnet test Oib.Vezba06.sln
 >
 > Dodati pravilo koje prepoznaje password spraying: ista adresa neuspešno pokušava prijavu na više različitih naloga. Napisati novu `IDetectionRule` klasu i registrovati je u composition root-u.
 
-### P3 — Testiranje i manual-core-baseline
+### Kontrolna tačka KT3 — Druga celina i povezivanje
 
-> **Kontrolna tačka**
+Prva i druga dodeljena celina imaju izvršive tokove, provereno povezivanje i ugovor gde postoji međutimska zavisnost. Timovi sa tri celine prikazuju minimalni izvršiv prototip treće celine.
+
+#### Obavezno za sve timove
+
+1. Izvršiv ključni funkcionalni tok iz PRVE i DRUGE dodeljene celine i način na koji su povezane (ili legitimno nezavisne, ali sa jasnim zajedničkim bezbednosnim scenarijem).
+2. Pozitivan + negativan automatski test toka; odgovarajući audit event, kontrolisana greška i prolazak kroz CI.
+3. Bar jedan dogovoreni među-timski contract/security test gde zavisnost postoji; stubbing privremeno dozvoljen uz dokaz ugovora.
+4. Dokumentovana ograničenja i plan prelaska sa stub-a na adapter.
+
+#### Dodatno za timove sa 3 celine
+
+- Treća celina ima izvršiv prototip JEDNOG ključnog use-case-a/pravila/odluke; ne traži se ceo R3 podsistem u ovom trenutku.
+
+> **Prikaz**
 >
-> Ova tačka zaokružuje prethodne teme. Organizacioni detalji i zahtevi nalaze se u posebnom odeljku kontrolnih tačaka.
+> Jedan povezani scenario, negative test i ugovor sa drugim timom.
+
+> **Termin i obuhvat**
+>
+> Vežba 5–6 · Kraj 6. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

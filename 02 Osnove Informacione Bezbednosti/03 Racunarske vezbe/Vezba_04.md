@@ -144,8 +144,26 @@ dotnet test Oib.Vezba04.sln
 >
 > Dodati rezidualni rizik: `ThreatScenario` dobija procenu efikasnosti kontrole, a izveštaj prikazuje rizik pre i posle kontrole. Pravilo smestiti u domenski servis i pokriti graničnim testovima.
 
-### P2 — Politike, klasifikacija i referentna konfiguracija
+### Kontrolna tačka KT2 — Prvi vertikalni scenario
 
-> **Kontrolna tačka**
+Primarna celina ima prvi zaokružen funkcionalan tok, serversku zaštitu i negativan automatski test. Model pretnji obuhvata sve dodeljene celine.
+
+#### Obavezno za sve timove
+
+1. Primarna celina: najmanje jedan zaokružen funkcionalan tok koji prolazi kroz aplikacionu logiku i persistence/simulator, sa demonstracijom normalnog ishoda; za jednostavnije celine očekuju se bar dve ključne operacije (npr. unos + promena statusa).
+2. Serverska zaštita konkretne operacije (scope/ownership/role prema domenu), validacija ulaza i jedan AUTOMATIZOVAN negativni test; ne smatra se dovoljnom zaštita samo kroz UI.
+3. Threat model svih dodeljenih celina: asset → misuse/pretnja → kontrola → test → evidence, uz prikaz bar jedne trust granice.
+4. Migracije/seed ili ekvivalentno ponovljivo testno stanje; strukturisani događaj/audit za relevantnu promenu bez tajni.
+5. Minimalni cross-team ugovor pregledan sa susednim timom; ako implementacija nije spremna, stub + pozitivni i negativni odgovor.
+
+> **Prikaz**
 >
-> Ova tačka zaokružuje prethodne teme. Organizacioni detalji i zahtevi nalaze se u posebnom odeljku kontrolnih tačaka.
+> Pokrenut normalan scenario i negativan automatski test.
+
+> **Ne tražiti u ovoj fazi**
+>
+> Puna realizacija druge/treće celine. Produkcioni simulator.
+
+> **Termin i obuhvat**
+>
+> Vežba 3–4 · Kraj 4. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

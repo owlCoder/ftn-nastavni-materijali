@@ -144,8 +144,26 @@ dotnet test Oib.Vezba02.sln
 >
 > Uvesti radnju izmene zapisa: menja ga samo vlasnik, bez obzira na `records:read:any`. Dodati novu politiku i use-case pored postojećih, bez menjanja `ResourceReadPolicy`.
 
-### P1 — Identitet, uloge i autorizacija
+### Kontrolna tačka KT1 — Scope, model i pokrenut projekat
 
-> **Kontrolna tačka**
+Tim utvrđuje obuhvat svih dodeljenih celina, zajednički model i početne ugovore, pokreće projekat i pokazuje prvo izvršivo pravilo.
+
+#### Obavezno za sve timove
+
+1. Za SVAKU dodeljenu celinu: lista use-case-ova iz specifikacije, redosled implementacije i označeni preduslovi (TAPIZ backlog).
+2. Jedan objedinjeni domen model / skica toka, ključni entiteti, statusi i vlasništvo podataka; minimalna security matrica Subject–Action–Resource–Allow/Deny za relevantne operacije.
+3. Prva mapa međutimskih zavisnosti: owner, consumer, minimalni API/event/policy ugovor u DRAFT stanju (ako postoji granica).
+4. Repozitorijum: osnovna struktura aplikacije, README sa startovanjem, build koji prolazi, početni CI i Tapiz task → branch → PR praksa.
+5. Jedno izvršivo pravilo ili minimalni test domenske invarijante.
+
+> **Prikaz**
 >
-> Ova tačka zaokružuje prethodne teme. Organizacioni detalji i zahtevi nalaze se u posebnom odeljku kontrolnih tačaka.
+> 5–7 minuta; model, backlog, dokaz da se projekat build-uje, jedan test i konkretan plan KT2.
+
+> **Ne tražiti u ovoj fazi**
+>
+> Završen MFA. Detections engine. Full frontend. Finalne integracije.
+
+> **Termin i obuhvat**
+>
+> Vežba 1–2 · Kraj 2. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

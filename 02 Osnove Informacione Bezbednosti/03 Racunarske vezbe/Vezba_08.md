@@ -144,8 +144,23 @@ dotnet test Oib.Vezba08.sln
 >
 > Dodati vreme događaja i meriti koliko je prošlo od prvog do poslednjeg događaja u slučaju. Proširiti `CorrelationCase` i napisati test za slučaj sa jednim događajem.
 
-### P4 — Operativna i napredna bezbednost — završna odbrana
+### Kontrolna tačka KT4 — Finalna demonstracija i security QA
 
-> **Kontrolna tačka**
+Tim demonstrira sve obavezne use-case-ove aktivnog/odobrenog scope-a, dokazuje bezbednosne odluke i ponovljivo pokretanje i predaje ažurnu dokumentaciju. Normativni obim ostaje obavezan dok nastavni tim ne objavi formalnu reviziju.
+
+#### Obavezno za sve timove
+
+1. Svi obavezni use-case-ovi AKTIVNOG/ODOBRENOG scope-a celina; ako se puni normativni scope iz SCUTUM specifikacije smanjuje, NASTAVNI TIM mora to unapred eksplicitno objaviti kao reviziju.
+2. End-to-end demo: početno stanje → akcija → odluka dozvoli/odbij → relevantan security/audit trag → konačan status.
+3. Unit + negativni security + odgovarajući integracioni/contract testovi po relevantnoj celini, CI green, dokumentovane revizije PR.
+4. Clean clone, migracije i seed/demo podaci rade prema README-u.
+5. API/event/policy ugovori, threat model, ADR, evidencija testiranja, individualni doprinosi i residual risk su ažurni.
+6. Cross-team integracija sa realnim adapterom gde je dostupna; samo stub ne prikazivati kao završenu realnu integraciju.
+
+#### Dodatno za timove sa 3 celine
+
+- Treća celina mora imati javno odobren opseg i izvršiv bezbednosni tok sa automatizovanim testovima; kompletan normativni obim je obavezan osim ako je nastavni tim formalno promenio specifikaciju.
+
+> **Termin i obuhvat**
 >
-> Ova tačka zaokružuje prethodne teme. Organizacioni detalji i zahtevi nalaze se u posebnom odeljku kontrolnih tačaka.
+> Vežba 7–8 · Kraj 8. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

@@ -237,16 +237,3 @@ git diff -- .
 > **Ishod vežbe**
 >
 > Student ume da koristi AI alat uz očuvanje SOLID principa, arhitektonskih granica i sopstvene odgovornosti za konačan rezultat.
-
-### Kontrolna tačka P3 — Testiranje i manual-core-baseline
-
-Do ove kontrolne tačke tim samostalno projektuje jezgro sistema i osnovni skup testova. U narednoj fazi AI alati mogu imati veću ulogu, ali se svaki njihov predlog proverava postojećim testovima i pregledom izmena.
-
-- Ključni slučajevi upotrebe imaju testove za uspešne i negativne scenarije.
-- Izveštaj o pokrivenosti je pregledan i najmanje jedna rizična grana je obrazložena ili dodatno pokrivena.
-- Najmanje jedan bug je najpre reprodukovan testom, a zatim ispravljen.
-- Stabilna verzija jezgra je označena Git tag-om `manual-core-baseline`.
-
-> **Termin i obuhvat**
->
-> Vežba 5–6 · nedelja od 23.11. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

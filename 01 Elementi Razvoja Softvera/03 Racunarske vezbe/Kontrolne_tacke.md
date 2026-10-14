@@ -1,45 +1,27 @@
 # Elementi razvoja softvera — Kontrolne tačke
 
-## P1 — Problem, backlog i razvojni tok
+## KT1 — Osnovna implementacija
 
-Datum: 19.10.
+Termin: Vežba 4
 
-U ovoj fazi ne zahteva se završena arhitektura niti veliki obim implementacije. Tim obrazlaže problem, razlaže rad na proverljive stavke i dokumentuje početni tok zajedničkog razvoja u repozitorijumu.
+Prva kontrolna tačka održava se u terminu 4. vežbe i proverava osnovnu implementaciju svih dodeljenih celina.
 
-- Zajednički repozitorijum sa README dokumentom i pristupom svih članova tima.
-- Tapiz Boards sadrži backlog sa prioritetima; opis svake priče je jedna rečenica po šablonu „Kao [uloga], želim/hoću/mogu [radnju], kako bih [postigao cilj]“, a koraci realizacije su u zasebnoj čeklisti.
-- Najmanje jedan zahtev za spajanje (pull request) sadrži pregled izmena i obrazložene komentare učesnika.
-- Tim koristi dogovoreni tok Backlog → Ready → In Progress → Code Review → QA/Verify → Done.
+Poeni: 10
 
-## P2 — Arhitektura i funkcionalno jezgro
+- Repozitorijum i pokretanje projekta; strukturiran Tapiz backlog i podela rada.
+- Osnovni domenski model, poslovna pravila i API/contract granice za sve dodeljene celine.
+- Najmanje jedan izvršiv funkcionalni tok i automatizovani test značajnog pravila.
+- Dogovor sa zavisnim timovima ili kontrolisani stub kada zavisna komponenta nije spremna.
 
-Datum: 02.11.
+## KT2 — Završna demonstracija
 
-Tim prikazuje arhitektonske granice i najmanje jedan zaokružen slučaj upotrebe, od ulaznog zahteva do poslovnog rezultata, uz razdvojene odgovornosti poslovnog i infrastrukturnog koda.
+Termin: Vežba 8
 
-- Dokumentovana odgovornost svakog sloja i dozvoljeni smer zavisnosti.
-- Implementiran je najmanje jedan vertikalni prolaz kroz sistem, od zahteva do rezultata.
-- Za očekivane neuspehe definisani stabilni kodovi ili tipovi rezultata, bez generičkih izuzetaka.
-- Domenski i aplikacioni sloj mogu se testirati bez pokretanja stvarne baze podataka ili korisničkog interfejsa.
+Druga kontrolna tačka održava se u terminu 8. vežbe i obuhvata završnu demonstraciju svake dodeljene celine u odobrenom obimu.
 
-## P3 — Testiranje i manual-core-baseline
+Poeni: 10
 
-Datum: 23.11.
-
-Do ove kontrolne tačke tim samostalno projektuje jezgro sistema i osnovni skup testova. U narednoj fazi AI alati mogu imati veću ulogu, ali se svaki njihov predlog proverava postojećim testovima i pregledom izmena.
-
-- Ključni slučajevi upotrebe imaju testove za uspešne i negativne scenarije.
-- Izveštaj o pokrivenosti je pregledan i najmanje jedna rizična grana je obrazložena ili dodatno pokrivena.
-- Najmanje jedan bug je najpre reprodukovan testom, a zatim ispravljen.
-- Stabilna verzija jezgra je označena Git tag-om `manual-core-baseline`.
-
-## P4 — Razvoj uz podršku AI alata i završna odbrana
-
-Datum: 14.12.
-
-Na završnoj odbrani svaki član tima obrazlaže zahteve, arhitekturu, testove i način na koji su AI alati korišćeni i proveravani tokom razvoja.
-
-- `AGENTS.md` i `AI_USAGE.md` sadrže projektna pravila i reprezentativne zapise odluka.
-- Najmanje dve ponovljive procedure ili uloge AI agenata imaju definisane ulaze, izlaze i ograničenja.
-- Postoje najmanje tri evaluaciona scenarija, uključujući negativan slučaj.
-- Na odbrani svaki član tima objašnjava svoj deo bez oslanjanja na automatski generisan odgovor.
+- Realizovani obavezni use-case-ovi svake dodeljene celine u odobrenom obimu.
+- Pozitivni i negativni testovi, integracija, build/CI i pregledani Pull Request-ovi.
+- Ponovljivo pokretanje sa demo podacima i demonstracija zaokruženog poslovnog procesa.
+- Poštovanje vlasništva nad podacima, prava pristupa i tenant izolacije gde je primenljivo.

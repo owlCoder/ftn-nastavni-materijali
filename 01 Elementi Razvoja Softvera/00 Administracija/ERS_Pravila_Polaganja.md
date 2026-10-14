@@ -1,232 +1,244 @@
-# ЕЛЕМЕНТИ РАЗВОЈА СОФТВЕРА
+# ELEMENTI RAZVOJA SOFTVERA
 
-## Начин полагања и критеријуми бодовања
+## Način polaganja i kriterijumi bodovanja
 
-Овај документ дефинише структуру полагања предмета, бодовање пројектног рада, контролне тачке, организацију одбране, теоријска питања, поправни термин и правила формирања коначне оцене.
+Ovaj dokument definiše strukturu polaganja predmeta, bodovanje projektnog rada, kontrolne tačke, organizaciju odbrane, teorijska pitanja, popravni termin i pravila formiranja konačne ocene.
 
-## 1. Структура полагања и формирање оцене
+## 1. Struktura polaganja i formiranje ocene
 
-Провера знања на предмету заснива се на континуираном раду на рачунарским вежбама, изради и одбрани пројектног задатка и усменом делу испита, у складу са условима наведеним у наставку.
+Provera znanja na predmetu zasniva se na kontinuiranom radu na računarskim vežbama, izradi i odbrani projektnog zadatka i usmenom delu ispita, u skladu sa uslovima navedenim u nastavku.
 
-- Рачунарске вежбе и пројектни задатак: **највише 71 поен**.
-- Минимум за успешно положен пројектни део: **41 поен**.
-- Са **51 или више поена** на пројектном делу студент може да прихвати оцену формирану на основу остварених поена, **без полагања усменог дела испита**.
-- Уколико студент који има **најмање 51 поен** са пројектног дела пријави испит, а не приступи усменом делу испита, **уписује се оцена која одговара броју поена остварених на пројекту**.
-- Са **41 до 50 поена** на пројектном делу студент **приступа усменом делу испита**. За позитивну коначну оцену потребно је достићи **најмање 51 поен**.
-- Резултат усменог дела може увећати укупан број поена за **највише 30**, односно умањити га за **највише 20 поена**.
-- Коначан резултат исказује се на скали од **0 до 100 поена**. Резултат већи од 100 евидентира се као **100 поена**.
-- Поени остварени на пројектном делу важе **до краја текуће академске године** и **не преносе се у наредну академску годину**!
+- Računarske vežbe i projektni zadatak: **najviše 71 poen**.
+- Minimum za uspešno položen projektni deo: **41 poen**.
+- Sa **51 ili više poena** na projektnom delu student može da prihvati ocenu formiranu na osnovu ostvarenih poena, **bez polaganja usmenog dela ispita**.
+- Ukoliko student koji ima **najmanje 51 poen** sa projektnog dela prijavi ispit, a ne pristupi usmenom delu ispita, **upisuje se ocena koja odgovara broju poena ostvarenih na projektu**.
+- Sa **41 do 50 poena** na projektnom delu student **pristupa usmenom delu ispita**. Za pozitivnu konačnu ocenu potrebno je dostići **najmanje 51 poen**.
+- Rezultat usmenog dela može uvećati ukupan broj poena za **najviše 30**, odnosno umanjiti ga za **najviše 20 poena**.
+- Konačan rezultat iskazuje se na skali od **0 do 100 poena**. Rezultat veći od 100 evidentira se kao **100 poena**.
+- Poeni ostvareni na projektnom delu važe **do kraja tekuće akademske godine** i **ne prenose se u narednu akademsku godinu**!
 
-| Пројектни део | Минимум пројекта | Упис без усменог | Усмени део |
+| Projektni deo | Minimum projekta | Upis bez usmenog | Usmeni deo |
 | --- | ---: | ---: | ---: |
-| до 71 поен | 41 поен | од 51 поена | -20 до +30 |
+| do 71 poen | 41 poen | od 51 poena | -20 do +30 |
 
-## 2. Бодовање пројектног задатка
+## 2. Bodovanje projektnog zadatka
 
-Пројектни задатак се вреднује по тематским целинама и контролним тачкама. Контролне тачке су саставни део укупног пројектног резултата и **не додају се преко максимума од 71 поена**.
+Projektni zadatak se vrednuje po tematskim celinama i kontrolnim tačkama. Kontrolne tačke su sastavni deo ukupnog projektnog rezultata i **ne dodaju se preko maksimuma od 71 poena**.
 
-| Област | Поени |
+| Oblast | Poeni |
 | --- | ---: |
-| Tapiz Boards, Agile и Scrum - организација и праћење развојног процеса | 10 |
-| Контролна тачка 1 - проблем, backlog и развојни ток | 3 |
-| SOLID принципи и Clean Architecture | 16 |
-| Контролна тачка 2 - архитектура и функционално језгро | 3 |
-| Пословна логика и аутоматизовано тестирање | 5 |
-| Контролна тачка 3 - тестирање и стабилна верзија функционалног језгра | 6 |
-| Интероперабилност и усклађеност уговорних страна | 10 |
-| Правилна и контролисана употреба AI алата у изради пројекта | 10 |
-| Контролна тачка 4 - AI/агентски развојни ток и завршна одбрана | 8 |
-| УКУПНО | 71 |
+| Tapiz Boards, Agile i Scrum - organizacija i praćenje razvojnog procesa | 10 |
+| SOLID principi i Clean Architecture | 16 |
+| Poslovna logika i automatizovano testiranje | 5 |
+| Kontrolna tačka 1 - osnovna implementacija (termin Vežbe 4) | 10 |
+| Interoperabilnost i usklađenost ugovornih strana | 10 |
+| Pravilna i kontrolisana upotreba AI alata u izradi projekta | 10 |
+| Kontrolna tačka 2 - završna demonstracija (termin Vežbe 8) | 10 |
+| UKUPNO | 71 |
 
-### 2.1. Додатни поени
+### 2.1. Dodatni poeni
 
-За активност и ангажовање на настави могуће је остварити **до 5 додатних поена**. Додатни поени служе искључиво као допуна пројектног резултата до **максималних 71 поена** и **не могу повећати пројектни резултат преко тог прага**.
+Za aktivnost i angažovanje na nastavi moguće je ostvariti **do 5 dodatnih poena**. Dodatni poeni služe isključivo kao dopuna projektnog rezultata do **maksimalnih 71 poena** i **ne mogu povećati projektni rezultat preko tog praga**.
 
-## 3. Контролне тачке
+## 3. Kontrolne tačke
 
-Током семестра реализују се **четири контролне тачке**. Њихова сврха је провера континуитета рада, стања пројекта и разумевања решења у одговарајућој фази развоја.
+Tokom semestra realizuju se **dve kontrolne tačke**, svaka sa **najviše 10 poena**. Prva se održava **u terminu Vežbe 4**, a druga **u terminu Vežbe 8**. Ukupno se na kontrolnim tačkama može ostvariti **20 poena**, koji su već uključeni u maksimum projektnog dela od **71 poena**.
 
-| Контролна тачка | Област провере | Поени |
+| Kontrolna tačka | Termin | Oblast provere | Poeni |
+| --- | --- | --- | ---: |
+| KT1 | Termin Vežbe 4 | Osnovna implementacija | 10 |
+| KT2 | Termin Vežbe 8 | Završna demonstracija | 10 |
+
+### KT1 — OSNOVNA IMPLEMENTACIJA (4. VEŽBA)
+
+- Repozitorijum i pokretanje projekta; strukturiran Tapiz backlog i podela rada.
+- Osnovni domenski model, poslovna pravila i API/contract granice za sve dodeljene celine.
+- Najmanje jedan izvršiv funkcionalni tok i automatizovani test značajnog pravila.
+- Dogovor sa zavisnim timovima ili kontrolisani stub kada zavisna komponenta nije spremna.
+
+### KT2 — ZAVRŠNA DEMONSTRACIJA (8. VEŽBA)
+
+- Realizovani obavezni use-case-ovi svake dodeljene celine u odobrenom obimu.
+- Pozitivni i negativni testovi, integracija, build/CI i pregledani Pull Request-ovi.
+- Ponovljivo pokretanje sa demo podacima i demonstracija zaokruženog poslovnog procesa.
+- Poštovanje vlasništva nad podacima, prava pristupa i tenant izolacije gde je primenljivo.
+
+**Kontrolne tačke u terminima Vežbe 4 i Vežbe 8 i termini odbrane projekta iz odeljka 6 predstavljaju odvojene organizacione obaveze.** Tačna satnica kontrolnih tačaka prati raspored računarskih vežbi i objave predmeta.
+
+## 4. Prisustvo i obaveze na računarskim vežbama
+
+- **Prisustvo računarskim vežbama je obavezno!**
+- Student koji tokom semestra ima **više od dva neopravdana izostanka** sa računarskih vežbi **gubi pravo na polaganje projekta**.
+- Da bi izostanak bio evidentiran kao opravdan, odgovarajuću potvrdu potrebno je dostaviti u najkraćem mogućem roku na adresu danijel.jovanovic@uns.ac.rs.
+- U poruci je potrebno navesti ime i prezime, broj indeksa i datum vežbe na koju se izostanak odnosi, kako bi opravdanje moglo pravilno da se evidentira.
+
+## 5. Informacije o projektu
+
+Projektni zadatak realizuje se u okviru zajedničkog softverskog proizvoda **PYXIS** - informacionog sistema za upravljanje data centrom. Detaljni funkcionalni i tehnički zahtevi definisani su aktuelnom projektnom specifikacijom, dok su u nastavku navedena pravila organizacije rada koja su obavezujuća za sve timove.
+
+### 5.1. Tim i dodela projektne celine
+
+- Tim čini **od 6 do 10 studenata**.
+- Svakom timu predmetni asistent dodeljuje projektne celine za koje tim preuzima primarnu odgovornost u okviru zajedničkog sistema.
+- Svi timovi rade nad **istim zajedničkim GitHub repozitorijumom**. Pristup repozitorijumu administrira predmetni asistent.
+- Pristup se dodeljuje na osnovu GitHub korisničkog imena. Student je dužan da dostavi tačno korisničko ime kako bi bio dodat kao saradnik na repozitorijumu i kako bi njegov individualni doprinos bio vidljiv kroz istoriju izmena.
+
+### 5.2. Način rada u repozitorijumu
+
+- Razvojni tok obuhvata Tapiz zadatak, radnu (feature) granu, smislene commit zapise, Pull Request, CI proveru, pregled koda (code review) i završnu VERIFY/QA proveru pre označavanja zadatka kao završenog.
+- **Direktan push na main granu nije dozvoljen.** Značajne promene moraju biti povezane sa odgovarajućom korisničkom pričom i njenom čeklistom, a Pull Request mora biti pregledan pre spajanja.
+- Kada promena utiče na druge module ili funkcionalnost druge projektne celine, neophodna je koordinacija sa timom koji tu celinu održava.
+- Referentna tehnologija za izradu je **.NET/C#**. Upotreba druge tehnologije moguća je uz obezbeđenu interoperabilnost sa ostatkom sistema.
+
+### 5.3. Minimalna očekivanja od projektne celine
+
+- Projektna celina **mora biti deo zajedničkog proizvoda** i imati jasno definisanu granicu i ugovor prema drugim celinama; izolovana mini-aplikacija koja se ne može integrisati sa sistemom ne smatra se prihvatljivom realizacijom.
+- Očekuju se automatizovani testovi ključnih poslovnih pravila i slučajeva upotrebe, kao i integracioni, ugovorni (contract/cross-team) i regresioni testovi kada su relevantni za dodeljenu celinu.
+- Kada domen to omogućava, tokom semestra očekuje se **najmanje jedna značajna integracija sa drugom projektnom celinom**.
+- Dokumentacija mora obuhvatiti odgovornost celine, glavne slučajeve upotrebe, korisničke priče i čekliste, javne ugovore, značajne arhitektonske odluke (ADR), uputstvo za lokalno pokretanje i testiranje, reprezentativan demonstracioni scenario i poznata ograničenja.
+- Lokalno pokretanje, izgradnja (build) i testiranje ne smeju zavisiti od nedokumentovanih ručnih koraka poznatih samo jednom članu tima.
+- **Svaki student mora imati vidljiv individualni doprinos** i na odbrani biti sposoban da obrazloži sopstveni rad, najmanje jedan relevantan slučaj upotrebe, donetu dizajnersku odluku, pripadajuće testove i zavisnost prema drugoj celini kada ona postoji.
+
+## 6. Termini odbrane projekta
+
+Odbrana projekta organizuje se u **dva osnovna termina**. Student, odnosno tim, projekat brani u jednom od ponuđenih termina.
+
+| Termin | Period | Napomena |
 | --- | --- | ---: |
-| КТ 1 | Проблем, backlog и развојни ток | 3 |
-| КТ 2 | Архитектура и функционално језгро | 3 |
-| КТ 3 | Тестирање и стабилна верзија функционалног језгра | 6 |
-| КТ 4 | AI/агентски развојни ток и завршна одбрана | 8 |
+| Predispitni termin (predrok) | Prva polovina decembra | Raniji termin za studente čiji je projekat spreman za odbranu. |
+| Redovni termin | Poslednja nedelja zimskog semestra | Redovni termin odbrane projekta. |
 
-## 4. Присуство и обавезе на рачунарским вежбама
+**Tačan datum, satnica i organizacija odbrane biće blagovremeno objavljeni putem zvaničnih kanala komunikacije predmeta.**
 
-- **Присуство рачунарским вежбама је обавезно!**
-- Студент који током семестра има **више од два неоправдана изостанка** са рачунарских вежби **губи право на полагање пројекта**.
-- Да би изостанак био евидентиран као оправдан, одговарајућу потврду потребно је доставити у најкраћем могућем року на адресу danijel.jovanovic@uns.ac.rs.
-- У поруци је потребно навести име и презиме, број индекса и датум вежбе на коју се изостанак односи, како би оправдање могло правилно да се евидентира.
+### 6.1. Odbrana projekta
 
-## 5. Информације о пројекту
+- Na odbrani se proverava funkcionalnost projekta, ispunjenost kriterijuma bodovanja i razumevanje donetih arhitektonskih, tehničkih i organizacionih odluka.
+- Svaki član tima mora biti u stanju da obrazloži svoj doprinos i relevantne delove zajedničkog rešenja. ****Prisustvo članova tima čija se odbrana evidentira je obavezno.****
+- Korišćenje AI alata je dozvoljeno u skladu sa zahtevima predmeta, ali **student ostaje odgovoran za proveru, razumevanje i obrazlaganje svakog dela rešenja koji predstavlja na odbrani**.
 
-Пројектни задатак реализује се у оквиру заједничког софтверског производа **PYXIS** - информационог система за управљање дата центром. Детаљни функционални и технички захтеви дефинисани су актуелном пројектном спецификацијом, док су у наставку наведена правила организације рада која су обавезујућа за све тимове.
+### 6.2. Teorijska pitanja na odbrani
 
-### 5.1. Тим и додела пројектне целине
+U okviru odbrane projekta student odgovara i na teorijska pitanja koja obuhvataju teme obrađene na predmetu i njihovu primenu na realizovanom projektu. Pitanja su grupisana po tematskim oblastima u nastavku.
 
-- Тим чини **од 6 до 10 студената**.
-- Сваком тиму предметни асистент додељује пројектну целину за коју тим преузима примарну одговорност у оквиру заједничког система.
-- Сви тимови раде над **истим заједничким GitHub репозиторијумом**. Приступ репозиторијуму администрира предметни асистент.
-- Приступ се додељује на основу GitHub корисничког имена. Студент је дужан да достави тачно корисничко име како би био додат као сарадник на репозиторијуму и како би његов индивидуални допринос био видљив кроз историју измена.
+#### 6.2.1. Zahtevi, backlog, Git i timski razvoj
 
-### 5.2. Начин рада у репозиторијуму
+1. Objasnite jedan User Story iz vašeg projekta: koja je uloga, cilj i vrednost koju donosi?
+2. Kako se piše korisnička priča po šablonu „Kao [uloga], želim/hoću/mogu [radnju], kako bih [postigao cilj]“ i koja je uloga zasebne čekliste?
+3. Pokažite jednu stavku backlog-a i objasnite kroz koje je faze prošla do statusa Done.
+4. Zašto Git istorija treba da bude sledljiv zapis razvoja, a ne samo mehanizam za čuvanje koda?
+5. Šta čini kvalitetnu commit poruku i po čemu se razlikuje od poruke poput "update" ili "fix"?
+6. Objasnite jedan pull request iz vašeg repozitorijuma: šta rešava, šta menja, kako je verifikovan?
+7. Da li ste imali Git konflikt tokom razvoja? Kako ste odlučili koje ponašanje treba da bude konačno?
+8. Šta znači da je stavka backlog-a zaista završena (Definition of Done) u vašem projektu?
 
-- Развојни ток обухвата Tapiz задатак, радну (feature) грану, смислене commit записе, Pull Request, CI проверу, преглед кода (code review) и завршну VERIFY/QA проверу пре означавања задатка као завршеног.
-- **Директан push на main грану није дозвољен.** Значајне промене морају бити повезане са одговарајућим задатком и критеријумима прихватања, а Pull Request мора бити прегледан пре спајања.
-- Када промена утиче на друге модуле или функционалност друге пројектне целине, неопходна је координација са тимом који ту целину одржава.
-- Референтна технологија за израду је **.NET/C#**. Употреба друге технологије могућа је уз обезбеђену интероперабилност са остатком система.
+#### 6.2.2. OOP, Clean Code, SOLID i Clean Architecture
 
-### 5.3. Минимална очекивања од пројектне целине
+1. Pokažite primer interfejsa u vašem projektu i objasnite koji ugovor on definiše.
+2. Objasnite princip enkapsulacije na konkretnoj klasi - zašto stanje nije javno izmenljivo bez kontrole?
+3. Za jednu klasu u projektu objasnite koja je njena jedina odgovornost (Single Responsibility Principle).
+4. Dajte primer gde je Open/Closed princip primenjen - kako dodajete novo ponašanje bez izmene postojećeg koda?
+5. Objasnite Liskov Substitution Principle na primeru iz vašeg koda - da li se svaka implementacija ponaša u skladu sa ugovorom?
+6. Šta je Interface Segregation Principle i zašto širok interfejs može biti problem?
+7. Objasnite Dependency Inversion Principle - da li vaš poslovni sloj zavisi od apstrakcija ili od konkretnih tehničkih detalja?
+8. Nacrtajte/opišite slojeve Clean Architecture u vašem projektu i smer zavisnosti između njih.
+9. Šta je composition root i gde se u vašem projektu nalazi registracija konkretnih zavisnosti?
+10. Koji deo vašeg projekta bi najviše patio kada bi Domain sloj neposredno zavisio od baze podataka?
 
-- Пројектна целина **мора бити део заједничког производа** и имати јасно дефинисану границу и уговор према другим целинама; изолована мини-апликација која се не може интегрисати са системом не сматра се прихватљивом реализацијом.
-- Очекују се аутоматизовани тестови кључних пословних правила и случајева употребе, као и интеграциони, уговорни (contract/cross-team) и регресиони тестови када су релевантни за додељену целину.
-- Када домен то омогућава, током семестра очекује се **најмање једна значајна интеграција са другом пројектном целином**.
-- Документација мора обухватити одговорност целине, главне случајеве употребе и критеријуме прихватања, јавне уговоре, значајне архитектонске одлуке (ADR), упутство за локално покретање и тестирање, репрезентативан демонстрациони сценарио и позната ограничења.
-- Локално покретање, изградња (build) и тестирање не смеју зависити од недокументованих ручних корака познатих само једном члану тима.
-- **Сваки студент мора имати видљив индивидуални допринос** и на одбрани бити способан да образложи сопствени рад, најмање један релевантан случај употребе, донету дизајнерску одлуку, припадајуће тестове и зависност према другој целини када она постоји.
+#### 6.2.3. Poslovna logika i use-case sloj
 
-## 6. Термини одбране пројекта
+1. Izaberite jedan use-case i objasnite njegov ulaz, tok i mogući ishod (uspeh i neuspeh).
+2. Kako vaš entitet čuva sopstvene invarijante i sprečava nevažeće stanje?
+3. Objasnite razliku između poslovnog (očekivanog) neuspeha i tehničke greške u vašem sistemu.
+4. Pokažite primer gde ste umesto bool/null/generičkog izuzetka koristili eksplicitan rezultat operacije.
+5. Koje zavisnosti vaš use-case servis dobija kroz Dependency Injection i zašto?
+6. Objasnite na kom nivou se u vašem sistemu vrši validacija ulaza, a na kom poslovnih pravila.
+7. Koja operacija u vašem projektu mora biti tretirana kao jedna atomska poslovna transakcija?
+8. Koju arhitektonsku odluku ste promenili tokom razvoja i zašto?
 
-Одбрана пројекта организује се у **два основна термина**. Студент, односно тим, пројекат брани у једном од понуђених термина.
+#### 6.2.4. Testabilni dizajn i automatizovano testiranje
 
-| Термин | Период | Напомена |
-| --- | --- | ---: |
-| Предиспитни термин (предрок) | Прва половина децембра | Ранији термин за студенте чији је пројекат спреман за одбрану. |
-| Редовни термин | Последња недеља зимског семестра | Редовни термин одбране пројекта. |
+1. Pokažite jedan test i objasnite Arrange–Act–Assert strukturu na njemu.
+2. Objasnite razliku između pozitivnog, negativnog i graničnog test scenarija u vašem projektu.
+3. Gde i zašto ste koristili Moq (ili sličan alat) za izolaciju zavisnosti?
+4. Zašto testabilan dizajn (DI, uske granice) olakšava pisanje testova bez baze i mreže?
+5. Koji deo vašeg sistema je testiran integracionim, a ne samo jediničnim testom, i zašto?
+6. Šta pokrivenost koda (code coverage) govori, a šta ne govori o kvalitetu testova?
+7. Da li ste neki bug prvo reprodukovali testom, a zatim ispravili? Opišite taj slučaj.
+8. Šta je Git tag manual-core-baseline u vašem projektu i zašto je taj trenutak važan?
 
-**Тачан датум, сатница и организација одбране биће благовремено објављени путем званичних канала комуникације предмета.**
+#### 6.2.5. Integracija modula, ugovori i podaci
 
-### 6.1. Одбрана пројекта
+1. Koje module ima vaš projekat i koja je poslovna granica svakog od njih?
+2. Koji modul poseduje koji podatak, i kako drugi moduli tom podatku pristupaju?
+3. Objasnite ugovor između dva modula - šta klijent zna, a šta ne zna o drugoj strani?
+4. Kada u vašem sistemu koristite sinhroni poziv, a kada poslovni događaj (event)? Zašto baš tako?
+5. Dajte primer poslovnog događaja iz vašeg sistema i objasnite ko ga objavljuje, a ko reaguje na njega.
+6. Kako vaš sistem rešava konkurentan pristup istom resursu od strane dva korisnika ili procesa?
+7. Šta znači idempotentnost i gde je u vašem projektu potrebna (npr. ponovljen zahtev)?
+8. Koji integracioni ili ugovorni test štiti granicu između dva vaša modula?
 
-- На одбрани се проверава функционалност пројекта, испуњеност критеријума бодовања и разумевање донетих архитектонских, техничких и организационих одлука.
-- Сваки члан тима мора бити у стању да образложи свој допринос и релевантне делове заједничког решења. ****Присуство чланова тима чија се одбрана евидентира је обавезно.****
-- Коришћење AI алата је дозвољено у складу са захтевима предмета, али **студент остаје одговоран за проверу, разумевање и образлагање сваког дела решења који представља на одбрани**.
+#### 6.2.6. Kontrolisan razvoj uz AI podršku
 
-### 6.2. Теоријска питања на одбрани
+1. Koje projektne instrukcije (npr. AI_INSTRUCTIONS.md) ste definisali i zašto baš te?
+2. Pokažite jedan zapis iz AI_USAGE.md i objasnite koja je odluka doneta i kako je verifikovana.
+3. Koju sugestiju AI alata ste prihvatili, a koju odbacili? Obrazložite oba slučaja.
+4. Da li ste napravili sopstvenu proceduru (skill) za neki ponovljivi zadatak? Šta ona radi?
+5. Ako ste koristili više agentskih uloga, koja je odgovornost i ograničenje svake od njih?
+6. Zašto rezultat AI alata sam po sebi nije dovoljan dokaz da je promena ispravna?
+7. Kada biste u razvoju vašeg projekta izabrali jednostavan tok (jedan agent) umesto više uloga?
 
-У оквиру одбране пројекта студент одговара и на теоријска питања која обухватају теме обрађене на предмету и њихову примену на реализованом пројекту. Питања су груписана по тематским областима у наставку.
+#### 6.2.7. MCP i povezivanje sa projektom
 
-#### 6.2.1. Захтеви, backlog, Git и тимски развој
+1. Da li vaš projekat ima MCP server? Koje resurse ili alate on izlaže?
+2. Objasnite razliku između MCP resursa i MCP alata na konkretnom primeru iz vašeg projekta.
+3. Koji stvarni razvojni signal (test, diff, status) vraća neki od vaših MCP alata?
+4. Kako ste primenili princip najmanjih privilegija pri definisanju dozvoljenih operacija server-a?
+5. Šta je prompt injection i kako biste (ili jeste) zaštitili agentski tok od nepouzdanog sadržaja?
+6. Koji podatak ili tajnu vaš MCP server namerno ne izlaže i zašto?
 
-1. Објасните један User Story из вашег пројекта: која је улога, циљ и вредност коју доноси?
-2. Како изгледа добар критеријум прихватања и по чему се разликује од нејасног описа захтева?
-3. Покажите једну ставку backlog-а и објасните кроз које је фазе прошла до статуса Done.
-4. Зашто Git историја треба да буде следљив запис развоја, а не само механизам за чување кода?
-5. Шта чини квалитетну commit поруку и по чему се разликује од поруке попут "update" или "fix"?
-6. Објасните један pull request из вашег репозиторијума: шта решава, шта мења, како је верификован?
-7. Да ли сте имали Git конфликт током развоја? Како сте одлучили које понашање треба да буде коначно?
-8. Шта значи да је ставка backlog-а заиста завршена (Definition of Done) у вашем пројекту?
+#### 6.2.8. Hooks, guardrails, evaluacije i završna provera kvaliteta
 
-#### 6.2.2. OOP, Clean Code, SOLID и Clean Architecture
+1. Koju determinističku proveru (hook) ima vaš projekat i na koji događaj se ona okida?
+2. Objasnite razliku između instrukcije (preporuke modelu) i hook-a (izvršivog mehanizma).
+3. Koji guardrail sprečava rizičnu operaciju u vašem projektu, i šta bi se desilo bez njega?
+4. Pokažite jedan evaluacioni scenario (uključujući negativni) koji proverava agentsko ponašanje.
+5. Ko je uradio peer QA pregled vašeg projekta i koji je konkretan nalaz ili potvrda zabeležena?
+6. Koji deo vašeg razvojnog toka mora biti garantovan kodom, a ne samo napisan kao instrukcija?
+7. Koji je najveći preostali rizik ili ograničenje vašeg projekta i zašto ste ga prihvatili takvog?
 
-1. Покажите пример интерфејса у вашем пројекту и објасните који уговор он дефинише.
-2. Објасните принцип енкапсулације на конкретној класи - зашто стање није јавно изменљиво без контроле?
-3. За једну класу у пројекту објасните која је њена једина одговорност (Single Responsibility Principle).
-4. Дајте пример где је Open/Closed принцип примењен - како додајете ново понашање без измене постојећег кода?
-5. Објасните Liskov Substitution Principle на примеру из вашег кода - да ли се свака имплементација понаша у складу са уговором?
-6. Шта је Interface Segregation Principle и зашто широк интерфејс може бити проблем?
-7. Објасните Dependency Inversion Principle - да ли ваш пословни слој зависи од апстракција или од конкретних техничких детаља?
-8. Нацртајте/опишите слојеве Clean Architecture у вашем пројекту и смер зависности између њих.
-9. Шта је composition root и где се у вашем пројекту налази регистрација конкретних зависности?
-10. Који део вашег пројекта би највише патио када би Domain слој непосредно зависио од базе података?
+#### 6.2.9. Opšta i integrativna pitanja
 
-#### 6.2.3. Пословна логика и use-case слој
+1. Provedite nas kroz ceo put jedne funkcionalnosti: od zahteva, preko koda i testa, do AI podrške ako je korišćena.
+2. Koja odluka u projektu je bila najteža i zašto ste je doneli baš tako?
+3. Šta biste uradili drugačije da sada ponovo krećete sa projektom?
+4. Koji deo sistema ne razumete u potpunosti i zašto (iskreno, ne kao trik pitanje)?
+5. Objasnite jednu analogiju između klasičnog principa softverskog inženjerstva i njegove primene u razvoju uz AI (npr. interfejs ↔ ugovor alata, SRP ↔ agentska uloga).
 
-1. Изаберите један use-case и објасните његов улаз, ток и могући исход (успех и неуспех).
-2. Како ваш ентитет чува сопствене инваријанте и спречава неважеће стање?
-3. Објасните разлику између пословног (очекиваног) неуспеха и техничке грешке у вашем систему.
-4. Покажите пример где сте уместо bool/null/генеричког изузетка користили експлицитан резултат операције.
-5. Које зависности ваш use-case сервис добија кроз Dependency Injection и зашто?
-6. Објасните на ком нивоу се у вашем систему врши валидација улаза, а на ком пословних правила.
-7. Која операција у вашем пројекту мора бити третирана као једна атомска пословна трансакција?
-8. Коју архитектонску одлуку сте променили током развоја и зашто?
+## 7. Popravni termin
 
-#### 6.2.4. Тестабилни дизајн и аутоматизовано тестирање
+U popravnom terminu student izrađuje **novi projekat samostalno**. ****Projektni poeni iz prethodne realizacije ne prenose se na novi projekat.****
 
-1. Покажите један тест и објасните Arrange–Act–Assert структуру на њему.
-2. Објасните разлику између позитивног, негативног и граничног тест сценарија у вашем пројекту.
-3. Где и зашто сте користили Moq (или сличан алат) за изолацију зависности?
-4. Зашто тестабилан дизајн (DI, уске границе) олакшава писање тестова без базе и мреже?
-5. Који део вашег система је тестиран интеграционим, а не само јединичним тестом, и зашто?
-6. Шта покривеност кода (code coverage) говори, а шта не говори о квалитету тестова?
-7. Да ли сте неки bug прво репродуковали тестом, а затим исправили? Опишите тај случај.
-8. Шта је Git tag manual-core-baseline у вашем пројекту и зашто је тај тренутак важан?
+Broj poena ostvaren na novom projektu množi se **koeficijentom 0,8**. Na taj način maksimalan broj poena koji je moguće ostvariti na projektnom delu u popravnom terminu iznosi **56,8 poena**. Na tako dobijen rezultat primenjuju se opšta pravila o minimumu projektnog dela, upisu ocene i usmenom delu ispita.
 
-#### 6.2.5. Интеграција модула, уговори и подаци
+## 8. Usmeni deo ispita i konačna ocena
 
-1. Које модуле има ваш пројекат и која је пословна граница сваког од њих?
-2. Који модул поседује који податак, и како други модули том податку приступају?
-3. Објасните уговор између два модула - шта клијент зна, а шта не зна о другој страни?
-4. Када у вашем систему користите синхрони позив, а када пословни догађај (event)? Зашто баш тако?
-5. Дајте пример пословног догађаја из вашег система и објасните ко га објављује, а ко реагује на њега.
-6. Како ваш систем решава конкурентан приступ истом ресурсу од стране два корисника или процеса?
-7. Шта значи идемпотентност и где је у вашем пројекту потребна (нпр. поновљен захтев)?
-8. Који интеграциони или уговорни тест штити границу између два ваша модула?
+Usmeni deo ispita obuhvata proveru razumevanja principa obrađenih na nastavi, arhitekture i implementacije projekta, testiranja, integracionih odluka i načina upotrebe AI alata.
 
-#### 6.2.6. Контролисан развој уз AI подршку
+- Rezultat usmenog dela može uvećati ukupan broj poena za **najviše 30**, odnosno umanjiti ga za **najviše 20 poena**.
+- Za studenta koji sa **51 ili više projektnih poena** pristupi usmenom delu, rezultat usmenog dela **ulazi u konačan obračun poena**.
+- Predmet je položen kada konačan broj poena iznosi **najmanje 51**.
 
-1. Које пројектне инструкције (нпр. AI_INSTRUCTIONS.md) сте дефинисали и зашто баш те?
-2. Покажите један запис из AI_USAGE.md и објасните која је одлука донета и како је верификована.
-3. Коју сугестију AI алата сте прихватили, а коју одбацили? Образложите оба случаја.
-4. Да ли сте направили сопствену процедуру (skill) за неки поновљиви задатак? Шта она ради?
-5. Ако сте користили више агентских улога, која је одговорност и ограничење сваке од њих?
-6. Зашто резултат AI алата сам по себи није довољан доказ да је промена исправна?
-7. Када бисте у развоју вашег пројекта изабрали једноставан ток (један agent) уместо више улога?
-
-#### 6.2.7. MCP и повезивање са пројектом
-
-1. Да ли ваш пројекат има MCP server? Које ресурсе или алате он излаже?
-2. Објасните разлику између MCP ресурса и MCP алата на конкретном примеру из вашег пројекта.
-3. Који стварни развојни сигнал (test, diff, status) враћа неки од ваших MCP алата?
-4. Како сте применили принцип најмањих привилегија при дефинисању дозвољених операција server-а?
-5. Шта је prompt injection и како бисте (или јесте) заштитили агентски ток од непоузданог садржаја?
-6. Који податак или тајну ваш MCP server намерно не излаже и зашто?
-
-#### 6.2.8. Hooks, guardrails, евалуације и завршна провера квалитета
-
-1. Коју детерминистичку проверу (hook) има ваш пројекат и на који догађај се она окида?
-2. Објасните разлику између инструкције (препоруке моделу) и hook-а (извршивог механизма).
-3. Који guardrail спречава ризичну операцију у вашем пројекту, и шта би се десило без њега?
-4. Покажите један евалуациони сценарио (укључујући негативни) који проверава агентско понашање.
-5. Ко је урадио peer QA преглед вашег пројекта и који је конкретан налаз или потврда забележена?
-6. Који део вашег развојног тока мора бити гарантован кодом, а не само написан као инструкција?
-7. Који је највећи преостали ризик или ограничење вашег пројекта и зашто сте га прихватили таквог?
-
-#### 6.2.9. Општа и интегративна питања
-
-1. Проведите нас кроз цео пут једне функционалности: од захтева, преко кода и теста, до AI подршке ако је коришћена.
-2. Која одлука у пројекту је била најтежа и зашто сте је донели баш тако?
-3. Шта бисте урадили другачије да сада поново крећете са пројектом?
-4. Који део система не разумете у потпуности и зашто (искрено, не као трик питање)?
-5. Објасните једну аналогију између класичног принципа софтверског инжењерства и његове примене у развоју уз AI (нпр. интерфејс ↔ уговор алата, SRP ↔ агентска улога).
-
-## 7. Поправни термин
-
-У поправном термину студент израђује **нови пројекат самостално**. ****Пројектни поени из претходне реализације не преносе се на нови пројекат.****
-
-Број поена остварен на новом пројекту множи се **коефицијентом 0,8**. На тај начин максималан број поена који је могуће остварити на пројектном делу у поправном термину износи **56,8 поена**. На тако добијен резултат примењују се општа правила о минимуму пројектног дела, упису оцене и усменом делу испита.
-
-## 8. Усмени део испита и коначна оцена
-
-Усмени део испита обухвата проверу разумевања принципа обрађених на настави, архитектуре и имплементације пројекта, тестирања, интеграционих одлука и начина употребе AI алата.
-
-- Резултат усменог дела може увећати укупан број поена за **највише 30**, односно умањити га за **највише 20 поена**.
-- За студента који са **51 или више пројектних поена** приступи усменом делу, резултат усменог дела **улази у коначан обрачун поена**.
-- Предмет је положен када коначан број поена износи **најмање 51**.
-
-| Оцена | 6 | 7 | 8 | 9 | 10 |
+| Ocena | 6 | 7 | 8 | 9 | 10 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Бодови | 51-60 | 61-70 | 71-80 | 81-90 | 91-100 |
+| Bodovi | 51-60 | 61-70 | 71-80 | 81-90 | 91-100 |
 
-## 9. Одговорност за рад
+## 9. Odgovornost za rad
 
-Од студената се очекује јасно разграничење сопственог рада, рада осталих чланова тима и садржаја добијеног употребом спољних алата. У случају неовлашћеног преузимања туђег решења, плагијата или лажног представљања доприноса, за пројектни задатак евидентира се **0 поена**.
+Od studenata se očekuje jasno razgraničenje sopstvenog rada, rada ostalih članova tima i sadržaja dobijenog upotrebom spoljnih alata. U slučaju neovlašćenog preuzimanja tuđeg rešenja, plagijata ili lažnog predstavljanja doprinosa, za projektni zadatak evidentira se **0 poena**.
 
-****Употреба AI алата не умањује обавезу студента да разуме и самостално образложи решење.**** На одбрани се као релевантан доказ рада могу користити репозиторијум, историја измена, тестови, документација и евиденција употребе AI алата.
+****Upotreba AI alata ne umanjuje obavezu studenta da razume i samostalno obrazloži rešenje.**** Na odbrani se kao relevantan dokaz rada mogu koristiti repozitorijum, istorija izmena, testovi, dokumentacija i evidencija upotrebe AI alata.
 
-## 10. Комуникација и организационе информације
+## 10. Komunikacija i organizacione informacije
 
-- **Организационе информације, тачни термини контролних тачака и одбрана, као и евентуалне измене распореда, објављују се путем званичних канала комуникације предмета.**
-- За достављање потврде о оправданом изостанку користи се адреса **danijel.jovanovic@uns.ac.rs**.
+- **Organizacione informacije, tačni termini kontrolnih tačaka i odbrana, kao i eventualne izmene rasporeda, objavljuju se putem zvaničnih kanala komunikacije predmeta.**
+- Za dostavljanje potvrde o opravdanom izostanku koristi se adresa **danijel.jovanovic@uns.ac.rs**.

@@ -29,12 +29,10 @@ Praktikum je organizovan u osam povezanih vežbi. Prva obrađuje zahteve, backlo
 
 Tok praktikuma: zahtevi i razvojni proces → arhitektura → poslovna logika → testiranje → integracija modula → razvoj uz AI podršku → MCP → završna provera kvaliteta.
 
-Napredak projekta proverava se na kontrolnim tačkama. Svaka je u praktikumu navedena jednom, posle poslednje vežbe na koju se oslanja, sa istim zahtevima koje prikazuje kartica „Kontrolne tačke“.
+Napredak projekta proverava se na dve kontrolne tačke: KT1 — Osnovna implementacija u terminu Vežbe 4 i KT2 — Završna demonstracija u terminu Vežbe 8. Svaka donosi najviše 10 poena, ukupno 20 poena u okviru maksimalnih 71 poena za projektni deo. Detaljni zahtevi navedeni su posle Vežbe 4 i Vežbe 8 i na kartici „Kontrolne tačke“.
 
-- P1 (Vežba 1–2, 19.10.) — Problem, backlog i razvojni tok.
-- P2 (Vežba 3–4, 02.11.) — Arhitektura i funkcionalno jezgro.
-- P3 (Vežba 5–6, 23.11.) — Testiranje i manual-core-baseline.
-- P4 (Vežba 7–8, 14.12.) — Razvoj uz podršku AI alata i završna odbrana.
+- KT1 (Vežba 1–4, Vežba 4) — Osnovna implementacija.
+- KT2 (Vežba 5–8, Vežba 8) — Završna demonstracija.
 
 ## Vežba 1 — Zahtevi, backlog, Git i timski razvoj
 
@@ -510,19 +508,6 @@ app.Run();
 >
 > Dodati alternativnu implementaciju jedne spoljne zavisnosti, na primer InMemory umesto JSON repozitorijuma. Prvi bod se dobija ako use-case kod ostane neizmenjen; drugi bod za jasno obrazloženje kako DIP/OCP omogućavaju zamenu.
 
-### Kontrolna tačka P1 — Problem, backlog i razvojni tok
-
-U ovoj fazi ne zahteva se završena arhitektura niti veliki obim implementacije. Tim obrazlaže problem, razlaže rad na proverljive stavke i dokumentuje početni tok zajedničkog razvoja u repozitorijumu.
-
-- Zajednički repozitorijum sa README dokumentom i pristupom svih članova tima.
-- Tapiz Boards sadrži backlog sa prioritetima; opis svake priče je jedna rečenica po šablonu „Kao [uloga], želim/hoću/mogu [radnju], kako bih [postigao cilj]“, a koraci realizacije su u zasebnoj čeklisti.
-- Najmanje jedan zahtev za spajanje (pull request) sadrži pregled izmena i obrazložene komentare učesnika.
-- Tim koristi dogovoreni tok Backlog → Ready → In Progress → Code Review → QA/Verify → Done.
-
-> **Termin i obuhvat**
->
-> Vežba 1–2 · nedelja od 19.10. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
-
 ## Vežba 3 — Poslovna logika i aplikacioni sloj
 
 Nakon uspostavljanja arhitektonskih granica potrebno je rasporediti odgovornosti između modela, validatora i servisa slučaja upotrebe. Model predstavlja stanje, validator proverava ispravnost ulaznih vrednosti, a aplikacioni servis koordinira poslovna pravila i zavisnosti. Nijedan od ovih elemenata ne treba da zavisi od konkretnog korisničkog interfejsa, baze podataka ili transportnog protokola.
@@ -830,18 +815,18 @@ Izveštaj o pokrivenosti treba tumačiti prema linijama i granama koje nose posl
 >
 > AI alatu dati opis use-case-a i postojeće testove, ali tražiti isključivo predlog nedostajućih scenarija. Prvi bod se dobija za novi smisleni granični test; drugi za obrazloženje zbog čega je predlog prihvaćen ili odbačen.
 
-### Kontrolna tačka P2 — Arhitektura i funkcionalno jezgro
+### Kontrolna tačka KT1 — Osnovna implementacija
 
-Tim prikazuje arhitektonske granice i najmanje jedan zaokružen slučaj upotrebe, od ulaznog zahteva do poslovnog rezultata, uz razdvojene odgovornosti poslovnog i infrastrukturnog koda.
+Prva kontrolna tačka održava se u terminu 4. vežbe i proverava osnovnu implementaciju svih dodeljenih celina.
 
-- Dokumentovana odgovornost svakog sloja i dozvoljeni smer zavisnosti.
-- Implementiran je najmanje jedan vertikalni prolaz kroz sistem, od zahteva do rezultata.
-- Za očekivane neuspehe definisani stabilni kodovi ili tipovi rezultata, bez generičkih izuzetaka.
-- Domenski i aplikacioni sloj mogu se testirati bez pokretanja stvarne baze podataka ili korisničkog interfejsa.
+- Repozitorijum i pokretanje projekta; strukturiran Tapiz backlog i podela rada.
+- Osnovni domenski model, poslovna pravila i API/contract granice za sve dodeljene celine.
+- Najmanje jedan izvršiv funkcionalni tok i automatizovani test značajnog pravila.
+- Dogovor sa zavisnim timovima ili kontrolisani stub kada zavisna komponenta nije spremna.
 
 > **Termin i obuhvat**
 >
-> Vežba 3–4 · nedelja od 02.11. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
+> Vežba 1–4 · Vežba 4 · 10 poena. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
 
 ## Vežba 5 — Integracija modula, ugovori i podaci
 
@@ -1315,19 +1300,6 @@ git diff -- .
 > **Ishod vežbe**
 >
 > Student ume da koristi AI alat uz očuvanje SOLID principa, arhitektonskih granica i sopstvene odgovornosti za konačan rezultat.
-
-### Kontrolna tačka P3 — Testiranje i manual-core-baseline
-
-Do ove kontrolne tačke tim samostalno projektuje jezgro sistema i osnovni skup testova. U narednoj fazi AI alati mogu imati veću ulogu, ali se svaki njihov predlog proverava postojećim testovima i pregledom izmena.
-
-- Ključni slučajevi upotrebe imaju testove za uspešne i negativne scenarije.
-- Izveštaj o pokrivenosti je pregledan i najmanje jedna rizična grana je obrazložena ili dodatno pokrivena.
-- Najmanje jedan bug je najpre reprodukovan testom, a zatim ispravljen.
-- Stabilna verzija jezgra je označena Git tag-om `manual-core-baseline`.
-
-> **Termin i obuhvat**
->
-> Vežba 5–6 · nedelja od 23.11. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
 
 ## Vežba 7 — Model Context Protocol (MCP)
 
@@ -1904,18 +1876,18 @@ Isti trag dokaza očekuje se i u projektnom repozitorijumu. Tabela pokazuje gde 
 >
 > Student demonstrira razvojni postupak zasnovan na definisanim granicama, preciznim ugovorima, testovima, ograničenim dozvolama i dokumentovanim odlukama.
 
-### Kontrolna tačka P4 — Razvoj uz podršku AI alata i završna odbrana
+### Kontrolna tačka KT2 — Završna demonstracija
 
-Na završnoj odbrani svaki član tima obrazlaže zahteve, arhitekturu, testove i način na koji su AI alati korišćeni i proveravani tokom razvoja.
+Druga kontrolna tačka održava se u terminu 8. vežbe i obuhvata završnu demonstraciju svake dodeljene celine u odobrenom obimu.
 
-- `AGENTS.md` i `AI_USAGE.md` sadrže projektna pravila i reprezentativne zapise odluka.
-- Najmanje dve ponovljive procedure ili uloge AI agenata imaju definisane ulaze, izlaze i ograničenja.
-- Postoje najmanje tri evaluaciona scenarija, uključujući negativan slučaj.
-- Na odbrani svaki član tima objašnjava svoj deo bez oslanjanja na automatski generisan odgovor.
+- Realizovani obavezni use-case-ovi svake dodeljene celine u odobrenom obimu.
+- Pozitivni i negativni testovi, integracija, build/CI i pregledani Pull Request-ovi.
+- Ponovljivo pokretanje sa demo podacima i demonstracija zaokruženog poslovnog procesa.
+- Poštovanje vlasništva nad podacima, prava pristupa i tenant izolacije gde je primenljivo.
 
 > **Termin i obuhvat**
 >
-> Vežba 7–8 · nedelja od 14.12. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
+> Vežba 5–8 · Vežba 8 · 10 poena. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
 
 ## Sažetak: isti principi u novom razvojnom okruženju
 

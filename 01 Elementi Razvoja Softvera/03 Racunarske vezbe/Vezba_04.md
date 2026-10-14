@@ -146,15 +146,15 @@ Izveštaj o pokrivenosti treba tumačiti prema linijama i granama koje nose posl
 >
 > AI alatu dati opis use-case-a i postojeće testove, ali tražiti isključivo predlog nedostajućih scenarija. Prvi bod se dobija za novi smisleni granični test; drugi za obrazloženje zbog čega je predlog prihvaćen ili odbačen.
 
-### Kontrolna tačka P2 — Arhitektura i funkcionalno jezgro
+### Kontrolna tačka KT1 — Osnovna implementacija
 
-Tim prikazuje arhitektonske granice i najmanje jedan zaokružen slučaj upotrebe, od ulaznog zahteva do poslovnog rezultata, uz razdvojene odgovornosti poslovnog i infrastrukturnog koda.
+Prva kontrolna tačka održava se u terminu 4. vežbe i proverava osnovnu implementaciju svih dodeljenih celina.
 
-- Dokumentovana odgovornost svakog sloja i dozvoljeni smer zavisnosti.
-- Implementiran je najmanje jedan vertikalni prolaz kroz sistem, od zahteva do rezultata.
-- Za očekivane neuspehe definisani stabilni kodovi ili tipovi rezultata, bez generičkih izuzetaka.
-- Domenski i aplikacioni sloj mogu se testirati bez pokretanja stvarne baze podataka ili korisničkog interfejsa.
+- Repozitorijum i pokretanje projekta; strukturiran Tapiz backlog i podela rada.
+- Osnovni domenski model, poslovna pravila i API/contract granice za sve dodeljene celine.
+- Najmanje jedan izvršiv funkcionalni tok i automatizovani test značajnog pravila.
+- Dogovor sa zavisnim timovima ili kontrolisani stub kada zavisna komponenta nije spremna.
 
 > **Termin i obuhvat**
 >
-> Vežba 3–4 · nedelja od 02.11. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
+> Vežba 1–4 · Vežba 4 · 10 poena. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

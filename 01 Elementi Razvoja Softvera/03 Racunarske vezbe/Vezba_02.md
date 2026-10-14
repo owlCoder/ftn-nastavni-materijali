@@ -262,16 +262,3 @@ app.Run();
 > **Mini domaći — bonus 2 boda**
 >
 > Dodati alternativnu implementaciju jedne spoljne zavisnosti, na primer InMemory umesto JSON repozitorijuma. Prvi bod se dobija ako use-case kod ostane neizmenjen; drugi bod za jasno obrazloženje kako DIP/OCP omogućavaju zamenu.
-
-### Kontrolna tačka P1 — Problem, backlog i razvojni tok
-
-U ovoj fazi ne zahteva se završena arhitektura niti veliki obim implementacije. Tim obrazlaže problem, razlaže rad na proverljive stavke i dokumentuje početni tok zajedničkog razvoja u repozitorijumu.
-
-- Zajednički repozitorijum sa README dokumentom i pristupom svih članova tima.
-- Tapiz Boards sadrži backlog sa prioritetima; opis svake priče je jedna rečenica po šablonu „Kao [uloga], želim/hoću/mogu [radnju], kako bih [postigao cilj]“, a koraci realizacije su u zasebnoj čeklisti.
-- Najmanje jedan zahtev za spajanje (pull request) sadrži pregled izmena i obrazložene komentare učesnika.
-- Tim koristi dogovoreni tok Backlog → Ready → In Progress → Code Review → QA/Verify → Done.
-
-> **Termin i obuhvat**
->
-> Vežba 1–2 · nedelja od 19.10. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

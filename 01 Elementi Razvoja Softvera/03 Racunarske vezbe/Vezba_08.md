@@ -332,15 +332,15 @@ Isti trag dokaza očekuje se i u projektnom repozitorijumu. Tabela pokazuje gde 
 >
 > Student demonstrira razvojni postupak zasnovan na definisanim granicama, preciznim ugovorima, testovima, ograničenim dozvolama i dokumentovanim odlukama.
 
-### Kontrolna tačka P4 — Razvoj uz podršku AI alata i završna odbrana
+### Kontrolna tačka KT2 — Završna demonstracija
 
-Na završnoj odbrani svaki član tima obrazlaže zahteve, arhitekturu, testove i način na koji su AI alati korišćeni i proveravani tokom razvoja.
+Druga kontrolna tačka održava se u terminu 8. vežbe i obuhvata završnu demonstraciju svake dodeljene celine u odobrenom obimu.
 
-- `AGENTS.md` i `AI_USAGE.md` sadrže projektna pravila i reprezentativne zapise odluka.
-- Najmanje dve ponovljive procedure ili uloge AI agenata imaju definisane ulaze, izlaze i ograničenja.
-- Postoje najmanje tri evaluaciona scenarija, uključujući negativan slučaj.
-- Na odbrani svaki član tima objašnjava svoj deo bez oslanjanja na automatski generisan odgovor.
+- Realizovani obavezni use-case-ovi svake dodeljene celine u odobrenom obimu.
+- Pozitivni i negativni testovi, integracija, build/CI i pregledani Pull Request-ovi.
+- Ponovljivo pokretanje sa demo podacima i demonstracija zaokruženog poslovnog procesa.
+- Poštovanje vlasništva nad podacima, prava pristupa i tenant izolacije gde je primenljivo.
 
 > **Termin i obuhvat**
 >
-> Vežba 7–8 · nedelja od 14.12. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
+> Vežba 5–8 · Vežba 8 · 10 poena. Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

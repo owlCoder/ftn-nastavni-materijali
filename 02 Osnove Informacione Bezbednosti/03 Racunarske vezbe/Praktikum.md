@@ -8,7 +8,7 @@ Praktikum prati sadržaj vežbi iz informacione bezbednosti. Svaka tema obuhvata
 
 > **Primena na projektu**
 >
-> Svaki tim radi na svim dodeljenim projektnim celinama iz SCUTUM specifikacije i obrađene principe primenjuje na sopstveni domen. Kontrolne tačke KT1–KT4 prate napredak celog dodeljenog obuhvata; dodatni zahtevi za timove sa tri celine navedeni su posebno.
+> Svaki tim radi na svim dodeljenim projektnim celinama iz SCUTUM specifikacije i obrađene principe primenjuje na sopstveni domen. Dve kontrolne tačke, KT1 u terminu 4. vežbe i KT2 u terminu 8. vežbe, prate napredak celog dodeljenog obuhvata; dodatni zahtevi za timove sa tri celine navedeni su posebno.
 
 | Faza | Preporučeni način rada |
 | --- | --- |
@@ -35,12 +35,10 @@ Osam vežbi obrađuje identitet i pristup, zaštitu podataka, bezbednosne politi
 - Operativna bezbednost: sesije, MFA, tajne, detekcija i incident.
 - Napredne odluke: kontekstualna pravila, rizik, korelacija i dokaz efektivnosti.
 
-Kontrolne tačke se održavaju na kraju 2, 4, 6. i 8. nedelje. Teme vežbi daju podršku radu, dok redosled implementacije svih dodeljenih celina tim određuje prema specifikaciji i njihovim preduslovima.
+Kontrolne tačke se održavaju u terminima 4. i 8. vežbe: KT1 proverava osnovnu implementaciju i bezbednosni model, a KT2 završnu demonstraciju i security QA. Kontrolne tačke i termini odbrane projekta su odvojene obaveze. Teme vežbi daju podršku radu, dok redosled implementacije svih dodeljenih celina tim određuje prema specifikaciji i njihovim preduslovima.
 
-- KT1 (Vežba 1–2, Kraj 2. nedelje) — Scope, model i pokrenut projekat.
-- KT2 (Vežba 3–4, Kraj 4. nedelje) — Prvi vertikalni scenario.
-- KT3 (Vežba 5–6, Kraj 6. nedelje) — Druga celina i povezivanje.
-- KT4 (Vežba 7–8, Kraj 8. nedelje) — Finalna demonstracija i security QA.
+- KT1 (Vežba 1–4, Vežba 4) — Osnovna implementacija i bezbednosni model.
+- KT2 (Vežba 5–8, Vežba 8) — Završna demonstracija i security QA.
 
 ## Vežba 1 — Identitet, autentikacija i RBAC
 
@@ -326,30 +324,6 @@ dotnet test Oib.Vezba02.sln
 >
 > Uvesti radnju izmene zapisa: menja ga samo vlasnik, bez obzira na `records:read:any`. Dodati novu politiku i use-case pored postojećih, bez menjanja `ResourceReadPolicy`.
 
-### Kontrolna tačka KT1 — Scope, model i pokrenut projekat
-
-Tim utvrđuje obuhvat svih dodeljenih celina, zajednički model i početne ugovore, pokreće projekat i pokazuje prvo izvršivo pravilo.
-
-#### Obavezno za sve timove
-
-1. Za SVAKU dodeljenu celinu: lista use-case-ova iz specifikacije, redosled implementacije i označeni preduslovi (TAPIZ backlog).
-2. Jedan objedinjeni domen model / skica toka, ključni entiteti, statusi i vlasništvo podataka; minimalna security matrica Subject–Action–Resource–Allow/Deny za relevantne operacije.
-3. Prva mapa međutimskih zavisnosti: owner, consumer, minimalni API/event/policy ugovor u DRAFT stanju (ako postoji granica).
-4. Repozitorijum: osnovna struktura aplikacije, README sa startovanjem, build koji prolazi, početni CI i Tapiz task → branch → PR praksa.
-5. Jedno izvršivo pravilo ili minimalni test domenske invarijante.
-
-> **Prikaz**
->
-> 5–7 minuta; model, backlog, dokaz da se projekat build-uje, jedan test i konkretan plan KT2.
-
-> **Ne tražiti u ovoj fazi**
->
-> Završen MFA. Detections engine. Full frontend. Finalne integracije.
-
-> **Termin i obuhvat**
->
-> Vežba 1–2 · Kraj 2. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
-
 ## Vežba 3 — Politike, konfiguracija i bezbednosna vidljivost
 
 Bezbednosna pravila postaju pouzdana tek kada su vidljiva, verzionisana i proverljiva. Pravilo rasuto kroz nekoliko metoda nije lako objasniti, pregledati niti promeniti bez neželjenih posledica. Politika zato predstavlja dogovoreno pravilo, a konfiguracija njegovu primenu u konkretnom okruženju.
@@ -634,21 +608,24 @@ dotnet test Oib.Vezba04.sln
 >
 > Dodati rezidualni rizik: `ThreatScenario` dobija procenu efikasnosti kontrole, a izveštaj prikazuje rizik pre i posle kontrole. Pravilo smestiti u domenski servis i pokriti graničnim testovima.
 
-### Kontrolna tačka KT2 — Prvi vertikalni scenario
+### Kontrolna tačka KT1 — Osnovna implementacija i bezbednosni model
 
-Primarna celina ima prvi zaokružen funkcionalan tok, serversku zaštitu i negativan automatski test. Model pretnji obuhvata sve dodeljene celine.
+Prva kontrolna tačka održava se u terminu 4. vežbe. Tim prikazuje obuhvat svih dodeljenih celina, bezbednosni model i prvi zaokružen funkcionalni tok sa serverskom zaštitom i negativnim testom.
 
 #### Obavezno za sve timove
 
-1. Primarna celina: najmanje jedan zaokružen funkcionalan tok koji prolazi kroz aplikacionu logiku i persistence/simulator, sa demonstracijom normalnog ishoda; za jednostavnije celine očekuju se bar dve ključne operacije (npr. unos + promena statusa).
-2. Serverska zaštita konkretne operacije (scope/ownership/role prema domenu), validacija ulaza i jedan AUTOMATIZOVAN negativni test; ne smatra se dovoljnom zaštita samo kroz UI.
-3. Threat model svih dodeljenih celina: asset → misuse/pretnja → kontrola → test → evidence, uz prikaz bar jedne trust granice.
-4. Migracije/seed ili ekvivalentno ponovljivo testno stanje; strukturisani događaj/audit za relevantnu promenu bez tajni.
-5. Minimalni cross-team ugovor pregledan sa susednim timom; ako implementacija nije spremna, stub + pozitivni i negativni odgovor.
+1. Za SVAKU dodeljenu celinu: lista use-case-ova iz specifikacije, redosled implementacije i označeni preduslovi (TAPIZ backlog).
+2. Jedan objedinjeni domen model / skica toka, ključni entiteti, statusi i vlasništvo podataka; minimalna security matrica Subject–Action–Resource–Allow/Deny za relevantne operacije.
+3. Repozitorijum: osnovna struktura aplikacije, README sa startovanjem, build koji prolazi, početni CI i Tapiz task → branch → PR praksa.
+4. Primarna celina: najmanje jedan zaokružen funkcionalan tok koji prolazi kroz aplikacionu logiku i persistence/simulator, sa demonstracijom normalnog ishoda; za jednostavnije celine očekuju se bar dve ključne operacije (npr. unos + promena statusa).
+5. Serverska zaštita konkretne operacije (scope/ownership/role prema domenu), validacija ulaza i jedan AUTOMATIZOVAN negativni test; ne smatra se dovoljnom zaštita samo kroz UI.
+6. Threat model svih dodeljenih celina: asset → misuse/pretnja → kontrola → test → evidence, uz prikaz bar jedne trust granice.
+7. Migracije/seed ili ekvivalentno ponovljivo testno stanje; strukturisani događaj/audit za relevantnu promenu bez tajni.
+8. Minimalni cross-team ugovor pregledan sa susednim timom; ako implementacija nije spremna, stub + pozitivni i negativni odgovor.
 
 > **Prikaz**
 >
-> Pokrenut normalan scenario i negativan automatski test.
+> Model i backlog, pokrenut normalan scenario, negativan automatski test i konkretan plan završetka do KT2 u terminu 8. vežbe.
 
 > **Ne tražiti u ovoj fazi**
 >
@@ -656,7 +633,7 @@ Primarna celina ima prvi zaokružen funkcionalan tok, serversku zaštitu i negat
 
 > **Termin i obuhvat**
 >
-> Vežba 3–4 · Kraj 4. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
+> Vežba 1–4 · Vežba 4 Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
 
 ## Vežba 5 — MFA, sesije, servisi i tajne
 
@@ -942,29 +919,6 @@ dotnet test Oib.Vezba06.sln
 >
 > Dodati pravilo koje prepoznaje password spraying: ista adresa neuspešno pokušava prijavu na više različitih naloga. Napisati novu `IDetectionRule` klasu i registrovati je u composition root-u.
 
-### Kontrolna tačka KT3 — Druga celina i povezivanje
-
-Prva i druga dodeljena celina imaju izvršive tokove, provereno povezivanje i ugovor gde postoji međutimska zavisnost. Timovi sa tri celine prikazuju minimalni izvršiv prototip treće celine.
-
-#### Obavezno za sve timove
-
-1. Izvršiv ključni funkcionalni tok iz PRVE i DRUGE dodeljene celine i način na koji su povezane (ili legitimno nezavisne, ali sa jasnim zajedničkim bezbednosnim scenarijem).
-2. Pozitivan + negativan automatski test toka; odgovarajući audit event, kontrolisana greška i prolazak kroz CI.
-3. Bar jedan dogovoreni među-timski contract/security test gde zavisnost postoji; stubbing privremeno dozvoljen uz dokaz ugovora.
-4. Dokumentovana ograničenja i plan prelaska sa stub-a na adapter.
-
-#### Dodatno za timove sa 3 celine
-
-- Treća celina ima izvršiv prototip JEDNOG ključnog use-case-a/pravila/odluke; ne traži se ceo R3 podsistem u ovom trenutku.
-
-> **Prikaz**
->
-> Jedan povezani scenario, negative test i ugovor sa drugim timom.
-
-> **Termin i obuhvat**
->
-> Vežba 5–6 · Kraj 6. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
-
 ## Vežba 7 — Atributi, rizik i periodični pregled pristupa
 
 RBAC daje stabilnu osnovu, ali složenije odluke često zavise i od konteksta: pripadnosti, vrste podataka, vremena, stanja resursa ili nivoa rizika. Atributska pravila uvode taj kontekst bez pretvaranja svake moguće kombinacije u novu ulogu.
@@ -1249,9 +1203,9 @@ dotnet test Oib.Vezba08.sln
 >
 > Dodati vreme događaja i meriti koliko je prošlo od prvog do poslednjeg događaja u slučaju. Proširiti `CorrelationCase` i napisati test za slučaj sa jednim događajem.
 
-### Kontrolna tačka KT4 — Finalna demonstracija i security QA
+### Kontrolna tačka KT2 — Završna demonstracija i security QA
 
-Tim demonstrira sve obavezne use-case-ove aktivnog/odobrenog scope-a, dokazuje bezbednosne odluke i ponovljivo pokretanje i predaje ažurnu dokumentaciju. Normativni obim ostaje obavezan dok nastavni tim ne objavi formalnu reviziju.
+Druga kontrolna tačka održava se u terminu 8. vežbe. Tim demonstrira sve obavezne use-case-ove svih dodeljenih celina u odobrenom obimu, njihovo povezivanje, bezbednosne odluke i ponovljivo pokretanje, uz ažurnu dokumentaciju.
 
 #### Obavezno za sve timove
 
@@ -1266,9 +1220,13 @@ Tim demonstrira sve obavezne use-case-ove aktivnog/odobrenog scope-a, dokazuje b
 
 - Treća celina mora imati javno odobren opseg i izvršiv bezbednosni tok sa automatizovanim testovima; kompletan normativni obim je obavezan osim ako je nastavni tim formalno promenio specifikaciju.
 
+> **Prikaz**
+>
+> Povezani end-to-end scenario, pozitivan i negativan test, ugovori i individualno obrazloženje rada. Kontrolne tačke i termini odbrane projekta su odvojene obaveze.
+
 > **Termin i obuhvat**
 >
-> Vežba 7–8 · Kraj 8. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
+> Vežba 5–8 · Vežba 8 Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
 
 ## Sažetak: bezbednost kao sledljiv, dokaziv proces
 

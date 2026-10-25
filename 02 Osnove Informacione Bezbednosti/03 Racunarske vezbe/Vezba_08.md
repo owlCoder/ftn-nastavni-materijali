@@ -144,9 +144,9 @@ dotnet test Oib.Vezba08.sln
 >
 > Dodati vreme događaja i meriti koliko je prošlo od prvog do poslednjeg događaja u slučaju. Proširiti `CorrelationCase` i napisati test za slučaj sa jednim događajem.
 
-### Kontrolna tačka KT4 — Finalna demonstracija i security QA
+### Kontrolna tačka KT2 — Završna demonstracija i security QA
 
-Tim demonstrira sve obavezne use-case-ove aktivnog/odobrenog scope-a, dokazuje bezbednosne odluke i ponovljivo pokretanje i predaje ažurnu dokumentaciju. Normativni obim ostaje obavezan dok nastavni tim ne objavi formalnu reviziju.
+Druga kontrolna tačka održava se u terminu 8. vežbe. Tim demonstrira sve obavezne use-case-ove svih dodeljenih celina u odobrenom obimu, njihovo povezivanje, bezbednosne odluke i ponovljivo pokretanje, uz ažurnu dokumentaciju.
 
 #### Obavezno za sve timove
 
@@ -161,6 +161,10 @@ Tim demonstrira sve obavezne use-case-ove aktivnog/odobrenog scope-a, dokazuje b
 
 - Treća celina mora imati javno odobren opseg i izvršiv bezbednosni tok sa automatizovanim testovima; kompletan normativni obim je obavezan osim ako je nastavni tim formalno promenio specifikaciju.
 
+> **Prikaz**
+>
+> Povezani end-to-end scenario, pozitivan i negativan test, ugovori i individualno obrazloženje rada. Kontrolne tačke i termini odbrane projekta su odvojene obaveze.
+
 > **Termin i obuhvat**
 >
-> Vežba 7–8 · Kraj 8. nedelje Isti zahtevi prikazani su na kartici „Kontrolne tačke“.
+> Vežba 5–8 · Vežba 8 Isti zahtevi prikazani su na kartici „Kontrolne tačke“.

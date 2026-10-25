@@ -2,6 +2,8 @@
 
 Praktikumi, zadaci, prezentacije, projektne specifikacije i programski primeri za Primenjeno softversko inženjerstvo.
 
+Za **Elemente razvoja softvera (ERS)** i **Osnove informacione bezbednosti (OIB)** postoje **dve kontrolne tačke**: **KT1 u terminu 4. vežbe** i **KT2 u terminu 8. vežbe**. Kontrolne tačke i termini odbrane projekta su odvojene obaveze.
+
 | Predmet | Praktikum i zadaci | Prezentacije | Projekat | Primeri |
 |---|---|---|---|---|
 | Elementi razvoja softvera | [ERS](<01 Elementi Razvoja Softvera/03 Racunarske vezbe/Praktikum.md>) | [PDF i PPTX](<01 Elementi Razvoja Softvera/02 Prezentacije>) | [Specifikacija](<01 Elementi Razvoja Softvera/01 Projekat/ERS_Projektna_Specifikacija.pdf>) | [Kod](<01 Elementi Razvoja Softvera/04 Primeri>) |

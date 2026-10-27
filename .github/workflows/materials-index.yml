@@ -1,0 +1,32 @@
+name: Update materials index
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '.github/materials-index.json'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: materials-index
+  cancel-in-progress: false
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build index for the current commit
+        run: node scripts/generate-materials-index.mjs
+      - name: Publish index
+        run: |
+          git add .github/materials-index.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update materials index'
+          git push origin HEAD:main

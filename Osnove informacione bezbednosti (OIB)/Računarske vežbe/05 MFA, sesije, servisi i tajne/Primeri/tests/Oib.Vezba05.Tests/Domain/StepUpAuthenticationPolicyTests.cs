@@ -82,4 +82,11 @@ public sealed class StepUpAuthenticationPolicyTests
 
     private static AuthSession Session(DateTimeOffset? mfaVerifiedAt, bool revoked = false) =>
         new("s-1", "ana", Now.AddHours(-2), mfaVerifiedAt, revoked);
+    [Test]
+    public void InvalidInput_ReturnsDeniedResult()
+    {
+        var result = new StepUpAuthenticationPolicy().Evaluate(null, null, DateTimeOffset.UtcNow);
+        Assert.That(result.Allowed, Is.False);
+        Assert.That(result.Code, Is.EqualTo(StepUpCodes.InvalidRequest));
+    }
 }

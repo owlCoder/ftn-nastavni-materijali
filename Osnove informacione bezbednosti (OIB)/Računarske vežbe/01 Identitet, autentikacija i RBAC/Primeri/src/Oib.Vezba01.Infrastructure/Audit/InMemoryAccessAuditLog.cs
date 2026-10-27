@@ -1,3 +1,4 @@
+using Oib.Vezba01.Domain.Shared;
 using Oib.Vezba01.Application.Access;
 using Oib.Vezba01.Application.Ports;
 
@@ -9,9 +10,10 @@ public sealed class InMemoryAccessAuditLog : IAccessAuditLog, IAccessAuditTrail
 
     public IReadOnlyList<AccessAuditEntry> Entries => _entries;
 
-    public void Record(AccessAuditEntry entry)
+    public Result<bool> Record(AccessAuditEntry? entry)
     {
-        ArgumentNullException.ThrowIfNull(entry);
+        if (entry is null) return Result<bool>.Fail("InvalidAccessAuditEntry");
         _entries.Add(entry);
+        return Result<bool>.Ok(true);
     }
 }

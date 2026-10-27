@@ -6,12 +6,12 @@ namespace Oib.Vezba04.Tests.Domain;
 
 public sealed class ThreatRiskCalculatorTests
 {
-    private readonly ThreatRiskCalculator _calculator = new(RiskPolicy.Default);
+    private readonly ThreatRiskCalculator _calculator = new(RiskPolicy.Default, new ThreatScenarioValidator());
 
     [Test]
     public void Assess_WhenFlowStaysInsideTrustBoundary_MultipliesLikelihoodAndImpact()
     {
-        var assessment = _calculator.Assess(Scenarios.Create(3, 5, crossesTrustBoundary: false));
+        var assessment = _calculator.Assess(Scenarios.Create(3, 5, crossesTrustBoundary: false)).Value!;
 
         Assert.That(assessment.RiskScore, Is.EqualTo(15));
     }
@@ -19,7 +19,7 @@ public sealed class ThreatRiskCalculatorTests
     [Test]
     public void Assess_WhenFlowCrossesTrustBoundary_DoublesTheScore()
     {
-        var assessment = _calculator.Assess(Scenarios.Create(3, 5, crossesTrustBoundary: true));
+        var assessment = _calculator.Assess(Scenarios.Create(3, 5, crossesTrustBoundary: true)).Value!;
 
         Assert.That(assessment.RiskScore, Is.EqualTo(30));
     }
@@ -34,7 +34,7 @@ public sealed class ThreatRiskCalculatorTests
         bool requiresTreatment)
     {
         var assessment = _calculator.Assess(
-            Scenarios.Create(likelihood, businessImpact, crossesTrustBoundary));
+            Scenarios.Create(likelihood, businessImpact, crossesTrustBoundary)).Value!;
 
         Assert.That(assessment.RequiresTreatment, Is.EqualTo(requiresTreatment));
     }
@@ -43,11 +43,18 @@ public sealed class ThreatRiskCalculatorTests
     public void Assess_UsesThresholdFromPolicy()
     {
         var strictCalculator = new ThreatRiskCalculator(
-            RiskPolicy.Default with { TreatmentThreshold = 10 });
+            RiskPolicy.Default with { TreatmentThreshold = 10 }, new ThreatScenarioValidator());
 
         var assessment = strictCalculator.Assess(
-            Scenarios.Create(2, 5, crossesTrustBoundary: false));
+            Scenarios.Create(2, 5, crossesTrustBoundary: false)).Value!;
 
         Assert.That(assessment.RequiresTreatment, Is.True);
+    }
+    [Test]
+    public void Assess_InvalidScenario_ReturnsError()
+    {
+        var result = _calculator.Assess(null);
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Error, Is.EqualTo(ThreatModelErrorCodes.InvalidScenario));
     }
 }

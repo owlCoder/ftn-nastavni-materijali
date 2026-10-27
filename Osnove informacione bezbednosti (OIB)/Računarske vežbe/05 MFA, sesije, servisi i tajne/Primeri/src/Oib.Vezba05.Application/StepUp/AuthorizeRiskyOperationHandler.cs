@@ -5,12 +5,14 @@ namespace Oib.Vezba05.Application.StepUp;
 
 public sealed class AuthorizeRiskyOperationHandler(
     ISessionStore sessions,
-    StepUpAuthenticationPolicy policy,
+    IStepUpAuthenticationPolicy policy,
     IClock clock) : IAuthorizeRiskyOperationUseCase
 {
-    public StepUpDecision Authorize(AuthorizeOperationRequest request)
+    public StepUpDecision Authorize(AuthorizeOperationRequest? request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null || string.IsNullOrWhiteSpace(request.SessionId) || request.Operation is null ||
+            request.Operation.MaximumMfaAge <= TimeSpan.Zero)
+            return new(false, false, StepUpCodes.InvalidRequest, "Neispravan zahtev za operaciju.");
 
         var session = sessions.FindById(request.SessionId);
 

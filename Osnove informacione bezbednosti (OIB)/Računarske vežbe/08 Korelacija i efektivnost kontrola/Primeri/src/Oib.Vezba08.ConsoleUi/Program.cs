@@ -3,7 +3,13 @@ using Oib.Vezba08.ConsoleUi;
 
 Console.OutputEncoding = Encoding.UTF8;
 
-var report = CompositionRoot.CreateUseCase().Analyze(DemoData.Control);
+var result = CompositionRoot.CreateUseCase().Analyze(DemoData.Control);
+if (!result.Success || result.Value is null)
+{
+    Console.WriteLine($"Analiza nije uspela: {result.Error}");
+    return;
+}
+var report = result.Value;
 
 Console.WriteLine("Korelisani slučajevi:");
 foreach (var correlationCase in report.Cases)

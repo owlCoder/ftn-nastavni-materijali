@@ -22,7 +22,7 @@ public sealed class DetectIncidentsHandlerTests
     [Test]
     public void Detect_WhenSubjectKeepsFailing_OpensAndStoresIncident()
     {
-        var opened = Handler(Attempts.Failures("ana", "203.0.113.10", 5, Now)).Detect();
+        var opened = Handler(Attempts.Failures("ana", "203.0.113.10", 5, Now)).Detect().Value!;
 
         using (Assert.EnterMultipleScope())
         {
@@ -37,7 +37,7 @@ public sealed class DetectIncidentsHandlerTests
     [Test]
     public void Detect_WhenNothingIsSuspicious_OpensNoIncident()
     {
-        var opened = Handler(Attempts.Failures("ana", "203.0.113.10", 1, Now)).Detect();
+        var opened = Handler(Attempts.Failures("ana", "203.0.113.10", 1, Now)).Detect().Value!;
 
         using (Assert.EnterMultipleScope())
         {
@@ -55,7 +55,7 @@ public sealed class DetectIncidentsHandlerTests
             .. Attempts.Failures("marko", "198.51.100.7", 3, Now)
         ];
 
-        var opened = Handler(attempts).Detect();
+        var opened = Handler(attempts).Detect().Value!;
 
         Assert.That(
             opened.Select(incident => incident.Id),

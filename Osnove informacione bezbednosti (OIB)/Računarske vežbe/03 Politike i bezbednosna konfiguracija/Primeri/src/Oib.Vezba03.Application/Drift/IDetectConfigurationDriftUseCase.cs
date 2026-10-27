@@ -1,6 +1,6 @@
+using Oib.Vezba03.Domain.Shared;
 namespace Oib.Vezba03.Application.Drift;
-
 public interface IDetectConfigurationDriftUseCase
 {
-    DriftReport Detect();
+    Result<DriftReport> Detect();
 }

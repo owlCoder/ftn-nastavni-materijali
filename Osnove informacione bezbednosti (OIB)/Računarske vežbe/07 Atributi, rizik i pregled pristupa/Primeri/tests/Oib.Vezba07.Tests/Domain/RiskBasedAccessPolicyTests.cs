@@ -51,12 +51,20 @@ public sealed class RiskBasedAccessPolicyTests
     }
 
     [Test]
-    public void Evaluate_WhenPolicyHasNoRules_AllowsOnlyBecauseNothingForbids()
+    public void Evaluate_WhenPolicyHasNoRules_DeniesByDefault()
     {
         var emptyPolicy = new RiskBasedAccessPolicy([], TimeSpan.FromDays(1));
 
         var decision = emptyPolicy.Evaluate(Contexts.Safe with { RiskScore = 100 }, Now);
 
-        Assert.That(decision.Allowed, Is.True);
+        Assert.That(decision.Allowed, Is.False);
+        Assert.That(decision.Code, Is.EqualTo(AccessDecisionCodes.InvalidRequest));
+    }
+    [Test]
+    public void InvalidInput_ReturnsDeniedResult()
+    {
+        var result = _policy.Evaluate(null, Now);
+        Assert.That(result.Allowed, Is.False);
+        Assert.That(result.Code, Is.EqualTo(AccessDecisionCodes.InvalidRequest));
     }
 }

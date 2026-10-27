@@ -1,3 +1,4 @@
+using Oib.Vezba06.Domain.Shared;
 using Oib.Vezba06.Application.Ports;
 using Oib.Vezba06.Domain.Incidents;
 
@@ -9,9 +10,10 @@ public sealed class InMemoryIncidentRepository : IIncidentRepository
 
     public IReadOnlyList<Incident> Incidents => _incidents;
 
-    public void Add(Incident incident)
+    public Result<bool> Add(Incident? incident)
     {
-        ArgumentNullException.ThrowIfNull(incident);
+        if (incident is null) return Result<bool>.Fail("InvalidIncident");
         _incidents.Add(incident);
+        return Result<bool>.Ok(true);
     }
 }

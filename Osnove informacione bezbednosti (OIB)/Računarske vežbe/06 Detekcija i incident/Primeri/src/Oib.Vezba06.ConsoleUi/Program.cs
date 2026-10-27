@@ -3,7 +3,13 @@ using Oib.Vezba06.ConsoleUi;
 
 Console.OutputEncoding = Encoding.UTF8;
 
-var incidents = CompositionRoot.CreateUseCase().Detect();
+var result = CompositionRoot.CreateUseCase().Detect();
+if (!result.Success || result.Value is null)
+{
+    Console.WriteLine($"Detekcija nije uspela: {result.Error}");
+    return;
+}
+var incidents = result.Value;
 
 Console.WriteLine($"Otvoreno incidenata: {incidents.Count}");
 foreach (var incident in incidents)

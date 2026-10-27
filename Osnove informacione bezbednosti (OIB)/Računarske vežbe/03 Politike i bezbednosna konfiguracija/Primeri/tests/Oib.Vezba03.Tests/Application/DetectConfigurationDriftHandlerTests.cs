@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using Oib.Vezba03.Application.Ports;
+using Oib.Vezba03.Domain.Shared;
 using Oib.Vezba03.Application.Drift;
 using Oib.Vezba03.Domain.Configuration;
 using Oib.Vezba03.Domain.Drift;
@@ -20,7 +22,7 @@ public sealed class DetectConfigurationDriftHandlerTests
     [Test]
     public void Detect_WhenConfigurationIsWeakerThanBaseline_ReportsEveryDrift()
     {
-        var report = Handler(new SecurityConfiguration(10, false)).Detect();
+        var report = Handler(new SecurityConfiguration(10, false)).Detect().Value!;
 
         using (Assert.EnterMultipleScope())
         {
@@ -34,7 +36,7 @@ public sealed class DetectConfigurationDriftHandlerTests
     [Test]
     public void Detect_WhenConfigurationMatchesBaseline_IsCompliant()
     {
-        var report = Handler(new SecurityConfiguration(14, true)).Detect();
+        var report = Handler(new SecurityConfiguration(14, true)).Detect().Value!;
 
         Assert.That(report.IsCompliant, Is.True);
     }
@@ -42,7 +44,7 @@ public sealed class DetectConfigurationDriftHandlerTests
     [Test]
     public void Detect_TagsReportWithCorrelationIdAndBaselineVersion()
     {
-        var report = Handler(new SecurityConfiguration(10, true)).Detect();
+        var report = Handler(new SecurityConfiguration(10, true)).Detect().Value!;
 
         using (Assert.EnterMultipleScope())
         {
@@ -54,7 +56,7 @@ public sealed class DetectConfigurationDriftHandlerTests
     [Test]
     public void Detect_MakesTheReportVisibleThroughTheLog()
     {
-        var report = Handler(new SecurityConfiguration(10, false)).Detect();
+        var report = Handler(new SecurityConfiguration(10, false)).Detect().Value!;
 
         Assert.That(_reportLog.Reports, Is.EqualTo(new[] { report }));
     }
@@ -70,4 +72,29 @@ public sealed class DetectConfigurationDriftHandlerTests
             ]),
             new FixedCorrelationIdGenerator("corr-1"),
             _reportLog);
+    [Test]
+    public void Detect_InvalidConfiguration_ReturnsErrorInsteadOfCompliantReport()
+    {
+        var result = Handler(new SecurityConfiguration(0, true)).Detect();
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Error, Is.EqualTo("InvalidConfiguration"));
+        Assert.That(_reportLog.Reports, Is.Empty);
+    }
+    [Test]
+    public void Detect_WhenReportCannotBeRecorded_ReturnsError()
+    {
+        var handler = new DetectConfigurationDriftHandler(
+            new InMemorySecurityBaselineProvider(Baseline),
+            new InMemoryActiveConfigurationProvider(new SecurityConfiguration(14, true)),
+            new ConfigurationDriftDetector([new MinimumPasswordLengthControl()]),
+            new FixedCorrelationIdGenerator("corr-1"), new FailingLog());
+        var result = handler.Detect();
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Error, Is.EqualTo("ReportWriteFailed"));
+    }
+
+    private sealed class FailingLog : IDriftReportLog
+    {
+        public Result<bool> Record(DriftReport? report) => Result<bool>.Fail("ReportWriteFailed");
+    }
 }

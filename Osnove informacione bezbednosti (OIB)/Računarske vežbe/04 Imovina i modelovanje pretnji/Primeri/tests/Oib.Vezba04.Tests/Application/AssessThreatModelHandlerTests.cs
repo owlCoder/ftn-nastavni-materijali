@@ -55,5 +55,5 @@ public sealed class AssessThreatModelHandlerTests
         new(
             new InMemoryThreatScenarioRepository(scenarios),
             new ThreatScenarioValidator(),
-            new ThreatRiskCalculator(RiskPolicy.Default));
+            new ThreatRiskCalculator(RiskPolicy.Default, new ThreatScenarioValidator()));
 }

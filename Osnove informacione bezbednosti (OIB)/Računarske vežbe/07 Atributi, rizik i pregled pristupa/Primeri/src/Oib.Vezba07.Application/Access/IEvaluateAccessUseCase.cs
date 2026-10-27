@@ -4,5 +4,5 @@ namespace Oib.Vezba07.Application.Access;
 
 public interface IEvaluateAccessUseCase
 {
-    AccessDecision Evaluate(EvaluateAccessRequest request);
+    AccessDecision Evaluate(EvaluateAccessRequest? request);
 }

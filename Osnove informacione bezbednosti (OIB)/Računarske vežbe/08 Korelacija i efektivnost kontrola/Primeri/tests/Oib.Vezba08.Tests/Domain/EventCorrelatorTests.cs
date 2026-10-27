@@ -18,7 +18,7 @@ public sealed class EventCorrelatorTests
             new("corr-42", "export-denied", "ana", true)
         ];
 
-        var correlationCase = _correlator.Correlate(events).Single();
+        var correlationCase = _correlator.Correlate(events).Value!.Single();
 
         using (Assert.EnterMultipleScope())
         {
@@ -39,7 +39,7 @@ public sealed class EventCorrelatorTests
             new("corr-77", "login-failed", "marko", false)
         ];
 
-        var cases = _correlator.Correlate(events);
+        var cases = _correlator.Correlate(events).Value!;
 
         Assert.That(
             cases.Select(correlationCase => correlationCase.CorrelationId),
@@ -55,7 +55,7 @@ public sealed class EventCorrelatorTests
             new("corr-42", "LOGIN-FAILED", "ana", false)
         ];
 
-        var correlationCase = _correlator.Correlate(events).Single();
+        var correlationCase = _correlator.Correlate(events).Value!.Single();
 
         using (Assert.EnterMultipleScope())
         {

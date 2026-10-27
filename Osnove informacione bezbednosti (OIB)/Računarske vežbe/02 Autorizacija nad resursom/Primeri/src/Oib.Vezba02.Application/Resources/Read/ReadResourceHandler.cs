@@ -5,20 +5,25 @@ namespace Oib.Vezba02.Application.Resources.Read;
 
 public sealed class ReadResourceHandler(
     IProtectedResourceRepository resources,
-    ResourceReadPolicy policy,
+    IResourceReadPolicy policy,
     IResourceAccessAuditLog auditLog) : IReadResourceUseCase
 {
-    public ReadResourceResult Read(ReadResourceQuery query)
+    public ReadResourceResult Read(ReadResourceQuery? query)
     {
-        ArgumentNullException.ThrowIfNull(query);
+        if (query?.Requester is null || string.IsNullOrWhiteSpace(query.Requester.ActorId) ||
+            query.Requester.Permissions is null || string.IsNullOrWhiteSpace(query.ResourceId))
+            return new(ReadResourceOutcome.Denied, ResourceAccessCodes.InvalidRequest, null);
 
         var result = Decide(query);
 
-        auditLog.Record(new ResourceAccessAuditEntry(
+        var auditResult = auditLog.Record(new ResourceAccessAuditEntry(
             query.Requester.ActorId,
             query.ResourceId,
             result.Outcome,
             result.Code));
+
+        if (!auditResult.Success)
+            return new(ReadResourceOutcome.Denied, ResourceAccessCodes.AuditFailed, null);
 
         return result;
     }

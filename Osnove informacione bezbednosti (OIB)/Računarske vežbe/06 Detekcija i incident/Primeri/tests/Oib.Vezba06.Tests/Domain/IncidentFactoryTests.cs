@@ -15,7 +15,7 @@ public sealed class IncidentFactoryTests
     [TestCase(5, IncidentSeverity.High)]
     public void Open_DerivesSeverityFromSignalStrength(int count, IncidentSeverity severity)
     {
-        var incident = _factory.Open("INC-0001", Signal(count), Now);
+        var incident = _factory.Open("INC-0001", Signal(count), Now).Value!;
 
         Assert.That(incident.Severity, Is.EqualTo(severity));
     }
@@ -23,7 +23,7 @@ public sealed class IncidentFactoryTests
     [Test]
     public void Open_CreatesOpenIncidentThatKeepsSignalContext()
     {
-        var incident = _factory.Open("INC-0001", Signal(5), Now);
+        var incident = _factory.Open("INC-0001", Signal(5), Now).Value!;
 
         using (Assert.EnterMultipleScope())
         {

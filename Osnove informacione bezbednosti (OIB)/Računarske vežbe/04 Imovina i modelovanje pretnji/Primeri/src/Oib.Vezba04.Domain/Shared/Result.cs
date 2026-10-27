@@ -17,9 +17,5 @@ public sealed class Result
 
     public static Result Ok() => new(true, null);
 
-    public static Result Fail(string error)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(error);
-        return new(false, error);
-    }
+    public static Result Fail(string error) => new(false, string.IsNullOrWhiteSpace(error) ? "UnknownError" : error);
 }

@@ -10,7 +10,7 @@ public sealed class ControlEffectivenessCalculatorTests
     [Test]
     public void Evaluate_ReturnsShareOfBlockedAttempts()
     {
-        var effectiveness = _calculator.Evaluate(new ControlMeasurement("step-up", 4, 3));
+        var effectiveness = _calculator.Evaluate(new ControlMeasurement("step-up", 4, 3)).Value!;
 
         Assert.That(effectiveness.Ratio, Is.EqualTo(0.75m));
     }
@@ -21,7 +21,7 @@ public sealed class ControlEffectivenessCalculatorTests
     public void Evaluate_ComparesMeasuredRatioWithTarget(int attempts, int blocked, bool meetsTarget)
     {
         var effectiveness = _calculator.Evaluate(
-            new ControlMeasurement("step-up", attempts, blocked));
+            new ControlMeasurement("step-up", attempts, blocked)).Value!;
 
         Assert.That(effectiveness.MeetsTarget, Is.EqualTo(meetsTarget));
     }
@@ -29,7 +29,7 @@ public sealed class ControlEffectivenessCalculatorTests
     [Test]
     public void Evaluate_WhenControlWasNeverExercised_DoesNotClaimItWorks()
     {
-        var effectiveness = _calculator.Evaluate(new ControlMeasurement("step-up", 0, 0));
+        var effectiveness = _calculator.Evaluate(new ControlMeasurement("step-up", 0, 0)).Value!;
 
         using (Assert.EnterMultipleScope())
         {
@@ -41,8 +41,14 @@ public sealed class ControlEffectivenessCalculatorTests
     [Test]
     public void Evaluate_WhenMeasurementIsInconsistent_RejectsIt()
     {
-        Action evaluate = () => _calculator.Evaluate(new ControlMeasurement("step-up", 2, 3));
-
-        Assert.That(evaluate, Throws.TypeOf<ArgumentOutOfRangeException>());
+        var result = _calculator.Evaluate(new ControlMeasurement("step-up", 2, 3));
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Error, Is.EqualTo("InvalidMeasurement"));
+    }
+    [Test]
+    public void Evaluate_WhenTargetIsInvalid_ReturnsError()
+    {
+        var result = new ControlEffectivenessCalculator(2m).Evaluate(new ControlMeasurement("step-up", 1, 1));
+        Assert.That(result.Error, Is.EqualTo("InvalidTargetRatio"));
     }
 }

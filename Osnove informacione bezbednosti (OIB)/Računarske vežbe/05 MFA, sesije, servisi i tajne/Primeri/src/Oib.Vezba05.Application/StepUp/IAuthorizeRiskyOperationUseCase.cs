@@ -4,5 +4,5 @@ namespace Oib.Vezba05.Application.StepUp;
 
 public interface IAuthorizeRiskyOperationUseCase
 {
-    StepUpDecision Authorize(AuthorizeOperationRequest request);
+    StepUpDecision Authorize(AuthorizeOperationRequest? request);
 }

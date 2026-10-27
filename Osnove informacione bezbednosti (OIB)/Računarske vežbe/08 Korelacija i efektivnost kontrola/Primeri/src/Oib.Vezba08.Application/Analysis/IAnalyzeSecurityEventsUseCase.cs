@@ -1,6 +1,6 @@
+using Oib.Vezba08.Domain.Shared;
 namespace Oib.Vezba08.Application.Analysis;
-
 public interface IAnalyzeSecurityEventsUseCase
 {
-    SecurityAnalysisReport Analyze(string control);
+    Result<SecurityAnalysisReport> Analyze(string? control);
 }

@@ -1,3 +1,4 @@
+using Oib.Vezba03.Domain.Shared;
 using Oib.Vezba03.Application.Drift;
 using Oib.Vezba03.Application.Ports;
 
@@ -7,5 +8,10 @@ internal sealed class RecordingDriftReportLog : IDriftReportLog
 {
     public List<DriftReport> Reports { get; } = [];
 
-    public void Record(DriftReport report) => Reports.Add(report);
+    public Result<bool> Record(DriftReport? report)
+    {
+        if (report is null) return Result<bool>.Fail("InvalidReport");
+        Reports.Add(report);
+        return Result<bool>.Ok(true);
+    }
 }

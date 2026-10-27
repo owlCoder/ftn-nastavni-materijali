@@ -58,4 +58,11 @@ public sealed class RbacPolicyTests
 
     private static Actor Authenticated(params string[] roles) =>
         new("ana", IsAuthenticated: true, roles.ToHashSet());
+    [Test]
+    public void InvalidInput_ReturnsDeniedResult()
+    {
+        var result = new RbacPolicy().Decide(null, "read", Array.Empty<Role>());
+        Assert.That(result.Allowed, Is.False);
+        Assert.That(result.Code, Is.EqualTo(AccessDecisionCodes.InvalidRequest));
+    }
 }

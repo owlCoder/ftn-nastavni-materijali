@@ -2,6 +2,8 @@ namespace Oib.Vezba02.Domain.Access;
 
 public static class ResourceAccessCodes
 {
+    public const string AuditFailed = "AuditFailed";
+    public const string InvalidRequest = "InvalidRequest";
     public const string MissingReadPermission = "MissingReadPermission";
     public const string OwnerAccess = "OwnerAccess";
     public const string ElevatedAccess = "ElevatedAccess";

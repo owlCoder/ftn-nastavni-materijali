@@ -11,6 +11,6 @@ public static class CompositionRoot
             new AssessThreatModelHandler(
                 new InMemoryThreatScenarioRepository(DemoData.Scenarios),
                 new ThreatScenarioValidator(),
-                new ThreatRiskCalculator(RiskPolicy.Default)),
+                new ThreatRiskCalculator(RiskPolicy.Default, new ThreatScenarioValidator())),
             output);
 }

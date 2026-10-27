@@ -5,13 +5,15 @@ namespace Oib.Vezba01.Application.Access;
 
 public sealed class AuthorizeAccessHandler(
     IRoleCatalog roleCatalog,
-    RbacPolicy policy,
+    IRbacPolicy policy,
     IAccessAuditLog auditLog,
     IClock clock) : IAuthorizeAccessUseCase
 {
-    public AccessDecision Authorize(AccessRequest request)
+    public AccessDecision Authorize(AccessRequest? request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request?.Actor is null || string.IsNullOrWhiteSpace(request.Actor.Id) ||
+            request.Actor.Roles is null || request.Actor.Roles.Any(string.IsNullOrWhiteSpace) || string.IsNullOrWhiteSpace(request.Permission))
+            return new(false, AccessDecisionCodes.InvalidRequest, "Neispravan zahtev za pristup.");
 
         var assignedRoles = request.Actor.Roles
             .Select(roleCatalog.FindByName)
@@ -20,12 +22,15 @@ public sealed class AuthorizeAccessHandler(
 
         var decision = policy.Decide(request.Actor, request.Permission, assignedRoles);
 
-        auditLog.Record(new AccessAuditEntry(
+        var auditResult = auditLog.Record(new AccessAuditEntry(
             clock.UtcNow,
             request.Actor.Id,
             request.Permission,
             decision.Allowed,
             decision.Code));
+
+        if (!auditResult.Success)
+            return new(false, AccessDecisionCodes.AuditFailed, "Nije moguće evidentirati odluku.");
 
         return decision;
     }

@@ -4,5 +4,5 @@ namespace Oib.Vezba01.Application.Access;
 
 public interface IAuthorizeAccessUseCase
 {
-    AccessDecision Authorize(AccessRequest request);
+    AccessDecision Authorize(AccessRequest? request);
 }

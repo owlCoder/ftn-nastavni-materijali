@@ -69,4 +69,11 @@ public sealed class ResourceReadPolicyTests
 
     private static ProtectedResource Resource(DataClassification classification) =>
         new("rec-42", "ana", classification);
+    [Test]
+    public void InvalidInput_ReturnsDeniedResult()
+    {
+        var result = new ResourceReadPolicy().Decide(null, null);
+        Assert.That(result.Allowed, Is.False);
+        Assert.That(result.Code, Is.EqualTo(ResourceAccessCodes.InvalidRequest));
+    }
 }

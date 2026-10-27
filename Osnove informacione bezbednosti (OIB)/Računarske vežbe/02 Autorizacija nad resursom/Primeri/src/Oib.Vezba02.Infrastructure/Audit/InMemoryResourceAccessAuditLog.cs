@@ -1,3 +1,4 @@
+using Oib.Vezba02.Domain.Shared;
 using Oib.Vezba02.Application.Ports;
 using Oib.Vezba02.Application.Resources.Read;
 
@@ -9,9 +10,10 @@ public sealed class InMemoryResourceAccessAuditLog : IResourceAccessAuditLog, IR
 
     public IReadOnlyList<ResourceAccessAuditEntry> Entries => _entries;
 
-    public void Record(ResourceAccessAuditEntry entry)
+    public Result<bool> Record(ResourceAccessAuditEntry? entry)
     {
-        ArgumentNullException.ThrowIfNull(entry);
+        if (entry is null) return Result<bool>.Fail("InvalidResourceAccessAuditEntry");
         _entries.Add(entry);
+        return Result<bool>.Ok(true);
     }
 }

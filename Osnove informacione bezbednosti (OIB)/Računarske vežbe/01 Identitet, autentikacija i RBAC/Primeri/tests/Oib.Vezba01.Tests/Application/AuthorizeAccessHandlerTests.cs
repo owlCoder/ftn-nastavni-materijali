@@ -1,4 +1,6 @@
 using NUnit.Framework;
+using Oib.Vezba01.Application.Ports;
+using Oib.Vezba01.Domain.Shared;
 using Oib.Vezba01.Application.Access;
 using Oib.Vezba01.Domain.Authorization;
 using Oib.Vezba01.Domain.Identity;
@@ -82,4 +84,19 @@ public sealed class AuthorizeAccessHandlerTests
 
     private static Actor Actor(params string[] roles) =>
         new("ana", IsAuthenticated: true, roles.ToHashSet());
+    [Test]
+    public void Authorize_WhenAuditFails_DeniesEvenIfPolicyAllows()
+    {
+        var handler = new AuthorizeAccessHandler(
+            new InMemoryRoleCatalog([new Role("Operator", new HashSet<string> { "reports:view" })]),
+            new RbacPolicy(), new FailingAudit(), new FixedClock(Now));
+        var decision = handler.Authorize(new AccessRequest(Actor("Operator"), "reports:view"));
+        Assert.That(decision.Allowed, Is.False);
+        Assert.That(decision.Code, Is.EqualTo(AccessDecisionCodes.AuditFailed));
+    }
+
+    private sealed class FailingAudit : IAccessAuditLog
+    {
+        public Result<bool> Record(AccessAuditEntry? entry) => Result<bool>.Fail("StorageUnavailable");
+    }
 }

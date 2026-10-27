@@ -3,15 +3,15 @@ using Oib.Vezba05.Domain.Sessions;
 
 namespace Oib.Vezba05.Domain.StepUp;
 
-public sealed class StepUpAuthenticationPolicy
+public sealed class StepUpAuthenticationPolicy : IStepUpAuthenticationPolicy
 {
     public StepUpDecision Evaluate(
-        AuthSession session,
-        RiskyOperation operation,
+        AuthSession? session,
+        RiskyOperation? operation,
         DateTimeOffset now)
     {
-        ArgumentNullException.ThrowIfNull(session);
-        ArgumentNullException.ThrowIfNull(operation);
+        if (session is null || operation is null || operation.MaximumMfaAge <= TimeSpan.Zero)
+            return new(false, false, StepUpCodes.InvalidRequest, "Neispravni podaci za proveru sesije.");
 
         if (session.Revoked)
             return new(false, false, StepUpCodes.SessionRevoked, "Sesija je opozvana.");

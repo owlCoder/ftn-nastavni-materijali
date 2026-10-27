@@ -14,7 +14,7 @@ public sealed class RepeatedFailedLoginRuleTests
     [Test]
     public void Detect_WhenFailuresReachThreshold_RaisesSignalWithContext()
     {
-        var signals = _rule.Detect(Attempts.Failures("ana", "203.0.113.10", 3, Now), Now);
+        var signals = _rule.Detect(Attempts.Failures("ana", "203.0.113.10", 3, Now), Now).Value!;
 
         Assert.That(
             signals,
@@ -27,7 +27,7 @@ public sealed class RepeatedFailedLoginRuleTests
     [Test]
     public void Detect_WhenFailuresAreBelowThreshold_RaisesNothing()
     {
-        var signals = _rule.Detect(Attempts.Failures("ana", "203.0.113.10", 2, Now), Now);
+        var signals = _rule.Detect(Attempts.Failures("ana", "203.0.113.10", 2, Now), Now).Value!;
 
         Assert.That(signals, Is.Empty);
     }
@@ -41,7 +41,7 @@ public sealed class RepeatedFailedLoginRuleTests
             new LoginAttempt("ana", "203.0.113.10", Succeeded: true, Now)
         ];
 
-        Assert.That(_rule.Detect(attempts, Now), Is.Empty);
+        Assert.That(_rule.Detect(attempts, Now).Value, Is.Empty);
     }
 
     [Test]
@@ -49,7 +49,7 @@ public sealed class RepeatedFailedLoginRuleTests
     {
         var signals = _rule.Detect(
             Attempts.Failures("ana", "203.0.113.10", 5, Now.AddMinutes(-11)),
-            Now);
+            Now).Value!;
 
         Assert.That(signals, Is.Empty);
     }
@@ -63,7 +63,7 @@ public sealed class RepeatedFailedLoginRuleTests
             .. Attempts.Failures("ana", "198.51.100.7", 2, Now)
         ];
 
-        Assert.That(_rule.Detect(attempts, Now), Is.Empty);
+        Assert.That(_rule.Detect(attempts, Now).Value, Is.Empty);
     }
 
     [Test]
@@ -75,10 +75,17 @@ public sealed class RepeatedFailedLoginRuleTests
             .. Attempts.Failures("marko", "198.51.100.7", 3, Now)
         ];
 
-        var signals = _rule.Detect(attempts, Now);
+        var signals = _rule.Detect(attempts, Now).Value!;
 
         Assert.That(
             signals.Select(signal => signal.SubjectId),
             Is.EquivalentTo(new[] { "ana", "marko" }));
+    }
+    [Test]
+    public void Detect_InvalidConfiguration_ReturnsError()
+    {
+        var result = new RepeatedFailedLoginRule(0, TimeSpan.Zero).Detect([], Now);
+        Assert.That(result.Success, Is.False);
+        Assert.That(result.Error, Is.EqualTo("InvalidDetectionConfiguration"));
     }
 }

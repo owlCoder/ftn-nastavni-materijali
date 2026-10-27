@@ -1,3 +1,4 @@
+using Oib.Vezba07.Domain.Shared;
 using Oib.Vezba07.Application.Ports;
 using Oib.Vezba07.Domain.Review;
 
@@ -9,9 +10,10 @@ public sealed class InMemoryAccessReviewSchedule : IAccessReviewSchedule, ISched
 
     public IReadOnlyList<AccessReviewItem> Items => _items;
 
-    public void Schedule(AccessReviewItem item)
+    public Result<bool> Schedule(AccessReviewItem? item)
     {
-        ArgumentNullException.ThrowIfNull(item);
+        if (item is null) return Result<bool>.Fail("InvalidAccessReviewItem");
         _items.Add(item);
+        return Result<bool>.Ok(true);
     }
 }

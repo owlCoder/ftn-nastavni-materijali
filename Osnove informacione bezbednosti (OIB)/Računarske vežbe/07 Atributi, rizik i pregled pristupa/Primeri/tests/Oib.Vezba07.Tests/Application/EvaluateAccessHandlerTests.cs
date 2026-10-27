@@ -1,6 +1,9 @@
 using NUnit.Framework;
+using Oib.Vezba07.Application.Ports;
+using Oib.Vezba07.Domain.Shared;
 using Oib.Vezba07.Application.Access;
 using Oib.Vezba07.Domain.Review;
+using Oib.Vezba07.Domain.Access;
 using Oib.Vezba07.Infrastructure.Review;
 using Oib.Vezba07.Tests.TestData;
 using Oib.Vezba07.Tests.TestDoubles;
@@ -22,6 +25,24 @@ public sealed class EvaluateAccessHandlerTests
             Contexts.Policy(),
             _reviewSchedule,
             new FixedClock(Now));
+    }
+
+    [Test]
+    public void Evaluate_UsesAnAlternativePolicyAndSchedulesItsReviewDate()
+    {
+        var handler = new EvaluateAccessHandler(
+            new AlwaysAllowPolicy(), _reviewSchedule, new FixedClock(Now));
+
+        var decision = handler.Evaluate(new EvaluateAccessRequest(Contexts.Safe, "vlasnik"));
+
+        Assert.That(decision.Code, Is.EqualTo("ALTERNATIVE"));
+        Assert.That(_reviewSchedule.Items.Single().ReviewDue, Is.EqualTo(Now.AddDays(7)));
+    }
+
+    private sealed class AlwaysAllowPolicy : IRiskBasedAccessPolicy
+    {
+        public AccessDecision Evaluate(AccessContext? context, DateTimeOffset now) =>
+            new(true, "ALTERNATIVE", "Odobreno prema drugoj politici.", now.AddDays(7));
     }
 
     [Test]
@@ -52,5 +73,18 @@ public sealed class EvaluateAccessHandlerTests
             Assert.That(decision.Allowed, Is.False);
             Assert.That(_reviewSchedule.Items, Is.Empty);
         }
+    }
+    [Test]
+    public void Evaluate_WhenReviewCannotBeScheduled_DeniesAccess()
+    {
+        var handler = new EvaluateAccessHandler(Contexts.Policy(), new FailingSchedule(), new FixedClock(Now));
+        var result = handler.Evaluate(new EvaluateAccessRequest(Contexts.Safe, "vlasnik"));
+        Assert.That(result.Allowed, Is.False);
+        Assert.That(result.Code, Is.EqualTo(AccessDecisionCodes.ReviewSchedulingFailed));
+    }
+
+    private sealed class FailingSchedule : IAccessReviewSchedule
+    {
+        public Result<bool> Schedule(AccessReviewItem? item) => Result<bool>.Fail("StorageUnavailable");
     }
 }

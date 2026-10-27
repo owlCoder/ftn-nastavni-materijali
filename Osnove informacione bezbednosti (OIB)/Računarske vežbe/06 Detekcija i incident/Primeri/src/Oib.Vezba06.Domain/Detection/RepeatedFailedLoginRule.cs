@@ -1,4 +1,5 @@
 using Oib.Vezba06.Domain.Signals;
+using Oib.Vezba06.Domain.Shared;
 
 namespace Oib.Vezba06.Domain.Detection;
 
@@ -11,20 +12,19 @@ public sealed class RepeatedFailedLoginRule : IDetectionRule
 
     public RepeatedFailedLoginRule(int threshold, TimeSpan window)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(threshold, 1);
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(window, TimeSpan.Zero);
-
         _threshold = threshold;
         _window = window;
     }
 
-    public IReadOnlyList<SecuritySignal> Detect(
-        IReadOnlyCollection<LoginAttempt> attempts,
+    public Result<IReadOnlyList<SecuritySignal>> Detect(
+        IReadOnlyCollection<LoginAttempt>? attempts,
         DateTimeOffset now)
     {
-        ArgumentNullException.ThrowIfNull(attempts);
-
-        return attempts
+        if (_threshold < 1 || _window <= TimeSpan.Zero)
+            return Result<IReadOnlyList<SecuritySignal>>.Fail("InvalidDetectionConfiguration");
+        if (attempts is null || attempts.Any(a => a is null || string.IsNullOrWhiteSpace(a.SubjectId) || string.IsNullOrWhiteSpace(a.SourceIp)))
+            return Result<IReadOnlyList<SecuritySignal>>.Fail("InvalidAttempts");
+        IReadOnlyList<SecuritySignal> signals = attempts
             .Where(attempt => !attempt.Succeeded && IsInsideWindow(attempt, now))
             .GroupBy(attempt => (attempt.SubjectId, attempt.SourceIp))
             .Where(group => group.Count() >= _threshold)
@@ -34,6 +34,7 @@ public sealed class RepeatedFailedLoginRule : IDetectionRule
                 group.Key.SourceIp,
                 group.Count()))
             .ToArray();
+        return Result<IReadOnlyList<SecuritySignal>>.Ok(signals);
     }
 
     private bool IsInsideWindow(LoginAttempt attempt, DateTimeOffset now) =>

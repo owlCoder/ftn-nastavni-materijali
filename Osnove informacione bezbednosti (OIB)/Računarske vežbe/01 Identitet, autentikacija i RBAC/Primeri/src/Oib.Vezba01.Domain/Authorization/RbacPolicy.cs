@@ -2,21 +2,21 @@ using Oib.Vezba01.Domain.Identity;
 
 namespace Oib.Vezba01.Domain.Authorization;
 
-public sealed class RbacPolicy
+public sealed class RbacPolicy : IRbacPolicy
 {
     public AccessDecision Decide(
-        Actor actor,
-        string permission,
-        IEnumerable<Role> assignedRoles)
+        Actor? actor,
+        string? permission,
+        IEnumerable<Role>? assignedRoles)
     {
-        ArgumentNullException.ThrowIfNull(actor);
-        ArgumentException.ThrowIfNullOrWhiteSpace(permission);
-        ArgumentNullException.ThrowIfNull(assignedRoles);
+        if (actor is null || string.IsNullOrWhiteSpace(actor.Id) || actor.Roles is null ||
+            string.IsNullOrWhiteSpace(permission) || assignedRoles is null)
+            return new(false, AccessDecisionCodes.InvalidRequest, "Neispravni podaci za autorizaciju.");
 
         if (!actor.IsAuthenticated)
             return new(false, AccessDecisionCodes.NotAuthenticated, "Identitet nije potvrđen.");
 
-        var grantingRole = assignedRoles.FirstOrDefault(role => Grants(role, permission));
+        var grantingRole = assignedRoles.FirstOrDefault(role => role is not null && role.Permissions is not null && Grants(role, permission));
 
         return grantingRole is null
             ? new(

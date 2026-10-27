@@ -1,8 +1,7 @@
 using Oib.Vezba06.Domain.Incidents;
-
+using Oib.Vezba06.Domain.Shared;
 namespace Oib.Vezba06.Application.Detection;
-
 public interface IDetectIncidentsUseCase
 {
-    IReadOnlyList<Incident> Detect();
+    Result<IReadOnlyList<Incident>> Detect();
 }

@@ -2,12 +2,14 @@ using Oib.Vezba02.Domain.Resources;
 
 namespace Oib.Vezba02.Domain.Access;
 
-public sealed class ResourceReadPolicy
+public sealed class ResourceReadPolicy : IResourceReadPolicy
 {
-    public ResourceAccessDecision Decide(Requester requester, ProtectedResource resource)
+    public ResourceAccessDecision Decide(Requester? requester, ProtectedResource? resource)
     {
-        ArgumentNullException.ThrowIfNull(requester);
-        ArgumentNullException.ThrowIfNull(resource);
+        if (requester is null || resource is null || string.IsNullOrWhiteSpace(requester.ActorId) ||
+            requester.Permissions is null || string.IsNullOrWhiteSpace(resource.OwnerId) ||
+            !Enum.IsDefined(resource.Classification))
+            return new(false, ResourceAccessCodes.InvalidRequest);
 
         if (!requester.Permissions.Contains(Permissions.ReadRecords))
             return new(false, ResourceAccessCodes.MissingReadPermission);

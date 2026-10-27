@@ -5,22 +5,27 @@ using Oib.Vezba07.Domain.Review;
 namespace Oib.Vezba07.Application.Access;
 
 public sealed class EvaluateAccessHandler(
-    RiskBasedAccessPolicy policy,
+    IRiskBasedAccessPolicy policy,
     IAccessReviewSchedule reviewSchedule,
     IClock clock) : IEvaluateAccessUseCase
 {
-    public AccessDecision Evaluate(EvaluateAccessRequest request)
+    public AccessDecision Evaluate(EvaluateAccessRequest? request)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request?.Context is null || string.IsNullOrWhiteSpace(request.BusinessOwner) ||
+            string.IsNullOrWhiteSpace(request.Context.SubjectId) || string.IsNullOrWhiteSpace(request.Context.Permission))
+            return new(false, AccessDecisionCodes.InvalidRequest, "Neispravan zahtev za pristup.", clock.UtcNow);
 
         var decision = policy.Evaluate(request.Context, clock.UtcNow);
 
         if (decision.Allowed)
-            reviewSchedule.Schedule(new AccessReviewItem(
-                request.Context.SubjectId,
-                request.Context.Permission,
-                request.BusinessOwner,
-                decision.ReviewAfter));
+        {
+            var scheduled = reviewSchedule.Schedule(new AccessReviewItem(
+                request.Context.SubjectId, request.Context.Permission,
+                request.BusinessOwner, decision.ReviewAfter));
+            if (!scheduled.Success)
+                return new(false, AccessDecisionCodes.ReviewSchedulingFailed,
+                    "Nije moguće zakazati pregled pristupa.", clock.UtcNow);
+        }
 
         return decision;
     }

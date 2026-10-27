@@ -1,20 +1,17 @@
 using Oib.Vezba08.Domain.Events;
-
+using Oib.Vezba08.Domain.Shared;
 namespace Oib.Vezba08.Domain.Correlation;
-
-public sealed class EventCorrelator
+public sealed class EventCorrelator : IEventCorrelator
 {
-    public IReadOnlyList<CorrelationCase> Correlate(IEnumerable<SecurityEvent> events)
+    public Result<IReadOnlyList<CorrelationCase>> Correlate(IEnumerable<SecurityEvent>? events)
     {
-        ArgumentNullException.ThrowIfNull(events);
-
-        return events
-            .GroupBy(securityEvent => securityEvent.CorrelationId)
-            .Select(group => new CorrelationCase(
-                group.Key,
-                group.Count(),
-                group.Select(securityEvent => securityEvent.Type)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase)))
-            .ToArray();
+        if (events is null) return Result<IReadOnlyList<CorrelationCase>>.Fail("MissingEvents");
+        var items = events.ToArray();
+        if (items.Any(e => e is null || string.IsNullOrWhiteSpace(e.CorrelationId) || string.IsNullOrWhiteSpace(e.Type)))
+            return Result<IReadOnlyList<CorrelationCase>>.Fail("InvalidEvent");
+        IReadOnlyList<CorrelationCase> cases = items.GroupBy(e => e.CorrelationId)
+            .Select(g => new CorrelationCase(g.Key, g.Count(),
+                g.Select(e => e.Type).ToHashSet(StringComparer.OrdinalIgnoreCase))).ToArray();
+        return Result<IReadOnlyList<CorrelationCase>>.Ok(cases);
     }
 }

@@ -237,7 +237,7 @@ jobs:
           text=Path("/tmp/oib-200-check.txt").read_text(encoding="utf-8")
           # PDF table cells may wrap a title across lines.
           normalized=" ".join(text.split())
-          for part in ("400 функционалних","200 Ј","140 П","60 Н","Управљање већим бројем пријавних фактора","Усклађивање интеграционих догађаја"):
+          for part in ("400 функционалних","200 Ј","140 П","60 Н","IDN-28","INT-12","ATT-35","TYP-26"):
               if part not in normalized:
                   raise RuntimeError("Expected phrase missing from PDF: "+part)
           b=Path("Osnove informacione bezbednosti (OIB)/Projekat/Projektna_Specifikacija_OIB.pdf").read_bytes()

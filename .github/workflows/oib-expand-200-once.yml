@@ -1,0 +1,264 @@
+name: OIB - extend catalog to 200 J and 200 P/N
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/oib-expand-200-once.yml']
+permissions:
+  contents: write
+jobs:
+  expand-original-specification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install document and PDF tools
+        run: |
+          python -m pip install --quiet python-docx
+          if ! command -v libreoffice >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends libreoffice-writer fonts-dejavu-core fonts-liberation fonts-noto-core poppler-utils
+          fi
+          if ! command -v pdftotext >/dev/null 2>&1; then sudo apt-get install -y poppler-utils; fi
+      - name: Merge 190 new Cyrillic requirements without reordering the 210 existing entries
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from collections import Counter, defaultdict
+          from copy import deepcopy
+          import json
+          import re
+          from docx import Document
+          from docx.oxml.ns import qn
+
+          root=Path("Osnove informacione bezbednosti (OIB)/Projekat")
+          path=root/"Projektna_Specifikacija_OIB.docx"
+          files=[Path(f".github/oib_200_part{n}.json") for n in (1,2,3)]
+          grades={"J":"Ј","P":"П","N":"Н"}
+          order={"Ј":0,"П":1,"Н":2}
+          id_re=re.compile(r'^[A-Z]{2,5}-\d{2}$')
+          latin_re=re.compile('[A-Za-z]')
+          additions=[]
+          for number, fname in enumerate(files,1):
+              bundle=json.loads(fname.read_text(encoding='utf-8'))
+              if bundle['part']!=number:
+                  raise RuntimeError("Wrong catalog partition: "+str(fname))
+              additions.extend(bundle['requirements'])
+          if len(additions)!=190:
+              raise RuntimeError(f"Expected 190 new requirements, got {len(additions)}")
+          added_counts=Counter(row['level'] for row in additions)
+          if added_counts!=Counter({"J":95,"P":70,"N":25}):
+              raise RuntimeError(f"Unbalanced additions: {added_counts}")
+          new_ids=set()
+          for entry in additions:
+              code=entry['id']
+              if not id_re.fullmatch(code) or code in new_ids:
+                  raise RuntimeError("Invalid or repeated new ID: "+code)
+              new_ids.add(code)
+              if entry['level'] not in grades:
+                  raise RuntimeError("Invalid grade for "+code)
+              if not entry['title'].strip() or not entry['criteria'].strip():
+                  raise RuntimeError("Empty title or acceptance criteria: "+code)
+              if latin_re.search(entry['title']+" "+entry['criteria']):
+                  raise RuntimeError("Latin letters in new requirement: "+code)
+          doc=Document(str(path))
+          prefixes={entry['id'].split('-')[0] for entry in additions}
+          existing_rows=[]
+          old_details={}
+          original_by_table={}
+          module_tables={}
+          for tab_index,table in enumerate(doc.tables):
+              local=[]
+              for row in table.rows:
+                  if len(row.cells)<4:
+                      continue
+                  code=row.cells[0].text.strip()
+                  if not id_re.fullmatch(code) or code[:code.index('-')] in ("SEC","OPS"):
+                      continue
+                  if code in old_details:
+                      raise RuntimeError("Original document had duplicate ID: "+code)
+                  prefix=code.split("-")[0]
+                  if prefix in module_tables and module_tables[prefix] is not table:
+                      raise RuntimeError("Module spans multiple tables unexpectedly: "+prefix)
+                  module_tables[prefix]=table
+                  grade=row.cells[1].text.strip()
+                  if grade not in order:
+                      raise RuntimeError("Bad original level: "+code)
+                  details=(grade,row.cells[2].text,row.cells[3].text)
+                  old_details[code]=details
+                  existing_rows.append(code)
+                  local.append(code)
+              original_by_table[tab_index]=local
+          if len(old_details)!=210:
+              raise RuntimeError(f"Expected 210 original functional entries; found {len(old_details)}")
+          orig_counts=Counter(g for g,_,_ in old_details.values())
+          if orig_counts!=Counter({"Ј":105,"П":70,"Н":35}):
+              raise RuntimeError(f"Unexpected baseline grade counts: {orig_counts}")
+          if new_ids & old_details.keys():
+              raise RuntimeError("A new requirement would overwrite an existing ID")
+          if prefixes-set(module_tables):
+              raise RuntimeError("Missing tables for "+repr(prefixes-set(module_tables)))
+          # Use existing rows only as styling templates. Never modify or reorder
+          # any original requirement row.
+          def set_cell(cell,value):
+              for idx,p in enumerate(cell.paragraphs):
+                  if idx==0:
+                      if p.runs:
+                          p.runs[0].text=value
+                          for run in p.runs[1:]:run.text=""
+                      else:
+                          p.add_run(value)
+                  else:
+                      p._element.getparent().remove(p._element)
+              for nested in list(cell.tables):
+                  nested._element.getparent().remove(nested._element)
+
+          by_module=defaultdict(list)
+          for entry in additions:
+              by_module[entry['id'].split("-")[0]].append(entry)
+          for prefix,entries in by_module.items():
+              table=module_tables[prefix]
+              for entry in entries:
+                  level=grades[entry['level']]
+                  # Read current module rows, including already inserted new ones.
+                  current=[]
+                  for row in table.rows:
+                      if len(row.cells)<4:continue
+                      code=row.cells[0].text.strip()
+                      if not id_re.fullmatch(code) or code.split('-')[0]!=prefix:continue
+                      current.append((row, row.cells[1].text.strip()))
+                  if not current:
+                      raise RuntimeError("Empty table: "+prefix)
+                  same=[r for r,g in current if g==level]
+                  later=[r for r,g in current if order[g]>order[level]]
+                  if same:
+                      template=same[-1]
+                      insert_after=same[-1]._tr
+                      insert_before=None
+                  elif later:
+                      template=later[0]
+                      insert_before=later[0]._tr
+                      insert_after=None
+                  else:
+                      template=current[-1][0]
+                      insert_after=current[-1][0]._tr
+                      insert_before=None
+                  new_xml=deepcopy(template._tr)
+                  parent=table._tbl
+                  if insert_after is not None:
+                      insert_after.addnext(new_xml)
+                  else:
+                      parent.insert(parent.index(insert_before),new_xml)
+                  new_row=next((r for r in table.rows if r._tr is new_xml),None)
+                  if new_row is None or len(new_row.cells)!=4:
+                      raise RuntimeError("Unable to insert 4-column requirement row for "+entry['id'])
+                  for cell,value in zip(new_row.cells,(
+                      entry['id'],level,entry['title'],entry['criteria'])):
+                      set_cell(cell,value)
+              print(prefix,": inserted",len(entries),"new requirements")
+
+          # Change only the existing summary, not individual original requirements.
+          summary_updates=0
+          for para in doc.paragraphs:
+              for run in para.runs:
+                  if "Укупни каталог" in run.text and "210" in run.text:
+                      if not all(v in run.text for v in ("105 Ј","70 П","35 Н")):
+                          raise RuntimeError("Unexpected current total-summary text")
+                      run.text=(run.text.replace("210 функционалних", "400 функционалних")
+                          .replace("105 Ј","200 Ј")
+                          .replace("70 П","140 П")
+                          .replace("35 Н","60 Н"))
+                      summary_updates+=1
+          if summary_updates!=1:
+              raise RuntimeError(f"Expected exactly one summary update, found {summary_updates}")
+          doc.core_properties.comments="Проширен каталог: 200 Ј + 140 П + 60 Н = 400 целина. Постојећих 210 целина није мењано."
+          checkpath=path.with_name("Projektna_Specifikacija_OIB_staging.docx")
+          doc.save(str(checkpath))
+          check=Document(str(checkpath))
+          all_post={}
+          original_order_after=[]
+          per_table_order=[]
+          for tab_index,table in enumerate(check.tables):
+              codes=[]
+              grades_in_table=[]
+              for row in table.rows:
+                  if len(row.cells)<4:continue
+                  code=row.cells[0].text.strip()
+                  if not id_re.fullmatch(code) or code.split('-')[0] in ("SEC","OPS"):continue
+                  grade=row.cells[1].text.strip()
+                  if code in all_post:raise RuntimeError("Duplicate ID after edit: "+code)
+                  all_post[code]=(grade,row.cells[2].text,row.cells[3].text)
+                  codes.append(code)
+                  grades_in_table.append(order[grade])
+                  if code in old_details:original_order_after.append(code)
+              old_in_table=[code for code in codes if code in old_details]
+              if old_in_table!=original_by_table[tab_index]:
+                  raise RuntimeError("Changed relative order of existing rows in table "+str(tab_index))
+              if grades_in_table!=sorted(grades_in_table):
+                  raise RuntimeError("J/P/N order broken in table "+str(tab_index))
+          if len(all_post)!=400 or len(original_order_after)!=210:
+              raise RuntimeError(f"Unexpected final count {len(all_post)} or missing originals {len(original_order_after)}")
+          if original_order_after!=existing_rows:
+              raise RuntimeError("The original 210 requirements were reordered")
+          for code,old in old_details.items():
+              if all_post.get(code)!=old:
+                  raise RuntimeError("Existing requirement was changed: "+code)
+          for row in additions:
+              actual=all_post.get(row['id'])
+              if actual!=(grades[row['level']],row['title'],row['criteria']):
+                  raise RuntimeError("New requirement mismatch: "+row['id'])
+          counts=Counter(x[0] for x in all_post.values())
+          if counts!=Counter({"Ј":200,"П":140,"Н":60}):
+              raise RuntimeError("Wrong final grade distribution: "+repr(counts))
+          checkpath.replace(path)
+          print("VERIFIED: 400 themes = 200 J + 140 P + 60 N")
+          print("VERIFIED: 210 existing themes retain identical content and relative order")
+          print("VERIFIED: 190 new requirement titles and acceptance criteria use Cyrillic")
+          print("VERIFIED: J then P then N in every functional catalog table")
+          PY
+      - name: Export final PDF from updated DOCX
+        shell: bash
+        run: |
+          set -euo pipefail
+          folder="Osnove informacione bezbednosti (OIB)/Projekat"
+          libreoffice -env:UserInstallation=file:///tmp/oib-200-400 --headless --convert-to pdf --outdir /tmp "$folder/Projektna_Specifikacija_OIB.docx"
+          test -s /tmp/Projektna_Specifikacija_OIB.pdf
+          mv /tmp/Projektna_Specifikacija_OIB.pdf "$folder/Projektna_Specifikacija_OIB.pdf"
+          pdfinfo "$folder/Projektna_Specifikacija_OIB.pdf" | head -16
+          pdftotext -layout "$folder/Projektna_Specifikacija_OIB.pdf" /tmp/oib-200-check.txt
+          python - <<'PY'
+          from pathlib import Path
+          text=Path("/tmp/oib-200-check.txt").read_text(encoding="utf-8")
+          for part in ("400 функционалних","200 Ј","140 П","60 Н","Управљање већим бројем пријавних фактора","Усклађивање интеграционих догађаја"):
+              if part not in text:
+                  raise RuntimeError("Expected phrase missing from PDF: "+part)
+          b=Path("Osnove informacione bezbednosti (OIB)/Projekat/Projektna_Specifikacija_OIB.pdf").read_bytes()
+          if not b.startswith(b"%PDF-") or len(b)<100000:raise RuntimeError("Bad PDF")
+          print("VERIFIED PDF text and size:",len(b))
+          PY
+          pdftoppm -f 1 -l 1 -scale-to 1024 -png -singlefile "$folder/Projektna_Specifikacija_OIB.pdf" /tmp/oib-200-front >/dev/null
+          test -s /tmp/oib-200-front.png
+      - name: Replace original Word and PDF and delete temporary JSON catalogs
+        shell: bash
+        run: |
+          set -euo pipefail
+          folder="Osnove informacione bezbednosti (OIB)/Projekat"
+          git add "$folder/Projektna_Specifikacija_OIB.docx" "$folder/Projektna_Specifikacija_OIB.pdf"
+          git rm .github/oib_200_part1.json .github/oib_200_part2.json .github/oib_200_part3.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "OIB: expand to 200 J and 200 P/N without changing assigned topics"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 3
+          done
+          echo "Unable to push updated documents" >&2
+          exit 1

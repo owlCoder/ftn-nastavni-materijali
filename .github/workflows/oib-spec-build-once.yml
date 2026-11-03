@@ -165,4 +165,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "OIB: integrate 105 J and 105 P/N directly into specification DOCX/PDF"
-          git push origin HEAD:main
+          # The automatic materials-index workflow can push in parallel.
+          # Rebase only our DOCX/PDF change on the latest main and retry.
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Push failed after retries" >&2
+          exit 1

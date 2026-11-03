@@ -1,0 +1,237 @@
+name: OIB - sort requirements and unify Serbian Cyrillic
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/oib-sort-cyrillic-once.yml']
+permissions:
+  contents: write
+jobs:
+  normalize-specification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install document tools
+        run: |
+          python -m pip install --quiet python-docx
+          if ! command -v libreoffice >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends libreoffice-writer fonts-dejavu-core fonts-liberation fonts-noto-core
+          fi
+          if ! command -v pdftotext >/dev/null 2>&1; then sudo apt-get install -y poppler-utils; fi
+      - name: Sort each module table and convert 98 new requirements to Cyrillic
+        shell: bash
+        run: |
+          python - <<'PY'
+          from collections import Counter
+          from docx import Document
+          from pathlib import Path
+          from docx.oxml.ns import qn
+          import re
+
+          base=Path("Osnove informacione bezbednosti (OIB)/Projekat")
+          source=base/"Projektna_Specifikacija_OIB.docx"
+          doc=Document(str(source))
+          thresholds={
+             "IDN":9,"ACC":9,"LAB":8,"AUT":9,"REV":8,
+             "ASN":8,"ATT":9,"EVAL":9,"REVW":8,"PRG":8,
+             "AUD":8,"ADM":9,"TYP":9
+          }
+          levels={"Ј":0,"П":1,"Н":2}
+          row_id=re.compile(r'^([A-Z]{2,5})-(\d{2})$')
+          latin=re.compile('[A-Za-z]')
+          single=dict(zip(
+            "abcdefghijklmnopqrstuvwxyzčćđšž",
+            "абцдефгхијклмнопрстувз" # placeholder replaced below
+          ))
+          # Explicit one-letter alphabet avoids unintended cross-script substitutions.
+          pairs={
+            'a':'а','b':'б','c':'ц','č':'ч','ć':'ћ','d':'д','đ':'ђ',
+            'e':'е','f':'ф','g':'г','h':'х','i':'и','j':'ј','k':'к',
+            'l':'л','m':'м','n':'н','o':'о','p':'п','q':'к','r':'р',
+            's':'с','š':'ш','t':'т','u':'у','v':'в','w':'в','x':'кс',
+            'y':'и','z':'з','ž':'ж'
+          }
+          digraph={'dž':'џ','lj':'љ','nj':'њ'}
+          def cyrillic(text):
+              text=text.replace("Milestones i postignuća", "Međuciljevi i postignuća")
+              text=text.replace("seed stvara", "postupak inicijalizacije stvara")
+              text=text.replace("novim ID-jem", "novim identifikatorom")
+              parts=[]
+              i=0
+              while i<len(text):
+                  match=None
+                  for seq,result in digraph.items():
+                      if text[i:i+len(seq)].lower()==seq:
+                          match=(seq,result)
+                          break
+                  if match:
+                      seq,result=match
+                      original=text[i:i+len(seq)]
+                      if original.isupper():result=result.upper()
+                      elif original[0].isupper():result=result.upper()
+                      parts.append(result)
+                      i+=len(seq)
+                  else:
+                      ch=text[i]
+                      lo=ch.lower()
+                      result=pairs.get(lo,ch)
+                      if ch.isupper():result=result.upper()
+                      parts.append(result)
+                      i+=1
+              return ''.join(parts)
+
+          def set_cell_preserve_first_run(cell,value):
+              if not cell.paragraphs:
+                  cell.text=value
+                  return
+              paragraph=cell.paragraphs[0]
+              if paragraph.runs:
+                  paragraph.runs[0].text=value
+                  for extra in paragraph.runs[1:]:extra.text=""
+              else:
+                  paragraph.add_run(value)
+              for para in list(cell.paragraphs)[1:]:
+                  para._element.getparent().remove(para._element)
+
+          ids_before={}
+          for table in doc.tables:
+              for row in table.rows:
+                  if len(row.cells)<4:continue
+                  m=row_id.fullmatch(row.cells[0].text.strip())
+                  if not m or m[1] not in {*thresholds,"RUN","INT"}:continue
+                  id_=m.group(0)
+                  if id_ in ids_before:raise RuntimeError("Duplicate ID in original: "+id_)
+                  grade=row.cells[1].text.strip()
+                  if grade not in levels:raise RuntimeError(f"Unexpected grade for {id_}: {grade}")
+                  ids_before[id_]=(grade,row.cells[2].text,row.cells[3].text)
+          if len(ids_before)!=210:
+              raise RuntimeError(f"Expected 210 IDs; found {len(ids_before)}")
+          original_grade_counts=Counter(item[0] for item in ids_before.values())
+          if original_grade_counts!=Counter({"Ј":105,"П":70,"Н":35}):
+              raise RuntimeError(f"Unexpected pre-edit balance: {original_grade_counts}")
+
+          translated=0
+          reordered_tables=0
+          for table in doc.tables:
+              catalog_rows=[]
+              for row in table.rows:
+                  if len(row.cells)<4:continue
+                  m=row_id.fullmatch(row.cells[0].text.strip())
+                  if not m or m[1] not in {*thresholds,"RUN","INT"}:continue
+                  id_=m.group(0)
+                  grade=row.cells[1].text.strip()
+                  if grade not in levels:raise RuntimeError(f"Invalid level {id_}: {grade}")
+                  if m[1] in thresholds and int(m[2])>=thresholds[m[1]]:
+                      for cell in row.cells[2:4]:
+                          result=cyrillic(cell.text)
+                          if latin.search(result):
+                              raise RuntimeError(f"Latin letters remain in new requirement {id_}: {result}")
+                          set_cell_preserve_first_run(cell,result)
+                      translated+=1
+                  catalog_rows.append((row._tr,levels[grade],int(m[2]),id_))
+              if not catalog_rows:continue
+              parent=table._tbl
+              slots=[parent.index(tup[0]) for tup in catalog_rows]
+              ordered=sorted(catalog_rows,key=lambda item:(item[1],item[2],item[3]))
+              if [x[3] for x in catalog_rows]!=[x[3] for x in ordered]:
+                  for node,*_ in catalog_rows:parent.remove(node)
+                  for slot,(node,*_) in zip(slots,ordered):parent.insert(slot,node)
+                  reordered_tables+=1
+              after=[levels[row.cells[1].text.strip()] for row in table.rows
+                     if len(row.cells)>=4 and
+                     row_id.fullmatch(row.cells[0].text.strip()) and
+                     row.cells[0].text.strip().split('-')[0] in {*thresholds,"RUN","INT"}]
+              if after!=sorted(after):raise RuntimeError("Table order validation failed")
+          if translated!=98:
+              raise RuntimeError(f"Expected 98 new Cyrillic requirements, got {translated}")
+
+          changed_intro=0
+          for par in doc.paragraphs:
+              for run in par.runs:
+                  if "Укупни каталог (основна спецификација са допуном)" in run.text:
+                      run.text=run.text.replace(
+                          "Укупни каталог (основна спецификација са допуном)",
+                          "Укупни каталог")
+                      changed_intro+=1
+          if changed_intro!=1:raise RuntimeError(f"Expected one catalog summary, found {changed_intro}")
+
+          draft=source.with_name(source.stem+"_checked.docx")
+          doc.save(str(draft))
+          reopened=Document(str(draft))
+          ids_after={}
+          for table in reopened.tables:
+              categories=[]
+              for row in table.rows:
+                  if len(row.cells)<4:continue
+                  m=row_id.fullmatch(row.cells[0].text.strip())
+                  if not m or m[1] not in {*thresholds,"RUN","INT"}:continue
+                  code=m.group(0);level=row.cells[1].text.strip()
+                  ids_after[code]=(level,row.cells[2].text,row.cells[3].text)
+                  categories.append(levels[level])
+              if categories!=sorted(categories):
+                  raise RuntimeError("Order invalid in saved document")
+          if set(ids_after)!=set(ids_before):
+              raise RuntimeError(f"Changed set of IDs: removed={set(ids_before)-set(ids_after)} added={set(ids_after)-set(ids_before)}")
+          if Counter(x[0] for x in ids_after.values())!=Counter({"Ј":105,"П":70,"Н":35}):
+              raise RuntimeError("Category counts changed after saving")
+          for code,before in ids_before.items():
+              new=ids_after[code]
+              if before[0]!=new[0]:raise RuntimeError(f"Changed grade: {code}")
+              m=row_id.fullmatch(code)
+              is_new=m[1] in thresholds and int(m[2])>=thresholds[m[1]]
+              if is_new:
+                  if latin.search(new[1]) or latin.search(new[2]):
+                      raise RuntimeError(f"Latin still in {code}")
+              elif before!=new:
+                  raise RuntimeError(f"Unexpected edit to original requirement {code}")
+          draft.replace(source)
+          print(f"CHECK PASSED: 210 IDs / J=105 P=70 N=35 / transliterated={translated} / reordered tables={reordered_tables} / introduction updated={changed_intro}")
+          PY
+      - name: Regenerate PDF from corrected DOCX
+        shell: bash
+        run: |
+          set -euo pipefail
+          folder="Osnove informacione bezbednosti (OIB)/Projekat"
+          libreoffice -env:UserInstallation=file:///tmp/oib-unify --headless --convert-to pdf --outdir /tmp "$folder/Projektna_Specifikacija_OIB.docx"
+          test -s /tmp/Projektna_Specifikacija_OIB.pdf
+          mv /tmp/Projektna_Specifikacija_OIB.pdf "$folder/Projektna_Specifikacija_OIB.pdf"
+          pdfinfo "$folder/Projektna_Specifikacija_OIB.pdf" | head -20
+          pdftotext -layout "$folder/Projektna_Specifikacija_OIB.pdf" /tmp/oib-extracted.txt
+          python - <<'PY'
+          from pathlib import Path
+          txt=Path("/tmp/oib-extracted.txt").read_text(encoding="utf-8")
+          for needle in ("Укупни каталог", "105 Ј", "70 П", "35 Н", "Међуциљеви"):
+              if needle not in txt:
+                  raise RuntimeError(f"Expected Cyrillic text absent in PDF: {needle}")
+          data=Path("Osnove informacione bezbednosti (OIB)/Projekat/Projektna_Specifikacija_OIB.pdf").read_bytes()
+          if not data.startswith(b'%PDF-') or len(data)<100000:
+              raise RuntimeError("PDF binary validation failed")
+          print("PDF TEXT CHECK PASSED, bytes:",len(data))
+          PY
+          # Rasterize representative pages to test layout/rendering and font availability.
+          pdftoppm -f 1 -l 1 -scale-to 1024 -png -singlefile "$folder/Projektna_Specifikacija_OIB.pdf" /tmp/oib_first >/dev/null
+          test -s /tmp/oib_first.png
+      - name: Publish corrected original DOCX and PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          folder="Osnove informacione bezbednosti (OIB)/Projekat"
+          git add "$folder/Projektna_Specifikacija_OIB.docx" "$folder/Projektna_Specifikacija_OIB.pdf"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "OIB: put J before P and N and use Cyrillic in new requirements"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 3
+          done
+          echo "Failed to safely push updated DOCX/PDF" >&2
+          exit 1

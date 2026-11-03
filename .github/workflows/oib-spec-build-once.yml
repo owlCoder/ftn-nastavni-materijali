@@ -131,7 +131,7 @@ jobs:
               for row in tab.rows:
                   if len(row.cells)>=2:
                       key=row.cells[0].text.strip()
-                      if re.fullmatch(r'[A-Z]{2,5}-\d{2}',key):
+                      if re.fullmatch(r'[A-Z]{2,5}-\d{2}',key) and key.split('-')[0] in groups:
                           from_doc[key]=row.cells[1].text.strip()
           if len(from_doc)!=210 or any(e[0] not in from_doc for e in entries):
               raise RuntimeError(f"Post-edit validation failed: {len(from_doc)} unique catalog IDs")

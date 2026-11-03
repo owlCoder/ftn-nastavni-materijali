@@ -1,0 +1,168 @@
+name: OIB - integrate catalog into original DOCX and PDF
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/oib-spec-build-once.yml']
+permissions:
+  contents: write
+jobs:
+  update-specification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install document tools
+        run: |
+          python -m pip install --quiet python-docx
+          if ! command -v libreoffice >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends libreoffice-writer fonts-dejavu-core fonts-liberation fonts-noto-core
+          fi
+      - name: Merge 98 new requirements into original Word tables
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from copy import deepcopy
+          from collections import Counter, defaultdict
+          from docx import Document
+          from docx.oxml import OxmlElement
+          from docx.text.paragraph import Paragraph
+          from docx.shared import Pt
+          import re
+
+          base = Path("Osnove informacione bezbednosti (OIB)/Projekat")
+          source = base / "Projektna_Specifikacija_OIB.docx"
+          supplement = base / "Dopuna_Kataloga_105J_105PN.md"
+          if not source.is_file() or not supplement.is_file():
+              raise RuntimeError("Source DOCX or intermediate catalog not found")
+
+          groups = defaultdict(list)
+          for line in supplement.read_text(encoding="utf-8").splitlines():
+              match = re.match(r'^\|\s*([A-Z]{2,5}-\d{2})\s*\|\s*([JPN])\s*\|', line)
+              if not match:
+                  continue
+              cells = [v.strip() for v in line.strip().strip('|').split('|')]
+              if len(cells) != 5:
+                  raise RuntimeError(f"Malformed catalog row: {line[:100]}")
+              code, grade, title, criteria, dependencies = cells
+              if not re.fullmatch(r'[A-Z]{2,5}-\d{2}', code):
+                  raise RuntimeError(f"Unexpected ID: {code}")
+              groups[code.split("-")[0]].append((code,grade,title,criteria,dependencies))
+          entries = [e for rows in groups.values() for e in rows]
+          grades = Counter(e[1] for e in entries)
+          if len(entries) != 98 or grades != Counter({"J":46,"P":37,"N":15}):
+              raise RuntimeError(f"Unexpected supplement: {len(entries)} rows, {grades}")
+          new_ids = [e[0] for e in entries]
+          if len(set(new_ids)) != 98:
+              raise RuntimeError("Duplicate supplement IDs")
+
+          doc = Document(str(source))
+          locations = defaultdict(list)
+          existing_ids = set()
+          for table in doc.tables:
+              for idx, row in enumerate(table.rows):
+                  if len(row.cells) < 4:
+                      continue
+                  first = row.cells[0].text.strip()
+                  if re.fullmatch(r'[A-Z]{2,5}-\d{2}', first):
+                      existing_ids.add(first)
+                      locations[first.split("-")[0]].append((table,idx,first))
+          if set(new_ids) & existing_ids:
+              raise RuntimeError(f"Overlapping IDs: {set(new_ids)&existing_ids}")
+          missing = set(groups) - set(locations)
+          if missing:
+              raise RuntimeError(f"Cannot locate original requirement tables: {sorted(missing)}")
+          print("Existing catalog:",len(existing_ids), "tables:",len(doc.tables))
+
+          def replace_cell(cell, value):
+              # Reuse the first run's formatting, including table fonts and emphasis.
+              for p in cell.paragraphs:
+                  for run in list(p.runs):
+                      run.text=""
+              p=cell.paragraphs[0]
+              if p.runs:
+                  p.runs[0].text=value
+              else:
+                  p.add_run(value)
+              for other in cell.paragraphs[1:]:
+                  other._element.getparent().remove(other._element)
+              for nested in list(cell.tables):
+                  nested._element.getparent().remove(nested._element)
+
+          for prefix, newrows in groups.items():
+              anchor_table, anchor_idx, existing_last = locations[prefix][-1]
+              anchor_row = anchor_table.rows[anchor_idx]
+              if len(anchor_row.cells) != 4:
+                  raise RuntimeError(f"Unexpected column count for {prefix}: {len(anchor_row.cells)}")
+              previous = anchor_row._tr
+              for code,grade,title,criteria,deps in newrows:
+                  new_xml = deepcopy(anchor_row._tr)
+                  previous.addnext(new_xml)
+                  current = next(row for row in anchor_table.rows if row._tr is new_xml)
+                  for cell, val in zip(current.cells, (code,{"J":"Ј","P":"П","N":"Н"}[grade],title,criteria)):
+                      replace_cell(cell,val)
+                  previous=new_xml
+              print(f"{prefix}: appended {len(newrows)} requirements after {existing_last}")
+
+          # Insert a balance statement inside the document, immediately before the
+          # first module table, rather than as a separate appendix.
+          idn_table = locations["IDN"][0][0]
+          para_element = OxmlElement("w:p")
+          idn_table._tbl.addprevious(para_element)
+          par = Paragraph(para_element, idn_table._parent)
+          par.style = doc.styles["Normal"]
+          run = par.add_run("Укупни каталог (основна спецификација са допуном): 210 функционалних целина — 105 Ј (језгро), 70 П (проширење) и 35 Н (напредно). Правило доделе: једна Ј и једна П или Н по тиму. Захтеви SEC и OPS су заједнички, а не засебне тимске целине.")
+          run.bold = True
+          run.font.size = Pt(9)
+
+          doc.core_properties.comments="Katalog izjednačen: 105 J = 70 P + 35 N, ukupno 210 funkcionalnih celina."
+          tmp = source.with_name(source.stem + "_new.docx")
+          doc.save(str(tmp))
+          check = Document(str(tmp))
+          from_doc = {}
+          for tab in check.tables:
+              for row in tab.rows:
+                  if len(row.cells)>=2:
+                      key=row.cells[0].text.strip()
+                      if re.fullmatch(r'[A-Z]{2,5}-\d{2}',key):
+                          from_doc[key]=row.cells[1].text.strip()
+          if len(from_doc)!=210 or any(e[0] not in from_doc for e in entries):
+              raise RuntimeError(f"Post-edit validation failed: {len(from_doc)} unique catalog IDs")
+          balanced = Counter(from_doc.values())
+          if balanced["Ј"]!=105 or balanced["П"]!=70 or balanced["Н"]!=35:
+              raise RuntimeError(f"Unbalanced catalog: {balanced}")
+          tmp.replace(source)
+          print("VALIDATED FINAL COUNTS:",balanced)
+          PY
+      - name: Render updated DOCX to PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="Osnove informacione bezbednosti (OIB)/Projekat"
+          libreoffice -env:UserInstallation=file:///tmp/lo-oib-105 --headless --convert-to pdf --outdir /tmp "$dir/Projektna_Specifikacija_OIB.docx"
+          test -s /tmp/Projektna_Specifikacija_OIB.pdf
+          mv /tmp/Projektna_Specifikacija_OIB.pdf "$dir/Projektna_Specifikacija_OIB.pdf"
+          python - <<'PY'
+          from pathlib import Path
+          b=Path("Osnove informacione bezbednosti (OIB)/Projekat/Projektna_Specifikacija_OIB.pdf").read_bytes()
+          assert b.startswith(b'%PDF-') and len(b)>50000, "PDF validation failed"
+          print("Generated PDF bytes:",len(b))
+          PY
+      - name: Replace original files and remove temporary catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir="Osnove informacione bezbednosti (OIB)/Projekat"
+          git rm "$dir/Dopuna_Kataloga_105J_105PN.md" "$dir/README.md"
+          git add "$dir/Projektna_Specifikacija_OIB.docx" "$dir/Projektna_Specifikacija_OIB.pdf"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "OIB: integrate 105 J and 105 P/N directly into specification DOCX/PDF"
+          git push origin HEAD:main
